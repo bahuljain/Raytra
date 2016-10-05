@@ -13,16 +13,6 @@
   <component name="ChangeListManager">
     <list default="true" id="46fcc408-ae3e-4d07-90af-1395533aa735" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Material.cc" afterPath="$PROJECT_DIR$/Material.cc" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Point.cc" afterPath="$PROJECT_DIR$/Point.cc" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Vector.cc" afterPath="$PROJECT_DIR$/Vector.cc" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/Material.h" afterPath="$PROJECT_DIR$/include/Material.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/Point.h" afterPath="$PROJECT_DIR$/include/Point.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/Sphere.h" afterPath="$PROJECT_DIR$/include/Sphere.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/Surface.h" afterPath="$PROJECT_DIR$/include/Surface.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/Vector.h" afterPath="$PROJECT_DIR$/include/Vector.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.cc" afterPath="$PROJECT_DIR$/main.cc" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/surfaces/Sphere.cc" afterPath="$PROJECT_DIR$/surfaces/Sphere.cc" />
     </list>
     <ignored path="Raytra.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -89,8 +79,8 @@
       <file leaf-file-name="Sphere.cc" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/surfaces/Sphere.cc">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="25" column="25" selection-start-line="25" selection-start-column="25" selection-end-line="25" selection-end-column="25" />
+            <state relative-caret-position="15">
+              <caret line="1" column="35" selection-start-line="1" selection-start-column="35" selection-end-line="1" selection-end-column="35" />
               <folding />
             </state>
           </provider>
@@ -440,7 +430,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32884902" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32972136" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.84365326" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.84365326" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -811,8 +801,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/surfaces/Sphere.cc">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="25" column="25" selection-start-line="25" selection-start-column="25" selection-end-line="25" selection-end-column="25" />
+        <state relative-caret-position="15">
+          <caret line="1" column="35" selection-start-line="1" selection-start-column="35" selection-end-line="1" selection-end-column="35" />
           <folding />
         </state>
       </provider>
