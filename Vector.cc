@@ -49,7 +49,3 @@ Vector Vector::operator-() {
 Vector Vector::times(float c) {
     return Vector(i * c, j * c, k * c);
 }
-
-void Vector::print() {
-    printf("%fi + %fj + %fk", i, j, k);
-}

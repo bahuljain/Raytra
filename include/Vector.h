@@ -16,7 +16,6 @@ public:
     Vector cross(const Vector &);
     float dot(const Vector &) const ;
     Vector operator-();
-    void print();
 };
 
 #endif //RAYTRA_VECTOR_H

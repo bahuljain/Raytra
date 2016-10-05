@@ -11,7 +11,7 @@
 
 class Sphere : public Surface {
 public:
-    Point center = Point();
+    Point center;
     float radius;
 
     Sphere(float, float, float, float);

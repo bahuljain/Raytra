@@ -10,10 +10,10 @@
 
 class Camera {
 public:
-    Point eye = Point();
-    Vector w = Vector();
-    Vector u = Vector();
-    Vector v = Vector();
+    Point eye;
+    Vector w;
+    Vector u;
+    Vector v;
 
     float d;
     int pw, ph;

@@ -10,9 +10,9 @@
 
 class Material {
 public:
-    RGB diffuse = RGB ();
-    RGB specular = RGB ();
-    RGB ideal_specular = RGB ();
+    RGB diffuse;
+    RGB specular;
+    RGB ideal_specular;
     float roughness;
 
     Material();

@@ -3,7 +3,7 @@
 //
 
 #include <math.h>
-#include "../include/Sphere.h"
+#include "include/Sphere.h"
 
 Sphere::Sphere(float x, float y, float z, float r) {
     this->center = Point (x, y, z);
