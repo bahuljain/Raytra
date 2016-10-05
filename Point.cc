@@ -2,7 +2,7 @@
 // Created by bahuljain on 10/4/16.
 //
 
-#include "Point.h"
+#include "include/Point.h"
 
 
 
@@ -18,6 +18,11 @@ Point::Point(float x, float y, float z) {
     this->z = z;
 }
 
-Vector Point::sub(Point p) {
+Point Point::moveAlong(const Vector &vec) {
+    return Point(x + vec.i, y + vec.j, z + vec.k);
+}
+
+Vector Point::sub(const Point &p) {
     return Vector(x - p.x, y - p.y, z - p.z);
 }
+

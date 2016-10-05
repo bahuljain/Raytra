@@ -2,4 +2,13 @@
 // Created by bahuljain on 10/4/16.
 //
 
-#include "Ray.h"
+#include "include/Ray.h"
+
+Ray::Ray(const Point &origin, const Vector &direction) {
+    this->origin = origin;
+    this->direction = direction;
+}
+
+Point Ray::getPointOnIt(float t) {
+    return origin.moveAlong(direction.times(t));;
+}

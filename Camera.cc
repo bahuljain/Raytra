@@ -2,13 +2,13 @@
 // Created by bahuljain on 10/3/16.
 //
 
-#include "Camera.h"
+#include "include/Camera.h"
 
 Camera::Camera(float x, float y, float z,
                float vx, float vy, float vz, float d,
-               float iw, float ih, float pw, float ph) {
+               float iw, float ih, int pw, int ph) {
 
-    this->e = Point(x, y, z);
+    this->eye = Point(x, y, z);
 
     /* Direction the camera is pointing to */
     Vector D = Vector(vx, vy, vz);
@@ -21,11 +21,22 @@ Camera::Camera(float x, float y, float z,
 
     this->d = d;
 
-    this->r = iw / 2;
-    this->l = - r;
-    this->t = ih / 2;
-    this->b = - t;
+    this->right = iw / 2;
+    this->left = - right;
+    this->top = ih / 2;
+    this->bottom = - top;
 
     this->pw = pw;
     this->ph = ph;
+}
+
+Point Camera::getPixelCenter(int i, int j, float width, float height) {
+    float x = left + width * (i + 0.5) / pw;
+    float y = bottom + height * (j + 0.5) / ph;
+
+    Point center = eye.moveAlong(w.times(-d))
+                    .moveAlong(u.times(x))
+                    .moveAlong(v.times(y));
+
+    return center;
 }

@@ -1,4 +1,4 @@
-#include "prp.h"
+#include "include/prp.h"
 
 #include <cmath>
 #include <sstream>
@@ -76,7 +76,7 @@ void POVRayParser::material(float3 diff, float3 spec, float r, float3 refl) {
   os << "    phong " << r << endl;
   os << "    ambient 1.0" << endl;
   os << "  }" << endl;
-  mStr = os.str();  
+  mStr = os.str();
 }
 
 void POVRayParser::finalizeObject() {

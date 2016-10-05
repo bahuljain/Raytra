@@ -3,7 +3,9 @@
 //
 
 #include <math.h>
-#include "Vector.h"
+#include "include/Vector.h"
+#include <iostream>
+
 
 Vector::Vector() {
     this->i = 0;
@@ -17,7 +19,7 @@ Vector::Vector(float i, float j, float k) {
     this->k = k;
 }
 
-Vector Vector::cross(Vector vec) {
+Vector Vector::cross(const Vector &vec) {
     float x, y, z;
 
     x = j * vec.k - k * vec.j;
@@ -27,20 +29,16 @@ Vector Vector::cross(Vector vec) {
     return Vector (x, y, z);
 }
 
-float Vector::dot(Vector vec) {
+float Vector::dot(const Vector &vec) {
     return i * vec.i + j * vec.j + k * vec.k;
 }
-
-/*Vector Vector::operator-(Vector vec) {
-    return Vector(-vec.i, -vec.j, -vec.k);
-}*/
 
 float Vector::mag() {
     return sqrtf(powf(i, 2.0) + powf(j, 2.0) + powf(k, 2.0));
 }
 
-Vector Vector::norm(Vector vec) {
-    float mag = vec.mag();
+Vector Vector::norm() {
+    float mag = this->mag();
     return Vector(i/mag, j/mag, k/mag);
 }
 
@@ -48,3 +46,10 @@ Vector Vector::operator-() {
     return Vector(-i, -j, -k);
 }
 
+Vector Vector::times(float c) {
+    return Vector(i * c, j * c, k * c);
+}
+
+void Vector::print() {
+    printf("%fi + %fj + %fk", i, j, k);
+}

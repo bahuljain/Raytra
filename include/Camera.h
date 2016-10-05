@@ -10,17 +10,18 @@
 
 class Camera {
 public:
-    Point e = Point();
+    Point eye = Point();
     Vector w = Vector();
     Vector u = Vector();
     Vector v = Vector();
 
-    float d, pw, ph;
+    float d;
+    int pw, ph;
 
-    float l, r, t, b;
+    float left, right, top, bottom;
 
-    Camera(float, float, float, float, float, float, float, float, float, float, float);
-
+    Camera(float, float, float, float, float, float, float, float, float, int, int);
+    Point getPixelCenter(int, int, float, float);
 };
 
 

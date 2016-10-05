@@ -13,7 +13,8 @@ public:
     float x, y, z;
     Point();
     Point(float, float, float);
-    Vector sub(Point);
+    Vector sub(const Point &);
+    Point moveAlong(const Vector &);
 };
 
 

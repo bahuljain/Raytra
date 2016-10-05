@@ -7,11 +7,15 @@
 
 
 #include "Vector.h"
+#include "Point.h"
 
 class Ray {
 public:
-    Vector dir;
-    float t;
+    Point origin;
+    Vector direction;
+
+    Ray(const Point &, const Vector &);
+    Point getPointOnIt(float);
 };
 
 
