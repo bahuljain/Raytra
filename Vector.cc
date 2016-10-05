@@ -29,7 +29,7 @@ Vector Vector::cross(const Vector &vec) {
     return Vector (x, y, z);
 }
 
-float Vector::dot(const Vector &vec) {
+float Vector::dot(const Vector &vec) const {
     return i * vec.i + j * vec.j + k * vec.k;
 }
 

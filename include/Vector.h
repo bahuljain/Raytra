@@ -14,7 +14,7 @@ public:
     Vector norm();
     Vector times(float);
     Vector cross(const Vector &);
-    float dot(const Vector &);
+    float dot(const Vector &) const ;
     Vector operator-();
     void print();
 };

@@ -15,6 +15,7 @@ public:
     RGB ideal_specular = RGB ();
     float roughness;
 
+    Material();
     Material(float, float, float, float, float, float, float, float, float, float);
 };
 

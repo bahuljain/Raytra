@@ -9,13 +9,13 @@
 #include "Surface.h"
 #include "Point.h"
 
-class Sphere: public Surface {
+class Sphere : public Surface {
 public:
     Point center = Point();
     float radius;
 
     Sphere(float, float, float, float);
-    virtual int getIntersection(const Ray &);
+    virtual int getIntersection(const Ray &) const;
 };
 
 

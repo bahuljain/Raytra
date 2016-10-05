@@ -22,7 +22,7 @@ Point Point::moveAlong(const Vector &vec) {
     return Point(x + vec.i, y + vec.j, z + vec.k);
 }
 
-Vector Point::sub(const Point &p) {
+Vector Point::sub(const Point &p) const {
     return Vector(x - p.x, y - p.y, z - p.z);
 }
 

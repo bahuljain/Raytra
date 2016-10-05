@@ -10,7 +10,7 @@ Sphere::Sphere(float x, float y, float z, float r) {
     this->radius = r;
 }
 
-int Sphere::getIntersection(const Ray &ray) {
+int Sphere::getIntersection(const Ray &ray) const {
     Vector x = ray.origin.sub(center);
     float dd = ray.direction.dot(ray.direction);
 
@@ -23,5 +23,5 @@ int Sphere::getIntersection(const Ray &ray) {
     float t1 = (- ray.direction.dot(x) + sqrtf(discriminant)) / dd;
     float t2 = (- ray.direction.dot(x) - sqrtf(discriminant)) / dd;
 
-    return __fminf(t1, t2);
+    return fminf(t1, t2);
 }

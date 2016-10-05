@@ -14,7 +14,7 @@ class Surface {
 private:
     Material m;
 public:
-    virtual int getIntersection(const Ray &) const;
+    virtual int getIntersection(const Ray &) const = 0;
 
     void setMaterial(const Material & m) {
         this->m = m;
