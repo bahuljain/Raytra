@@ -45,27 +45,33 @@ int getClosestSurface(const vector<Surface*> &surfaces, const Ray &ray) {
 }
 
 int main(int argc, char** argv) {
-    // parse the scene file first
+
     if (argc != 2) {
         cerr << "usage: raytra scenefilename" << endl;
         return -1;
     }
 
-    Camera* cam = new Camera(); // = new Camera(24.2, 29.3, 53.6, 0.0, 0.0, -1.0f, 35.0, 35.0, 25.0, 160, 120);
+    Camera* cam = new Camera();
     vector<Surface*> surfaces;
 
     parseSceneFile (argv[1], surfaces, cam);
 
-    // TODO: Need to add sanity checks for camera and surfaces parsed from scened
+    // TODO: Need to add sanity checks for surfaces parsed from scene
 
     float w = cam->right - cam->left;
     float h = cam->top - cam->bottom;
+
+    if (cam->pw == 0 && cam->ph == 0 && w == 0 && h == 0) {
+        cout << "No camera and image plane in the scene" << endl;
+        return -1;
+    }
 
     Array2D<Rgba> pixels;
     pixels.resizeErase(cam->ph, cam->pw);
 
     for (int i = 0; i < cam->ph; i++) {
         for (int j = 0; j < cam->pw; j++) {
+
             Point px_center;
             px_center = cam->getPixelCenter(j, i, w, h);
 

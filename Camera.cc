@@ -13,15 +13,15 @@ Camera::Camera() {
     this->w = - D;
 
     /* Note here D should not be [0 t 0] */
-    this->u = D.cross(Vector(0, 1, 0));
-    this->v = u.cross(D);
+    this->u = Vector(1, 0, 0);
+    this->v = Vector(0, 1, 0);
 
     this->d = 1;
 
     this->right = 0;
-    this->left = - right;
+    this->left = 0;
     this->top = 0;
-    this->bottom = - top;
+    this->bottom = 0;
 
     this->pw = 0;
     this->ph = 0;
