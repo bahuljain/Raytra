@@ -284,7 +284,7 @@ int main(int argc, char** argv) {
 
     parseSceneFile (argv[1], surfaces, cam);
 
-    // TODO: Need to add sanity checks for camera and surfaces parsed from scene
+    // TODO: Need to add sanity checks for camera and surfaces parsed from scened
 
     float w = cam->right - cam->left;
     float h = cam->top - cam->bottom;
