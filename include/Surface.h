@@ -16,7 +16,7 @@ private:
 public:
     virtual int getIntersection(const Ray &) const = 0;
 
-    void setMaterial(const Material & m) {
+    void setMaterial(const Material &m) {
         this->m = m;
     }
 

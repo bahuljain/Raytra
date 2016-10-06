@@ -1,3 +1,4 @@
 .idea/*
 prog_out
 raytra_render.exr
+*.scn

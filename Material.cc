@@ -19,3 +19,12 @@ Material::Material(float dr, float dg, float db,
     this->ideal_specular = RGB(ir, ig, ib);
     this->roughness = r;
 }
+
+void Material::setValues(float dr, float dg, float db,
+                         float sr, float sg, float sb,
+                         float r, float ir, float ig, float ib) {
+    this->diffuse.setRGB(dr, dg, db);
+    this->specular.setRGB(sr, sg, sb);
+    this->ideal_specular.setRGB(ir, ig, ib);
+    this->roughness = r;
+}
