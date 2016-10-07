@@ -101,5 +101,12 @@ int main(int argc, char** argv) {
 
     writeRgba("raytra_render.exr", &pixels[0][0], cam->pw, cam->ph);
 
+
+    delete cam;
+
+    for (unsigned int k = 0; k < surfaces.size(); k++) {
+        delete surfaces[k];
+    }
+
     return 0;
 }

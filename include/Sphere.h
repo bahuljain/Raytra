@@ -15,6 +15,8 @@ public:
     float radius;
 
     Sphere(float, float, float, float);
+    ~Sphere();
+
     virtual int getIntersection(const Ray &) const;
 };
 
