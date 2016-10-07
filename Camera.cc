@@ -34,7 +34,7 @@ void Camera::setValues(float x, float y, float z,
     this->eye = Point(x, y, z);
 
     /* Direction the camera is pointing to */
-    Vector D = Vector(vx, vy, vz);
+    Vector D = Vector(vx, vy, vz).norm();
 
     this->w = - D;
 
@@ -54,14 +54,14 @@ void Camera::setValues(float x, float y, float z,
 }
 
 Point Camera::getPixelCenter(int i, int j, float width, float height) {
+    Point center;
+
     float x = left + width * (i + 0.5) / pw;
     float y = bottom + height * (j + 0.5) / ph;
 
-    Point center =
-            eye
-            .moveAlong(w.times(-d))
-            .moveAlong(u.times(x))
-            .moveAlong(v.times(y));
+    center = eye.moveAlong(u.times(x))
+                .moveAlong(v.times(y))
+                .moveAlong(w.times(-d));
 
     return center;
 }
