@@ -26,3 +26,7 @@ Vector Point::sub(const Point &p) const {
     return Vector(x - p.x, y - p.y, z - p.z);
 }
 
+float Point::dot(const Vector &vec) const {
+    return x * vec.i + y * vec.j + z * vec.k;
+}
+

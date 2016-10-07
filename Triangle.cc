@@ -12,7 +12,7 @@ Triangle::Triangle(float x1, float y1, float z1,
     this->p3 = Point(x3, y3, z3);
 }
 
-int Triangle::getIntersection(const Ray &) const {
+float Triangle::getIntersection(const Ray &) const {
 
 
     return 0;

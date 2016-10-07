@@ -15,7 +15,7 @@ public:
     Point p3;
 
     Triangle(float, float, float, float, float, float, float, float, float);
-    virtual int getIntersection(const Ray &) const;
+    virtual float getIntersection(const Ray &) const;
 };
 
 

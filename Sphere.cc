@@ -10,7 +10,7 @@ Sphere::Sphere(float x, float y, float z, float r) {
     this->radius = r;
 }
 
-int Sphere::getIntersection(const Ray &ray) const {
+float Sphere::getIntersection(const Ray &ray) const {
     Vector x = ray.origin.sub(center);
     float dd = ray.direction.dot(ray.direction);
 

@@ -7,6 +7,7 @@
 #include <cstring>
 #include "include/parser.h"
 #include "include/Sphere.h"
+#include "include/Plane.h"
 
 // this is called from the parseSceneFile function, which uses
 // it to get the float from the correspoding position on the line.
@@ -86,17 +87,8 @@ void parseSceneFile (char *filename, std::vector<Surface*> &surfaces, Camera* ca
         exit (-1);
     }
 
+    /* Most recently added material */
     Material lastMaterialLoaded (0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-
-    // Note: you'll have to keep track of whatever the last material
-    // you loaded in was, so you can apply it to any geometry that gets loaded.
-    // So here, you'll have something like:
-    //
-    // myMaterialClass *lastMaterialLoaded = 0;  // 0 or maybe a default material?
-    //
-    // and each time you load in a new piece of geometry (sphere, triangle, plane)
-    // you will set its material to lastMaterialLoaded.
-
 
     while (! inFile.eof ()) {   // go through every line in the file until finished
 
@@ -124,15 +116,6 @@ void parseSceneFile (char *filename, std::vector<Surface*> &surfaces, Camera* ca
 
                 surfaces.push_back(sphere);
 
-                // build your sphere here from the parameters
-                // i.e. you must call your sphere constructor and set its position
-                // and radius from the above values. You must also put your new
-                // sphere into the objects list (which can be global)
-                // So something like;
-                // mySphereClass *ms = new mySphereClass (x, y, z, r);   // make a new instance of your sphere class
-                // ms->setMaterial (lastMaterialLoaded)
-                // objectsList->push_back (ms);  // objectsList is a global std:vector<surface *> for example.
-
 #ifdef IM_DEBUGGING
                 // if we're debugging, show what we got:
                 cout << "got a sphere with ";
@@ -143,12 +126,22 @@ void parseSceneFile (char *filename, std::vector<Surface*> &surfaces, Camera* ca
             case 't':   // triangle
                 break;
 
-            case 'p':   // plane
+            case 'p': {  // plane
+                float nx, ny, nz, d;
+
+                nx = getTokenAsFloat(line, 1);
+                ny = getTokenAsFloat(line, 2);
+                nz = getTokenAsFloat(line, 3);
+                d = getTokenAsFloat(line, 4);
+
+                Plane *plane = new Plane(nx, ny, nz, d);
+                plane->setMaterial(lastMaterialLoaded);
+
+                surfaces.push_back(plane);
+            }
                 break;
 
             case 'c': {  // camera
-                // one trick here: the cameras pixel count (width, height) are integers,
-                // so cast them.
                 float x, y, z, vx, vy, vz, d, iw, ih;
                 int pw, ph;
 

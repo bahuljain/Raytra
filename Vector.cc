@@ -5,7 +5,7 @@
 #include <math.h>
 #include "include/Vector.h"
 #include <iostream>
-
+#include <assert.h>
 
 Vector::Vector() {
     this->i = 0;
@@ -39,6 +39,9 @@ float Vector::mag() {
 
 Vector Vector::norm() {
     float mag = this->mag();
+
+    assert (mag != 0.0);
+
     return Vector(i/mag, j/mag, k/mag);
 }
 
@@ -49,3 +52,4 @@ Vector Vector::operator-() {
 Vector Vector::times(float c) {
     return Vector(i * c, j * c, k * c);
 }
+

@@ -10,7 +10,13 @@
 
 class Plane : public Surface {
 public:
+    Vector normal;
+    float d;
 
+    Plane(float, float, float, float);
+    ~Plane();
+
+    virtual float getIntersection(const Ray &) const;
 };
 
 

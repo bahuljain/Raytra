@@ -17,7 +17,7 @@ public:
     Sphere(float, float, float, float);
     ~Sphere();
 
-    virtual int getIntersection(const Ray &) const;
+    virtual float getIntersection(const Ray &) const;
 };
 
 

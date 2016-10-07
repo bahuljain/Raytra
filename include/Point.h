@@ -15,6 +15,7 @@ public:
     Point(float, float, float);
     Vector sub(const Point &) const ;
     Point moveAlong(const Vector &);
+    float dot(const Vector &) const;
 };
 
 
