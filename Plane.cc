@@ -19,3 +19,7 @@ float Plane::getIntersection(const Ray &ray) const {
 
     return t;
 }
+
+Vector Plane::getSurfaceNormal(const Point &p) const {
+    return normal;
+}

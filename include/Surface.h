@@ -15,6 +15,7 @@ private:
     Material m;
 public:
     virtual float getIntersection(const Ray &) const = 0;
+    virtual Vector getSurfaceNormal(const Point &) const = 0;
 
     void setMaterial(const Material &m) {
         this->m = m;

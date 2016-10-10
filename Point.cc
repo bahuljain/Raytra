@@ -3,7 +3,7 @@
 //
 
 #include "include/Point.h"
-
+#include <math.h>
 
 
 Point::Point() {
@@ -28,5 +28,9 @@ Vector Point::sub(const Point &p) const {
 
 float Point::dot(const Vector &vec) const {
     return x * vec.i + y * vec.j + z * vec.k;
+}
+
+float Point::distance2(const Point &p) const {
+    return powf(x - p.x, 2.0) + powf(y - p.y, 2.0) + powf(z - p.z, 2.0);
 }
 

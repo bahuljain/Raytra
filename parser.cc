@@ -77,7 +77,7 @@ float getTokenAsFloat (string inString, int whichToken) {
 // only use "correct" scene files.
 //
 //
-void parseSceneFile (char *filename, std::vector<Surface*> &surfaces, Camera* cam) {
+void parseSceneFile (char *filename, std::vector<Surface*> &surfaces, Camera* cam, Light* light) {
 
     ifstream inFile(filename);    // open the file
     string line;
@@ -157,26 +157,40 @@ void parseSceneFile (char *filename, std::vector<Surface*> &surfaces, Camera* ca
                 pw = (int) getTokenAsFloat(line, 10);
                 ph = (int) getTokenAsFloat(line, 11);
 
-                cam->setValues (x, y, z, vx, vy, vz, d, iw, ih, pw, ph);
+                cam->setValues(x, y, z, vx, vy, vz, d, iw, ih, pw, ph);
 
                 break;
             }
             case 'l':   // light
-                break;
-                /*
                 // slightly different from the rest, we need to examine the second param,
                 // which is at the third position on the line:
                 switch (line[2]) {
-                    case 'p':   // point light
+                    case 'p': { // point light
+                        float x, y, z, r, g, b;
+
+                        x = getTokenAsFloat(line, 2);
+                        y = getTokenAsFloat(line, 3);
+                        z = getTokenAsFloat(line, 4);
+                        r = getTokenAsFloat(line, 5);
+                        g = getTokenAsFloat(line, 6);
+                        b = getTokenAsFloat(line, 7);
+
+                        cout << "Yipee" << endl;
+
+                        light->setValues(x, y, z, r, g, b, 10.0);
+
                         break;
+                    }
+/*
                     case 'd':   // directional light
                         break;
                     case 'a':   // ambient light
                         break;
+*/
 
                 }
 
-                break;*/
+                break;
 
             case 'm': {  // material
                 // the trick here: we should keep a pointer to the last material we read in,

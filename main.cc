@@ -29,7 +29,7 @@ void writeRgba (const char fileName[], const Rgba *pixels,
     file.writePixels (height);
 }
 
-int getClosestSurface(const vector<Surface*> &surfaces, const Ray &ray) {
+std::tuple<int, float> getClosestSurface(const vector<Surface*> &surfaces, const Ray &ray) {
     float min_t = numeric_limits<float>::infinity();
     int min_i = -1;
 
@@ -41,7 +41,7 @@ int getClosestSurface(const vector<Surface*> &surfaces, const Ray &ray) {
             min_i = i;
         }
     }
-    return min_i;
+    return std::make_tuple(min_i, min_t);
 }
 
 int main(int argc, char** argv) {
@@ -52,9 +52,12 @@ int main(int argc, char** argv) {
     }
 
     Camera* cam = new Camera();
+    Light* light = new Light();
     vector<Surface*> surfaces;
 
-    parseSceneFile (argv[1], surfaces, cam);
+    parseSceneFile (argv[1], surfaces, cam, light);
+
+    cout << light->position.x << endl;
 
     // TODO: Need to add sanity checks for surfaces parsed from scene
 
@@ -77,16 +80,27 @@ int main(int argc, char** argv) {
 
             Ray ray (px_center, px_center.sub(cam->eye).norm());
 
-            int closest_surface_idx = getClosestSurface(surfaces, ray);
+            std::tuple<int, float> surface_intersection = getClosestSurface(surfaces, ray);
+
+            int closest_surface_idx = std::get<0>(surface_intersection);
+            float t = std::get<1>(surface_intersection);
+            
 
             Rgba &px = pixels[i][j];
 
             if (closest_surface_idx != -1) {
-                Material mat = surfaces[closest_surface_idx]->getMaterial();
+                Surface* surface = surfaces[closest_surface_idx];
+                Point intersection = ray.getPointOnIt(t);
+                Material mat = surface->getMaterial();
 
-                px.r = mat.diffuse.r;
-                px.g = mat.diffuse.g;
-                px.b = mat.diffuse.b;
+                Vector normal = surface->getSurfaceNormal(intersection);
+                Vector I = light->position.sub(intersection).norm();
+
+                float diffuse_factor = fmaxf(0, normal.dot(I));
+
+                px.r = mat.diffuse.r * diffuse_factor * light->color.r;
+                px.g = mat.diffuse.g * diffuse_factor * light->color.g;
+                px.b = mat.diffuse.b * diffuse_factor * light->color.b;
                 px.a = 1;
             } else {
                 // set pixel to black
@@ -103,6 +117,7 @@ int main(int argc, char** argv) {
 
 
     delete cam;
+    delete light;
 
     for (unsigned int k = 0; k < surfaces.size(); k++) {
         delete surfaces[k];
