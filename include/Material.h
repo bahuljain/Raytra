@@ -13,7 +13,7 @@ public:
     RGB diffuse;
     RGB specular;
     RGB ideal_specular;
-    float roughness;
+    float phong;
 
     Material();
     Material(float, float, float, float, float, float, float, float, float, float);

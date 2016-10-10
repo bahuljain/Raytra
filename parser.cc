@@ -39,6 +39,7 @@ float getTokenAsFloat (string inString, int whichToken) {
 
     for (int i = 0; i < whichToken; i++) {
         p = strtok (0, " ");
+
         if (p == 0) {
             cerr << "error: the line is not long enough for your token request!" << endl;
             exit (-1);
@@ -77,7 +78,8 @@ float getTokenAsFloat (string inString, int whichToken) {
 // only use "correct" scene files.
 //
 //
-void parseSceneFile (char *filename, std::vector<Surface*> &surfaces, Camera* cam, Light* light) {
+void parseSceneFile (char *filename, std::vector<Surface*> &surfaces,
+                     Camera* cam, Light* light, AmbientLight* ambient) {
 
     ifstream inFile(filename);    // open the file
     string line;
@@ -175,18 +177,23 @@ void parseSceneFile (char *filename, std::vector<Surface*> &surfaces, Camera* ca
                         g = getTokenAsFloat(line, 6);
                         b = getTokenAsFloat(line, 7);
 
-                        cout << "Yipee" << endl;
-
-                        light->setValues(x, y, z, r, g, b, 10.0);
+                        light->setValues(x, y, z, r, g, b, 2.0);
 
                         break;
                     }
 /*
-                    case 'd':   // directional light
-                        break;
-                    case 'a':   // ambient light
+ *                  case 'd':   // directional light
                         break;
 */
+                    case 'a':   // ambient light
+                        float r, g, b;
+
+                        r = getTokenAsFloat(line, 2);
+                        g = getTokenAsFloat(line, 2);
+                        b = getTokenAsFloat(line, 2);
+
+                        ambient->setValues(r, g, b);
+                        break;
 
                 }
 

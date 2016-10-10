@@ -8,6 +8,7 @@
 class Vector {
 public:
     float i, j, k;
+
     Vector();
     Vector(float, float, float);
     float mag();
@@ -15,6 +16,7 @@ public:
     Vector times(float);
     Vector cross(const Vector &);
     float dot(const Vector &) const ;
+    Vector plus(const Vector &) const;
     Vector operator-();
 };
 

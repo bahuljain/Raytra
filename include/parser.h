@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "Surface.h"
 #include "Light.h"
+#include "AmbientLight.h"
 #include <iostream>
 
 using namespace std;
@@ -16,5 +17,5 @@ using namespace std;
 #endif //RAYTRA_PARSER_H
 
 
-void parseSceneFile (char *, vector<Surface*> &, Camera*, Light*);
+void parseSceneFile (char *, vector<Surface*> &, Camera*, Light*, AmbientLight*);
 float getTokenAsFloat (string, int);

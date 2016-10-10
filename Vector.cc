@@ -53,3 +53,8 @@ Vector Vector::times(float c) {
     return Vector(i * c, j * c, k * c);
 }
 
+Vector Vector::plus(const Vector &vec) const {
+    return Vector(i + vec.i, j + vec.j, k + vec.k);
+}
+
+

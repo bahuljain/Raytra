@@ -8,7 +8,7 @@ Material::Material() {
     this->diffuse = RGB(0, 0, 0);
     this->specular = RGB(0, 0, 0);
     this->ideal_specular = RGB(0, 0, 0);
-    this->roughness = 0;
+    this->phong = 0;
 }
 
 Material::Material(float dr, float dg, float db,
@@ -17,7 +17,7 @@ Material::Material(float dr, float dg, float db,
     this->diffuse = RGB(dr, dg, db);
     this->specular = RGB(sr, sg, sb);
     this->ideal_specular = RGB(ir, ig, ib);
-    this->roughness = r;
+    this->phong = r;
 }
 
 void Material::setValues(float dr, float dg, float db,
@@ -26,5 +26,5 @@ void Material::setValues(float dr, float dg, float db,
     this->diffuse.setRGB(dr, dg, db);
     this->specular.setRGB(sr, sg, sb);
     this->ideal_specular.setRGB(ir, ig, ib);
-    this->roughness = r;
+    this->phong = r;
 }
