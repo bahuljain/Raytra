@@ -182,7 +182,7 @@ void parseSceneFile (char *filename, std::vector<Surface*> &surfaces,
                         break;
                     }
 /*
- *                  case 'd':   // directional light
+                    case 'd':   // directional light
                         break;
 */
                     case 'a':   // ambient light
