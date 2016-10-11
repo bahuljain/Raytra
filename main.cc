@@ -1,19 +1,19 @@
 #include <fstream>
 #include <vector>
 
-//#include <ImfStringAttribute.h>
-//#include <ImfArray.h>
-//#include <ImfRgba.h>
+#include <ImfStringAttribute.h>
+#include <ImfArray.h>
+#include <ImfRgba.h>
 #include <ImfRgbaFile.h>
 #include <limits>
 
-//#include "include/parser.h"
+#include "include/parser.h"
 
-//using namespace Imf;
-//using namespace std;
-//using namespace Imath;
+using namespace Imf;
+using namespace std;
+using namespace Imath;
 
-/*void writeRgba (const char fileName[], const Rgba *pixels,
+void writeRgba (const char fileName[], const Rgba *pixels,
                 int width, int height)
 {
     //
@@ -42,18 +42,17 @@ std::tuple<int, float> getClosestSurface(const vector<Surface*> &surfaces, const
         }
     }
     return std::make_tuple(min_i, min_t);
-}*/
+}
 
 int main(int argc, char** argv) {
 
     if (argc != 2) {
-//        cerr << "usage: raytra scenefilename" << endl;
+        cerr << "usage: raytra scenefilename" << endl;
         return -1;
     }
 
-    return 0;
-    /*Camera* cam = new Camera();
-    Light* light = new Light();
+    Camera* cam = new Camera();
+        Light* light = new Light();
     AmbientLight* ambient = new AmbientLight();
     vector<Surface*> surfaces;
 
@@ -137,6 +136,6 @@ int main(int argc, char** argv) {
         delete surfaces[k];
     }
 
-    return 0;*/
+    return 0;
 
 }

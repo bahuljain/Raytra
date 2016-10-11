@@ -177,7 +177,7 @@ void parseSceneFile (char *filename, std::vector<Surface*> &surfaces,
                         g = getTokenAsFloat(line, 6);
                         b = getTokenAsFloat(line, 7);
 
-                        light->setValues(x, y, z, r, g, b, 2.0);
+                        light->setValues(x, y, z, r, g, b, 1.0);
 
                         break;
                     }
