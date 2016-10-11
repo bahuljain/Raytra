@@ -80,6 +80,7 @@ float getTokenAsFloat (string inString, int whichToken) {
 //
 void parseSceneFile (char *filename, std::vector<Surface*> &surfaces,
                      Camera* cam, Light* light, AmbientLight* ambient) {
+    int Cams = 0;
 
     ifstream inFile(filename);    // open the file
     string line;
@@ -161,6 +162,8 @@ void parseSceneFile (char *filename, std::vector<Surface*> &surfaces,
 
                 cam->setValues(x, y, z, vx, vy, vz, d, iw, ih, pw, ph);
 
+                Cams++;
+
                 break;
             }
             case 'l':   // light
@@ -234,6 +237,11 @@ void parseSceneFile (char *filename, std::vector<Surface*> &surfaces,
                 //
             case 'o':   // make your own options if you wish
                 break;
+        }
+
+        if (Cams != 1) {
+            cerr << "error: scene should have exactly 1 camera!" << endl;
+            exit(-1);
         }
 
     }
