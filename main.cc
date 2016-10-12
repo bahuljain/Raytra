@@ -81,8 +81,6 @@ int main(int argc, char **argv) {
             int closest_surface_idx = std::get<0>(closest_surface);
             float t = std::get<1>(closest_surface);
 
-            const float ka = 0.05;
-
             Rgba &px = pixels[i][j];
 
 
@@ -101,17 +99,19 @@ int main(int argc, char **argv) {
                 float diffuse_factor = light->intensity * fmaxf(0, normal.dot(I));
                 float specular_factor = light->intensity * powf(fmaxf(0, normal.dot(bisector)), mat.phong);
 
-                px.r = mat.diffuse.r * diffuse_factor * light->color.r
-                       + ka * ambient->color.r
-                       + mat.specular.r * specular_factor * light->color.r;
+                float d2 = light->position.distance2(intersection);
 
-                px.g = mat.diffuse.g * diffuse_factor * light->color.g
-                       + ka * ambient->color.g
-                       + mat.specular.g * specular_factor * light->color.r;
+                px.r = (mat.diffuse.r * diffuse_factor * light->color.r
+                       + mat.specular.r * specular_factor * light->color.r) / d2
+                       + ambient->color.r;
 
-                px.b = mat.diffuse.b * diffuse_factor * light->color.b
-                       + ka * ambient->color.b
-                       + mat.specular.b * specular_factor * light->color.r;
+                px.g = (mat.diffuse.g * diffuse_factor * light->color.g
+                       + mat.specular.g * specular_factor * light->color.r) / d2
+                       + ambient->color.g;
+
+                px.b = (mat.diffuse.b * diffuse_factor * light->color.b
+                       + mat.specular.b * specular_factor * light->color.r) / d2
+                       + ambient->color.b;
 
                 px.a = 1;
             } else {
