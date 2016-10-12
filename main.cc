@@ -57,8 +57,6 @@ int main(int argc, char **argv) {
 
     parseSceneFile(argv[1], surfaces, cam, light, ambient);
 
-    // TODO: Need to add sanity checks for surfaces parsed from scene
-
     float w = cam->right - cam->left;
     float h = cam->top - cam->bottom;
 
@@ -78,10 +76,10 @@ int main(int argc, char **argv) {
 
             Ray ray(px_center, px_center.sub(cam->eye).norm());
 
-            std::tuple<int, float> surface_intersection = getClosestSurface(surfaces, ray);
+            std::tuple<int, float> closest_surface = getClosestSurface(surfaces, ray);
 
-            int closest_surface_idx = std::get<0>(surface_intersection);
-            float t = std::get<1>(surface_intersection);
+            int closest_surface_idx = std::get<0>(closest_surface);
+            float t = std::get<1>(closest_surface);
 
             const float ka = 0.05;
 
@@ -89,22 +87,8 @@ int main(int argc, char **argv) {
 
 
             if (closest_surface_idx != -1) {
-/*                cout << "Ray Origin";
-                ray.origin.printPoint();
-
-                cout << "Ray Direction: ";
-                ray.direction.printVector();*/
-
                 Surface *surface = surfaces[closest_surface_idx];
                 Point intersection = ray.getPointOnIt(t);
-
-/*                cout << "Pixel: " << i << " " << j << endl;
-
-                cout << "Surface Intersection: ";
-                intersection.printPoint();
-
-                cout << "Pixel Center: ";
-                px_center.printPoint();*/
 
                 Material mat = surface->getMaterial();
 
@@ -128,6 +112,7 @@ int main(int argc, char **argv) {
                 px.b = mat.diffuse.b * diffuse_factor * light->color.b
                        + ka * ambient->color.b
                        + mat.specular.b * specular_factor * light->color.r;
+
                 px.a = 1;
             } else {
                 // set pixel to black
