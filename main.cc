@@ -45,8 +45,8 @@ std::tuple<int, float> getClosestSurface(const vector<Surface *> &surfaces, cons
 
 int main(int argc, char **argv) {
 
-    if (argc != 2) {
-        cerr << "usage: raytra scenefilename" << endl;
+    if (argc < 2) {
+        cerr << "usage: raytra scenefilename outputfilename.exr" << endl;
         return -1;
     }
 
@@ -140,8 +140,11 @@ int main(int argc, char **argv) {
         }
     }
 
-    writeRgba("raytra_render.exr", &pixels[0][0], cam->pw, cam->ph);
-
+    if (argc == 2) {
+        writeRgba("hw1.1.exr", &pixels[0][0], cam->pw, cam->ph);
+    } else {
+        writeRgba(argv[2], &pixels[0][0], cam->pw, cam->ph);
+    }
 
     delete cam;
     delete light;
