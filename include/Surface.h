@@ -14,6 +14,7 @@ class Surface {
 private:
     Material m;
 public:
+    virtual ~Surface() {}
     virtual float getIntersection(const Ray &) const = 0;
     virtual Vector getSurfaceNormal(const Point &) const = 0;
 

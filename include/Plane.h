@@ -14,7 +14,7 @@ public:
     float d;
 
     Plane(float, float, float, float);
-    ~Plane();
+    ~Plane() {};
 
     virtual float getIntersection(const Ray &) const;
     virtual Vector getSurfaceNormal(const Point &) const;
