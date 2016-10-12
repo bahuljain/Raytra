@@ -4,6 +4,7 @@
 
 #include "include/Point.h"
 #include <math.h>
+#include <iostream>
 
 
 Point::Point() {
@@ -32,5 +33,9 @@ float Point::dot(const Vector &vec) const {
 
 float Point::distance2(const Point &p) const {
     return powf(x - p.x, 2.0) + powf(y - p.y, 2.0) + powf(z - p.z, 2.0);
+}
+
+void Point::printPoint() {
+    std::cout << "(" << x << ", " << y << ", " << z << ")" << std::endl;
 }
 

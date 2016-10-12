@@ -23,7 +23,7 @@ Vector Vector::cross(const Vector &vec) {
     float x, y, z;
 
     x = j * vec.k - k * vec.j;
-    y = i * vec.k - k * vec.i;
+    y = k * vec.i - i * vec.k;
     z = i * vec.j - j * vec.i;
 
     return Vector (x, y, z);
@@ -55,6 +55,10 @@ Vector Vector::times(float c) {
 
 Vector Vector::plus(const Vector &vec) const {
     return Vector(i + vec.i, j + vec.j, k + vec.k);
+}
+
+void Vector::printVector() {
+    std::cout << i << "i + " << j << "j + " << k << "k" << std::endl;
 }
 
 

@@ -237,11 +237,10 @@ void parseSceneFile (char *filename, std::vector<Surface*> &surfaces,
             case 'o':   // make your own options if you wish
                 break;
         }
+    }
 
-        /*if (Cams != 1) {
-            cerr << "error: scene should have exactly 1 camera!" << endl;
-            exit(-1);
-        }*/
-
+    if (Cams != 1) {
+        cerr << "error: scene should have exactly 1 camera!" << endl;
+        exit(-1);
     }
 }

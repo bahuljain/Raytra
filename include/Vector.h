@@ -18,6 +18,7 @@ public:
     float dot(const Vector &) const ;
     Vector plus(const Vector &) const;
     Vector operator-();
+    void printVector();
 };
 
 #endif //RAYTRA_VECTOR_H

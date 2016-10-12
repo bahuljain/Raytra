@@ -57,8 +57,6 @@ int main(int argc, char **argv) {
 
     parseSceneFile(argv[1], surfaces, cam, light, ambient);
 
-    cout << surfaces.size() << endl;
-
     // TODO: Need to add sanity checks for surfaces parsed from scene
 
     float w = cam->right - cam->left;
@@ -89,17 +87,28 @@ int main(int argc, char **argv) {
 
             Rgba &px = pixels[i][j];
 
+
             if (closest_surface_idx != -1) {
+/*                cout << "Ray Origin";
+                ray.origin.printPoint();
+
+                cout << "Ray Direction: ";
+                ray.direction.printVector();*/
+
                 Surface *surface = surfaces[closest_surface_idx];
                 Point intersection = ray.getPointOnIt(t);
 
-//                cout << intersection.x << intersection.y << intersection.z << endl;
-                cout << i << " " << j << endl;
+/*                cout << "Pixel: " << i << " " << j << endl;
 
+                cout << "Surface Intersection: ";
+                intersection.printPoint();
+
+                cout << "Pixel Center: ";
+                px_center.printPoint();*/
 
                 Material mat = surface->getMaterial();
 
-                Vector v = -ray.direction;
+                Vector v = - ray.direction;
                 Vector normal = surface->getSurfaceNormal(intersection);
                 Vector I = light->position.sub(intersection).norm();
 
