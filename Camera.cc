@@ -40,7 +40,7 @@ void Camera::setValues(float x, float y, float z,
 
     /* Note here D should not be [0 t 0] */
     this->u = D.cross(Vector(0, 1, 0)).norm();
-    this->v = u.cross(D).norm();
+    this->v = D.cross(u).norm();
 
     this->d = d;
 
