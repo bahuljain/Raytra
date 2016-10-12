@@ -2,3 +2,5 @@
 prog_out
 raytra_render.exr
 .idea/
+Makefile
+
