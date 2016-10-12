@@ -99,6 +99,10 @@ void parseSceneFile (char *filename, std::vector<Surface*> &surfaces,
 
         switch (line[0])  {     // we'll decide which command based on the first character
 
+            case '/':
+                // don't do anything, it's a comment
+                break;
+
             //
             // geometry types:
             //
@@ -227,22 +231,17 @@ void parseSceneFile (char *filename, std::vector<Surface*> &surfaces,
                 break;
             }
 
-            case '/':
-                // don't do anything, it's a comment
-                break;
-
-
-                //
+                            //
                 // options
                 //
             case 'o':   // make your own options if you wish
                 break;
         }
 
-        if (Cams != 1) {
+        /*if (Cams != 1) {
             cerr << "error: scene should have exactly 1 camera!" << endl;
             exit(-1);
-        }
+        }*/
 
     }
 }
