@@ -45,6 +45,43 @@ std::tuple<int, float> getClosestSurface(const vector<Surface *> &surfaces, cons
     return std::make_tuple(min_i, min_t);
 }
 
+RGB phongShading(const Surface *surface,
+                 const Light *light,
+                 const Ray &ray,
+                 const Point &intersection,
+                 const Material &mat) {
+    float r, g, b, diffuse_factor, specular_factor;
+    Vector v, normal, I, bisector;
+
+    /* Vector to the viewer */
+    v = -ray.direction;
+
+    /* Vector normal to the surface at the given intersection point */
+    normal = surface->getSurfaceNormal(intersection);
+
+    /* Vector to the light source */
+    I = light->position.sub(intersection).norm();
+
+    /* Vector bisecting the view vector and light vector */
+    bisector = v.plus(I).norm();
+
+    diffuse_factor = light->intensity * fmaxf(0, normal.dot(I));
+    specular_factor = light->intensity * powf(fmaxf(0, normal.dot(bisector)), mat.phong);
+
+    float d2 = light->position.distance2(intersection);
+
+    r = (mat.diffuse.r * diffuse_factor
+            + mat.specular.r * specular_factor) * light->color.r / d2;
+
+    g = (mat.diffuse.g * diffuse_factor
+            + mat.specular.g * specular_factor) * light->color.g / d2;
+
+    b = (mat.diffuse.b * diffuse_factor
+            + mat.specular.b * specular_factor) * light->color.b / d2;
+
+    return RGB(r, g, b);
+}
+
 void render(Array2D <Rgba> &pixels,
             const Camera *cam,
             const Light *light,
@@ -64,41 +101,24 @@ void render(Array2D <Rgba> &pixels,
 
             Ray ray(px_center, px_center.sub(cam->eye).norm());
 
+            /* Get closest surface along the ray */
             std::tuple<int, float> closest_surface = getClosestSurface(surfaces, ray);
-
             int closest_surface_idx = std::get<0>(closest_surface);
             float t = std::get<1>(closest_surface);
 
             Rgba &px = pixels[i][j];
 
-
             if (closest_surface_idx != -1) {
                 Surface *surface = surfaces[closest_surface_idx];
                 Point intersection = ray.getPointOnIt(t);
-
                 Material mat = surface->getMaterial();
+                RGB shade = phongShading(surface, light, ray, intersection, mat);
 
-                Vector v = -ray.direction;
-                Vector normal = surface->getSurfaceNormal(intersection);
-                Vector I = light->position.sub(intersection).norm();
-
-                Vector bisector = v.plus(I).norm();
-
-                float diffuse_factor = light->intensity * fmaxf(0, normal.dot(I));
-                float specular_factor = light->intensity * powf(fmaxf(0, normal.dot(bisector)), mat.phong);
-
-                float d2 = light->position.distance2(intersection);
-
-                px.r = (mat.diffuse.r * diffuse_factor * light->color.r
-                        + mat.specular.r * specular_factor * light->color.r) / d2;
-
-                px.g = (mat.diffuse.g * diffuse_factor * light->color.g
-                        + mat.specular.g * specular_factor * light->color.r) / d2;
-
-                px.b = (mat.diffuse.b * diffuse_factor * light->color.b
-                        + mat.specular.b * specular_factor * light->color.r) / d2;
-
+                px.r = shade.r;
+                px.g = shade.g;
+                px.b = shade.b;
                 px.a = 1;
+
             } else {
                 // set pixel to black
                 px.r = 0;
@@ -131,7 +151,7 @@ int main(int argc, char **argv) {
     render(pixels, cam, light, surfaces, materials, lights);
 
     if (argc == 2) {
-        writeRgba("hw1.1.exr", &pixels[0][0], cam->pw, cam->ph);
+        writeRgba("hw1.2.exr", &pixels[0][0], cam->pw, cam->ph);
     } else {
         writeRgba(argv[2], &pixels[0][0], cam->pw, cam->ph);
     }
