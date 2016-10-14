@@ -10,14 +10,23 @@ public:
     float i, j, k;
 
     Vector();
+
     Vector(float, float, float);
+
     float mag() const;
+
     Vector norm() const;
+
     Vector times(float) const;
+
     Vector cross(const Vector &) const;
-    float dot(const Vector &) const ;
+
+    float dot(const Vector &) const;
+
     Vector plus(const Vector &) const;
+
     Vector operator-() const;
+
     void printVector() const;
 };
 

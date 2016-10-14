@@ -12,18 +12,20 @@
 
 class Surface {
 private:
-    Material m;
+    Material *material;
 public:
     virtual ~Surface() {}
+
     virtual float getIntersection(const Ray &) const = 0;
+
     virtual Vector getSurfaceNormal(const Point &) const = 0;
 
-    void setMaterial(const Material &m) {
-        this->m = m;
+    void setMaterial(Material *m) {
+        this->material = m;
     }
 
-    Material getMaterial() {
-        return m;
+    Material *getMaterial() {
+        return this->material;
     }
 };
 

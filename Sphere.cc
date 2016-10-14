@@ -6,7 +6,7 @@
 #include "include/Sphere.h"
 
 Sphere::Sphere(float x, float y, float z, float r) {
-    this->center = Point (x, y, z);
+    this->center = Point(x, y, z);
     this->radius = r;
 }
 
@@ -20,8 +20,8 @@ float Sphere::getIntersection(const Ray &ray) const {
     if (discriminant < 0)
         return -1;
 
-    float t1 = (- ray.direction.dot(x) + sqrtf(discriminant)) / dd;
-    float t2 = (- ray.direction.dot(x) - sqrtf(discriminant)) / dd;
+    float t1 = (-ray.direction.dot(x) + sqrtf(discriminant)) / dd;
+    float t2 = (-ray.direction.dot(x) - sqrtf(discriminant)) / dd;
 
     return fminf(t1, t2);
 }

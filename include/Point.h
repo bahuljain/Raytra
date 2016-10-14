@@ -11,12 +11,19 @@
 class Point {
 public:
     float x, y, z;
+
     Point();
+
     Point(float, float, float);
-    Vector sub(const Point &) const ;
+
+    Vector sub(const Point &) const;
+
     Point moveAlong(const Vector &) const;
+
     float dot(const Vector &) const;
+
     float distance2(const Point &) const;
+
     void printPoint() const;
 };
 

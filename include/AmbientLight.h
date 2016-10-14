@@ -13,6 +13,7 @@ public:
     RGB color;
 
     AmbientLight();
+
     void setValues(float, float, float);
 };
 

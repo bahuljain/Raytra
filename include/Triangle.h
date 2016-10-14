@@ -15,9 +15,11 @@ public:
     Point p3;
 
     Triangle(float, float, float, float, float, float, float, float, float);
+
     ~Triangle() {};
 
     virtual float getIntersection(const Ray &) const;
+
     virtual Vector getSurfaceNormal(const Point &) const;
 };
 

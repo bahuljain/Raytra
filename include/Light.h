@@ -16,6 +16,7 @@ public:
     float intensity;
 
     Light();
+
     void setValues(float, float, float, float, float, float, float);
 
 };

@@ -18,36 +18,36 @@
 //
 // you really don't need to know what is going on in here, I think.
 //
-float getTokenAsFloat (string inString, int whichToken) {
+float getTokenAsFloat(string inString, int whichToken) {
 
     float thisFloatVal = 0.;  // the return value
 
     if (whichToken == 0) {
         cerr << "error: the first token on a line is a character!" << endl;
-        exit (-1);
+        exit(-1);
     }
 
     // c++ string class has no super-easy way to tokenize, let's use c's:
-    char *cstr = new char [inString.size () + 1];
+    char *cstr = new char[inString.size() + 1];
 
-    strcpy (cstr, inString.c_str());
+    strcpy(cstr, inString.c_str());
 
-    char *p = strtok (cstr, " ");
+    char *p = strtok(cstr, " ");
     if (p == 0) {
         cerr << "error: the line has nothing on it!" << endl;
-        exit (-1);
+        exit(-1);
     }
 
     for (int i = 0; i < whichToken; i++) {
-        p = strtok (0, " ");
+        p = strtok(0, " ");
 
         if (p == 0) {
             cerr << "error: the line is not long enough for your token request!" << endl;
-            exit (-1);
+            exit(-1);
         }
     }
 
-    thisFloatVal = atof (p);
+    thisFloatVal = atof(p);
 
     delete[] cstr;
 
@@ -79,37 +79,40 @@ float getTokenAsFloat (string inString, int whichToken) {
 // only use "correct" scene files.
 //
 //
-void parseSceneFile (char *filename, std::vector<Surface*> &surfaces,
-                     Camera* cam, Light* light) {
+void parseSceneFile(char *filename,
+                    std::vector<Surface *> &surfaces,
+                    std::vector<Material *> &materials,
+                    Camera *cam, Light *light) {
     int Cams = 0;
 
     ifstream inFile(filename);    // open the file
     string line;
 
-    if (! inFile.is_open ()) {  // if it's not open, error out.
+    if (!inFile.is_open()) {  // if it's not open, error out.
         cerr << "can't open scene file" << endl;
-        exit (-1);
+        exit(-1);
     }
 
-    /* Most recently added material */
-    Material lastMaterialLoaded (0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    /* Most recently added material and a default in the beginning */
+    Material *lastMaterial = new Material();
+    materials.push_back(lastMaterial);
 
-    while (! inFile.eof ()) {   // go through every line in the file until finished
+    while (!inFile.eof()) {   // go through every line in the file until finished
 
-        getline (inFile, line); // get the line
+        getline(inFile, line); // get the line
 
-        switch (line[0])  {     // we'll decide which command based on the first character
+        switch (line[0]) {     // we'll decide which command based on the first character
 
             case '/':
                 // don't do anything, it's a comment
                 break;
 
-            //
-            // geometry types:
-            //
-            // NOTE: whichever type of geo you load in, set its material to
-            // be "lastMaterialLoaded"
-            //
+                //
+                // geometry types:
+                //
+                // NOTE: whichever type of geo you load in, set its material to
+                // be "lastMaterialLoaded"
+                //
             case 's': {
                 // it's a sphere, load in the parameters
 
@@ -120,7 +123,7 @@ void parseSceneFile (char *filename, std::vector<Surface*> &surfaces,
                 r = getTokenAsFloat(line, 4);
 
                 Sphere *sphere = new Sphere(x, y, z, r);
-                sphere->setMaterial(lastMaterialLoaded);
+                sphere->setMaterial(lastMaterial);
 
                 surfaces.push_back(sphere);
 
@@ -145,7 +148,7 @@ void parseSceneFile (char *filename, std::vector<Surface*> &surfaces,
                 z3 = getTokenAsFloat(line, 9);
 
                 Triangle *triangle = new Triangle(x1, y1, z1, x2, y2, z2, x3, y3, z3);
-                triangle->setMaterial(lastMaterialLoaded);
+                triangle->setMaterial(lastMaterial);
 
                 surfaces.push_back(triangle);
 
@@ -160,7 +163,7 @@ void parseSceneFile (char *filename, std::vector<Surface*> &surfaces,
                 d = getTokenAsFloat(line, 4);
 
                 Plane *plane = new Plane(nx, ny, nz, d);
-                plane->setMaterial(lastMaterialLoaded);
+                plane->setMaterial(lastMaterial);
 
                 surfaces.push_back(plane);
             }
@@ -243,12 +246,13 @@ void parseSceneFile (char *filename, std::vector<Surface*> &surfaces,
                 ig = getTokenAsFloat(line, 9);
                 ib = getTokenAsFloat(line, 10);
 
-                lastMaterialLoaded.setValues(dr, dg, db, sr, sg, sb, r, ir, ig, ib);
+                lastMaterial = new Material(dr, dg, db, sr, sg, sb, r, ir, ig, ib);
+                materials.push_back(lastMaterial);
 
                 break;
             }
 
-                            //
+                //
                 // options
                 //
             case 'o':   // make your own options if you wish

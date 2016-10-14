@@ -15,7 +15,7 @@ float Plane::getIntersection(const Ray &ray) const {
     if (a == 0)
         return -1;
 
-    float t = - (ray.origin.dot(normal) - d) / a;
+    float t = -(ray.origin.dot(normal) - d) / a;
 
     return t;
 }

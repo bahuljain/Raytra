@@ -16,8 +16,8 @@ public:
     float phong;
 
     Material();
+
     Material(float, float, float, float, float, float, float, float, float, float);
-    void setValues(float, float, float, float, float, float, float, float, float, float);
 };
 
 

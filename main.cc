@@ -14,7 +14,6 @@ using namespace std;
 using namespace Imath;
 
 
-
 void writeRgba(const char fileName[], const Rgba *pixels,
                int width, int height) {
     //
@@ -47,11 +46,14 @@ std::tuple<int, float> getClosestSurface(const vector<Surface *> &surfaces, cons
 
 RGB phongShading(const Surface *surface,
                  const Light *light,
+                 const Material *material,
                  const Ray &ray,
-                 const Point &intersection,
-                 const Material &mat) {
-    float r, g, b, diffuse_factor, specular_factor;
+                 const Point &intersection) {
+    float r, g, b, d2, diffuse_factor, specular_factor;
     Vector v, normal, I, bisector;
+
+    /* Distance of light from the point of intersection */
+    d2 = light->position.distance2(intersection);
 
     /* Vector to the viewer */
     v = -ray.direction;
@@ -66,31 +68,34 @@ RGB phongShading(const Surface *surface,
     bisector = v.plus(I).norm();
 
     diffuse_factor = light->intensity * fmaxf(0, normal.dot(I));
-    specular_factor = light->intensity * powf(fmaxf(0, normal.dot(bisector)), mat.phong);
+    specular_factor = light->intensity * powf(fmaxf(0, normal.dot(bisector)), material->phong);
 
-    float d2 = light->position.distance2(intersection);
+    r = (material->diffuse.r * diffuse_factor
+         + material->specular.r * specular_factor) * light->color.r / d2;
 
-    r = (mat.diffuse.r * diffuse_factor
-            + mat.specular.r * specular_factor) * light->color.r / d2;
+    g = (material->diffuse.g * diffuse_factor
+         + material->specular.g * specular_factor) * light->color.g / d2;
 
-    g = (mat.diffuse.g * diffuse_factor
-            + mat.specular.g * specular_factor) * light->color.g / d2;
-
-    b = (mat.diffuse.b * diffuse_factor
-            + mat.specular.b * specular_factor) * light->color.b / d2;
+    b = (material->diffuse.b * diffuse_factor
+         + material->specular.b * specular_factor) * light->color.b / d2;
 
     return RGB(r, g, b);
 }
 
 void cleanMemory(Camera *cam,
                  Light *light,
-                std::vector<Surface *> &surfaces,
-                std::vector<Light *> &lights) {
+                 std::vector<Surface *> &surfaces,
+                 std::vector<Material *> &materials,
+                 std::vector<Light *> &lights) {
     delete cam;
     delete light;
 
     for (Surface *surface : surfaces) {
         delete surface;
+    }
+
+    for (Material *material : materials) {
+        delete material;
     }
 
     for (Light *light : lights) {
@@ -127,8 +132,8 @@ void render(Array2D <Rgba> &pixels,
             if (closest_surface_idx != -1) {
                 Surface *surface = surfaces[closest_surface_idx];
                 Point intersection = ray.getPointOnIt(t);
-                Material mat = surface->getMaterial();
-                RGB shade = phongShading(surface, light, ray, intersection, mat);
+                Material *material = surface->getMaterial();
+                RGB shade = phongShading(surface, light, material, ray, intersection);
 
                 px.r = shade.r;
                 px.g = shade.g;
@@ -160,7 +165,7 @@ int main(int argc, char **argv) {
     vector<Material *> materials;
     vector<Light *> lights;
 
-    parseSceneFile(argv[1], surfaces, cam, light);
+    parseSceneFile(argv[1], surfaces, materials, cam, light);
 
     Array2D <Rgba> pixels;
 
@@ -172,7 +177,7 @@ int main(int argc, char **argv) {
         writeRgba(argv[2], &pixels[0][0], cam->pw, cam->ph);
     }
 
-    cleanMemory(cam, light, surfaces, lights);
+    cleanMemory(cam, light, surfaces, materials, lights);
 
     return 0;
 }

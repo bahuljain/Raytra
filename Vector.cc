@@ -26,7 +26,7 @@ Vector Vector::cross(const Vector &vec) const {
     y = k * vec.i - i * vec.k;
     z = i * vec.j - j * vec.i;
 
-    return Vector (x, y, z);
+    return Vector(x, y, z);
 }
 
 float Vector::dot(const Vector &vec) const {
@@ -42,7 +42,7 @@ Vector Vector::norm() const {
 
     assert (mag != 0.0);
 
-    return Vector(i/mag, j/mag, k/mag);
+    return Vector(i / mag, j / mag, k / mag);
 }
 
 Vector Vector::operator-() const {
