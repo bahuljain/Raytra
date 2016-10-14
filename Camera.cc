@@ -60,7 +60,8 @@ Point Camera::getPixelCenter(int i, int j,
     float x = left + width * (i + 0.5f) / pw;
     float y = bottom + height * (j + 0.5f) / ph;
 
-    center = eye.moveAlong(u.times(x))
+    center = eye
+            .moveAlong(u.times(x))
             .moveAlong(v.times(y))
             .moveAlong(w.times(-d));
 

@@ -29,7 +29,10 @@ void writeRgba(const char fileName[], const Rgba *pixels,
     file.writePixels(height);
 }
 
-std::tuple<int, float> getClosestSurface(const vector<Surface *> &surfaces, const Ray &ray) {
+std::tuple<int, float> getClosestSurface(
+        const vector<Surface *> &surfaces,
+        const Ray &ray) {
+
     float min_t = numeric_limits<float>::infinity();
     int min_i = -1;
 
@@ -147,7 +150,6 @@ void render(Array2D <Rgba> &pixels,
                 px.b = 0;
                 px.a = 1;
             }
-
         }
     }
 }
@@ -171,13 +173,11 @@ int main(int argc, char **argv) {
 
     render(pixels, cam, light, surfaces, materials, lights);
 
-    if (argc == 2) {
+    if (argc == 2)
         writeRgba("hw1.2.exr", &pixels[0][0], cam->pw, cam->ph);
-    } else {
+    else
         writeRgba(argv[2], &pixels[0][0], cam->pw, cam->ph);
-    }
 
     cleanMemory(cam, light, surfaces, materials, lights);
-
     return 0;
 }

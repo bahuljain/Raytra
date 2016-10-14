@@ -9,10 +9,12 @@
 #include "Surface.h"
 
 class Triangle : public Surface {
+private:
+    Vector normal;
 public:
-    Point p1;
-    Point p2;
-    Point p3;
+    Point a;
+    Point b;
+    Point c;
 
     Triangle(float, float, float, float, float, float, float, float, float);
 
