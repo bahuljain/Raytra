@@ -23,7 +23,7 @@ public:
     Camera();
     void setValues(float, float, float, float, float, float, float, float, float, int, int);
 
-    Point getPixelCenter(int, int, float, float);
+    Point getPixelCenter(int, int, float, float) const;
 };
 
 

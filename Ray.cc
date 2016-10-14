@@ -9,6 +9,6 @@ Ray::Ray(const Point &origin, const Vector &direction) {
     this->direction = direction;
 }
 
-Point Ray::getPointOnIt(float t) {
+Point Ray::getPointOnIt(float t) const {
     return origin.moveAlong(direction.times(t));;
 }

@@ -15,7 +15,7 @@ public:
     Vector direction;
 
     Ray(const Point &, const Vector &);
-    Point getPointOnIt(float);
+    Point getPointOnIt(float) const;
 };
 
 

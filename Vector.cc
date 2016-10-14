@@ -19,7 +19,7 @@ Vector::Vector(float i, float j, float k) {
     this->k = k;
 }
 
-Vector Vector::cross(const Vector &vec) {
+Vector Vector::cross(const Vector &vec) const {
     float x, y, z;
 
     x = j * vec.k - k * vec.j;
@@ -33,11 +33,11 @@ float Vector::dot(const Vector &vec) const {
     return i * vec.i + j * vec.j + k * vec.k;
 }
 
-float Vector::mag() {
+float Vector::mag() const {
     return sqrtf(powf(i, 2.0) + powf(j, 2.0) + powf(k, 2.0));
 }
 
-Vector Vector::norm() {
+Vector Vector::norm() const {
     float mag = this->mag();
 
     assert (mag != 0.0);
@@ -45,11 +45,11 @@ Vector Vector::norm() {
     return Vector(i/mag, j/mag, k/mag);
 }
 
-Vector Vector::operator-() {
+Vector Vector::operator-() const {
     return Vector(-i, -j, -k);
 }
 
-Vector Vector::times(float c) {
+Vector Vector::times(float c) const {
     return Vector(i * c, j * c, k * c);
 }
 
@@ -57,7 +57,7 @@ Vector Vector::plus(const Vector &vec) const {
     return Vector(i + vec.i, j + vec.j, k + vec.k);
 }
 
-void Vector::printVector() {
+void Vector::printVector() const {
     std::cout << i << "i + " << j << "j + " << k << "k" << std::endl;
 }
 

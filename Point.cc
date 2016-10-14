@@ -19,7 +19,7 @@ Point::Point(float x, float y, float z) {
     this->z = z;
 }
 
-Point Point::moveAlong(const Vector &vec) {
+Point Point::moveAlong(const Vector &vec) const {
     return Point(x + vec.i, y + vec.j, z + vec.k);
 }
 
@@ -35,7 +35,7 @@ float Point::distance2(const Point &p) const {
     return powf(x - p.x, 2.0) + powf(y - p.y, 2.0) + powf(z - p.z, 2.0);
 }
 
-void Point::printPoint() {
+void Point::printPoint() const {
     std::cout << "(" << x << ", " << y << ", " << z << ")" << std::endl;
 }
 

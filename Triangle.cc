@@ -13,7 +13,9 @@ Triangle::Triangle(float x1, float y1, float z1,
 }
 
 float Triangle::getIntersection(const Ray &) const {
-
-
     return 0;
+}
+
+Vector Triangle::getSurfaceNormal(const Point &) const {
+    return Vector();
 }

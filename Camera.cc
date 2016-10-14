@@ -53,7 +53,8 @@ void Camera::setValues(float x, float y, float z,
     this->ph = ph;
 }
 
-Point Camera::getPixelCenter(int i, int j, float width, float height) {
+Point Camera::getPixelCenter(int i, int j,
+                             float width, float height) const {
     Point center;
 
     float x = left + width * (i + 0.5f) / pw;

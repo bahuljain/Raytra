@@ -13,6 +13,8 @@ using namespace Imf;
 using namespace std;
 using namespace Imath;
 
+
+
 void writeRgba(const char fileName[], const Rgba *pixels,
                int width, int height) {
     //
@@ -43,34 +45,20 @@ std::tuple<int, float> getClosestSurface(const vector<Surface *> &surfaces, cons
     return std::make_tuple(min_i, min_t);
 }
 
-int main(int argc, char **argv) {
-
-    if (argc < 2) {
-        cerr << "usage: raytra scenefilename outputfilename.exr" << endl;
-        return -1;
-    }
-
-    Camera *cam = new Camera();
-    Light *light = new Light();
-    AmbientLight *ambient = new AmbientLight();
-    vector<Surface *> surfaces;
-
-    parseSceneFile(argv[1], surfaces, cam, light, ambient);
+void render(Array2D <Rgba> &pixels,
+            const Camera *cam,
+            const Light *light,
+            const vector<Surface *> &surfaces,
+            const vector<Material *> &materials,
+            const vector<Light *> &lights) {
 
     float w = cam->right - cam->left;
     float h = cam->top - cam->bottom;
 
-    if (cam->pw == 0 && cam->ph == 0 && w == 0 && h == 0) {
-        cout << "No camera and image plane in the scene" << endl;
-        return -1;
-    }
-
-    Array2D <Rgba> pixels;
     pixels.resizeErase(cam->ph, cam->pw);
 
     for (int i = 0; i < cam->ph; i++) {
         for (int j = 0; j < cam->pw; j++) {
-
             Point px_center;
             px_center = cam->getPixelCenter(j, i, w, h);
 
@@ -90,7 +78,7 @@ int main(int argc, char **argv) {
 
                 Material mat = surface->getMaterial();
 
-                Vector v = - ray.direction;
+                Vector v = -ray.direction;
                 Vector normal = surface->getSurfaceNormal(intersection);
                 Vector I = light->position.sub(intersection).norm();
 
@@ -102,16 +90,13 @@ int main(int argc, char **argv) {
                 float d2 = light->position.distance2(intersection);
 
                 px.r = (mat.diffuse.r * diffuse_factor * light->color.r
-                       + mat.specular.r * specular_factor * light->color.r) / d2
-                       + ambient->color.r;
+                        + mat.specular.r * specular_factor * light->color.r) / d2;
 
                 px.g = (mat.diffuse.g * diffuse_factor * light->color.g
-                       + mat.specular.g * specular_factor * light->color.r) / d2
-                       + ambient->color.g;
+                        + mat.specular.g * specular_factor * light->color.r) / d2;
 
                 px.b = (mat.diffuse.b * diffuse_factor * light->color.b
-                       + mat.specular.b * specular_factor * light->color.r) / d2
-                       + ambient->color.b;
+                        + mat.specular.b * specular_factor * light->color.r) / d2;
 
                 px.a = 1;
             } else {
@@ -124,6 +109,26 @@ int main(int argc, char **argv) {
 
         }
     }
+}
+
+int main(int argc, char **argv) {
+
+    if (argc < 2) {
+        cerr << "usage: raytra scenefilename outputfilename.exr" << endl;
+        return -1;
+    }
+
+    Camera *cam = new Camera();
+    Light *light = new Light();
+    vector<Surface *> surfaces;
+    vector<Material *> materials;
+    vector<Light *> lights;
+
+    parseSceneFile(argv[1], surfaces, cam, light);
+
+    Array2D <Rgba> pixels;
+
+    render(pixels, cam, light, surfaces, materials, lights);
 
     if (argc == 2) {
         writeRgba("hw1.1.exr", &pixels[0][0], cam->pw, cam->ph);
@@ -133,12 +138,10 @@ int main(int argc, char **argv) {
 
     delete cam;
     delete light;
-    delete ambient;
 
     for (unsigned int k = 0; k < surfaces.size(); k++) {
         delete surfaces[k];
     }
 
     return 0;
-
 }

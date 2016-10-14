@@ -14,10 +14,10 @@ public:
     Point();
     Point(float, float, float);
     Vector sub(const Point &) const ;
-    Point moveAlong(const Vector &);
+    Point moveAlong(const Vector &) const;
     float dot(const Vector &) const;
     float distance2(const Point &) const;
-    void printPoint();
+    void printPoint() const;
 };
 
 

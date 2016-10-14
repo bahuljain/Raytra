@@ -8,6 +8,7 @@
 #include "include/parser.h"
 #include "include/Sphere.h"
 #include "include/Plane.h"
+#include "include/Triangle.h"
 
 // this is called from the parseSceneFile function, which uses
 // it to get the float from the correspoding position on the line.
@@ -79,7 +80,7 @@ float getTokenAsFloat (string inString, int whichToken) {
 //
 //
 void parseSceneFile (char *filename, std::vector<Surface*> &surfaces,
-                     Camera* cam, Light* light, AmbientLight* ambient) {
+                     Camera* cam, Light* light) {
     int Cams = 0;
 
     ifstream inFile(filename);    // open the file
@@ -130,9 +131,26 @@ void parseSceneFile (char *filename, std::vector<Surface*> &surfaces,
 #endif
                 break;
             }
-            case 't':   // triangle
-                break;
+            case 't': {  // triangle
+                float x1, y1, z1, x2, y2, z2, x3, y3, z3;
 
+                x1 = getTokenAsFloat(line, 1);
+                y1 = getTokenAsFloat(line, 2);
+                z1 = getTokenAsFloat(line, 3);
+                x2 = getTokenAsFloat(line, 4);
+                y2 = getTokenAsFloat(line, 5);
+                z2 = getTokenAsFloat(line, 6);
+                x3 = getTokenAsFloat(line, 7);
+                y3 = getTokenAsFloat(line, 8);
+                z3 = getTokenAsFloat(line, 9);
+
+                Triangle *triangle = new Triangle(x1, y1, z1, x2, y2, z2, x3, y3, z3);
+                triangle->setMaterial(lastMaterialLoaded);
+
+                surfaces.push_back(triangle);
+
+                break;
+            }
             case 'p': {  // plane
                 float nx, ny, nz, d;
 
@@ -193,15 +211,14 @@ void parseSceneFile (char *filename, std::vector<Surface*> &surfaces,
                         break;
 */
                     case 'a':   // ambient light
+/*
                         float r, g, b;
 
                         r = getTokenAsFloat(line, 2);
                         g = getTokenAsFloat(line, 2);
                         b = getTokenAsFloat(line, 2);
-
-                        ambient->setValues(r, g, b);
+*/
                         break;
-
                 }
 
                 break;

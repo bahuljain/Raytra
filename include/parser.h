@@ -17,5 +17,5 @@ using namespace std;
 #endif //RAYTRA_PARSER_H
 
 
-void parseSceneFile (char *, vector<Surface*> &, Camera*, Light*, AmbientLight*);
+void parseSceneFile (char *, vector<Surface*> &, Camera*, Light*);
 float getTokenAsFloat (string, int);

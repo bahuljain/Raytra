@@ -11,14 +11,14 @@ public:
 
     Vector();
     Vector(float, float, float);
-    float mag();
-    Vector norm();
-    Vector times(float);
-    Vector cross(const Vector &);
+    float mag() const;
+    Vector norm() const;
+    Vector times(float) const;
+    Vector cross(const Vector &) const;
     float dot(const Vector &) const ;
     Vector plus(const Vector &) const;
-    Vector operator-();
-    void printVector();
+    Vector operator-() const;
+    void printVector() const;
 };
 
 #endif //RAYTRA_VECTOR_H
