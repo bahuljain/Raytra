@@ -82,6 +82,22 @@ RGB phongShading(const Surface *surface,
     return RGB(r, g, b);
 }
 
+void cleanMemory(Camera *cam,
+                 Light *light,
+                std::vector<Surface *> &surfaces,
+                std::vector<Light *> &lights) {
+    delete cam;
+    delete light;
+
+    for (Surface *surface : surfaces) {
+        delete surface;
+    }
+
+    for (Light *light : lights) {
+        delete light;
+    }
+}
+
 void render(Array2D <Rgba> &pixels,
             const Camera *cam,
             const Light *light,
@@ -156,12 +172,7 @@ int main(int argc, char **argv) {
         writeRgba(argv[2], &pixels[0][0], cam->pw, cam->ph);
     }
 
-    delete cam;
-    delete light;
-
-    for (unsigned int k = 0; k < surfaces.size(); k++) {
-        delete surfaces[k];
-    }
+    cleanMemory(cam, light, surfaces, lights);
 
     return 0;
 }
