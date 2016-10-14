@@ -15,5 +15,5 @@ cd Raytra
 ### Run
 
 ```
-./prog_out <scene file name>
+./prog_out <scene_file_name> <output_image_name.exr>
 ```
