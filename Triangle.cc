@@ -11,8 +11,8 @@ Triangle::Triangle(float x1, float y1, float z1,
     this->b = Point(x2, y2, z2);
     this->c = Point(x3, y3, z3);
 
-    normal = Vector(c.sub(a))
-            .cross(Vector(b.sub(a)))
+    normal = Vector(b.sub(a))
+            .cross(Vector(c.sub(a)))
             .norm();
 }
 
