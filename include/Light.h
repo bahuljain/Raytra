@@ -15,10 +15,7 @@ public:
     RGB color;
     float intensity;
 
-    Light();
-
-    void setValues(float, float, float, float, float, float, float);
-
+    virtual ~Light() {}
 };
 
 

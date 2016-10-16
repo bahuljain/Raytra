@@ -9,6 +9,7 @@
 #include "include/Sphere.h"
 #include "include/Plane.h"
 #include "include/Triangle.h"
+#include "include/PointLight.h"
 
 // this is called from the parseSceneFile function, which uses
 // it to get the float from the correspoding position on the line.
@@ -82,7 +83,8 @@ float getTokenAsFloat(string inString, int whichToken) {
 void parseSceneFile(char *filename,
                     std::vector<Surface *> &surfaces,
                     std::vector<Material *> &materials,
-                    Camera *cam, Light *light) {
+                    std::vector<Light *> &lights,
+                    Camera *cam) {
     int Cams = 0;
 
     ifstream inFile(filename);    // open the file
@@ -205,7 +207,8 @@ void parseSceneFile(char *filename,
                         g = getTokenAsFloat(line, 6);
                         b = getTokenAsFloat(line, 7);
 
-                        light->setValues(x, y, z, r, g, b, 1.0);
+                        PointLight *light = new PointLight(x, y, z, r, g, b, 1.0);
+                        lights.push_back(light);
 
                         break;
                     }
@@ -213,15 +216,20 @@ void parseSceneFile(char *filename,
                     case 'd':   // directional light
                         break;
 */
-                    case 'a':   // ambient light
+                    case 'a': {  // ambient light
 /*
                         float r, g, b;
 
                         r = getTokenAsFloat(line, 2);
                         g = getTokenAsFloat(line, 2);
                         b = getTokenAsFloat(line, 2);
+
+                        AmbientLight *light = new AmbientLight(r, g, b);
+                        lights.push_back(light);
 */
+
                         break;
+                    }
                 }
 
                 break;

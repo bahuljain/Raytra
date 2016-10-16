@@ -25,6 +25,9 @@ p 0.0 1.0 0.0 0.0
 / one point light
 l p -80. 120. -46.6 30000.0 30000.0 30000.0
 
+/ another point light
+l p 100. 60. -150.3 30000.0 30000.0 30000.0
+
 / one ambient light
 l a 0.005 0.005 0.005
 

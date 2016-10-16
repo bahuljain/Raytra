@@ -20,6 +20,7 @@ using namespace std;
 void parseSceneFile(char *,
                     vector<Surface *> &,
                     vector<Material *> &,
-                    Camera *, Light *);
+                    vector<Light *> &,
+                    Camera *);
 
 float getTokenAsFloat(string, int);

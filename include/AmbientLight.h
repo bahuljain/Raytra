@@ -7,14 +7,13 @@
 
 
 #include "RGB.h"
+#include "Light.h"
 
-class AmbientLight {
+class AmbientLight : public Light {
 public:
-    RGB color;
+    AmbientLight(float, float, float);
 
-    AmbientLight();
-
-    void setValues(float, float, float);
+    ~AmbientLight() {};
 };
 
 
