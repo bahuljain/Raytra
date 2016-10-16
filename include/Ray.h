@@ -6,6 +6,7 @@
 #define RAYTRA_RAY_H
 
 
+#include <vector>
 #include "Vector.h"
 #include "Point.h"
 
@@ -17,6 +18,7 @@ public:
     Ray(const Point &, const Vector &);
 
     Point getPointOnIt(float) const;
+    float getOffsetFromOrigin(const Point &) const;
 };
 
 

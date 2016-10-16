@@ -7,4 +7,4 @@ set(SOURCE_FILES main.cc Vector.cc include/Vector.h Camera.cc include/Camera.h P
 add_executable(Raytra ${SOURCE_FILES})
 
 file(GLOB TEST_FILES "specs/*.cc")
-add_executable(test_out ${TEST_FILES} specs/VectorSpecs.cc specs/PointSpecs.cc)
+add_executable(test_out ${TEST_FILES} specs/VectorSpecs.cc specs/PointSpecs.cc specs/RaySpecs.cc)
