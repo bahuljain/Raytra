@@ -4739,7 +4739,7 @@ namespace Catch {
             .describe( "display usage information" )
             .bind( &ConfigData::showHelp );
 
-        cli["-l"]["--list-tests"]
+        cli["-l"]["--list-specs"]
             .describe( "list all/matching test cases" )
             .bind( &ConfigData::listTests );
 
@@ -4748,7 +4748,7 @@ namespace Catch {
             .bind( &ConfigData::listTags );
 
         cli["-s"]["--success"]
-            .describe( "include successful tests in output" )
+            .describe( "include successful specs in output" )
             .bind( &ConfigData::showSuccessfulTests );
 
         cli["-b"]["--break"]
@@ -4756,7 +4756,7 @@ namespace Catch {
             .bind( &ConfigData::shouldDebugBreak );
 
         cli["-e"]["--nothrow"]
-            .describe( "skip exception tests" )
+            .describe( "skip exception specs" )
             .bind( &ConfigData::noThrow );
 
         cli["-i"]["--invisibles"]
@@ -4796,7 +4796,7 @@ namespace Catch {
 //            .placeholder( "level" );
 
         cli[_]
-            .describe( "which test or tests to use" )
+            .describe( "which test or specs to use" )
             .bind( &addTestOrTags, "test name, pattern or tags" );
 
         cli["-d"]["--durations"]
@@ -6294,7 +6294,7 @@ namespace Catch {
 
         TestSpec testSpec = config->testSpec();
         if( !testSpec.hasFilters() )
-            testSpec = TestSpecParser( ITagAliasRegistry::get() ).parse( "~[.]" ).testSpec(); // All not hidden tests
+            testSpec = TestSpecParser( ITagAliasRegistry::get() ).parse( "~[.]" ).testSpec(); // All not hidden specs
 
         std::vector<TestCase> const& allTestCases = getAllTestCasesSorted( *iconfig );
         for( std::vector<TestCase>::const_iterator it = allTestCases.begin(), itEnd = allTestCases.end();
@@ -6913,7 +6913,7 @@ namespace Catch {
     }
 
     // Store the streambuf from cout up-front because
-    // cout may get redirected when running tests
+    // cout may get redirected when running specs
     CoutStream::CoutStream()
     :   m_os( Catch::cout().rdbuf() )
     {}
@@ -9404,7 +9404,7 @@ namespace Catch {
             xml.writeAttribute( "name", stats.groupInfo.name );
             xml.writeAttribute( "errors", unexpectedExceptions );
             xml.writeAttribute( "failures", stats.totals.assertions.failed-unexpectedExceptions );
-            xml.writeAttribute( "tests", stats.totals.assertions.total() );
+            xml.writeAttribute( "specs", stats.totals.assertions.total() );
             xml.writeAttribute( "hostname", "tbd" ); // !TBD
             if( m_config->showDurations() == ShowDurations::Never )
                 xml.writeAttribute( "time", "" );
@@ -9885,10 +9885,10 @@ namespace Catch {
 
         void printTotals( Totals const& totals ) {
             if( totals.testCases.total() == 0 ) {
-                stream << Colour( Colour::Warning ) << "No tests ran\n";
+                stream << Colour( Colour::Warning ) << "No specs ran\n";
             }
             else if( totals.assertions.total() > 0 && totals.testCases.allPassed() ) {
-                stream << Colour( Colour::ResultSuccess ) << "All tests passed";
+                stream << Colour( Colour::ResultSuccess ) << "All specs passed";
                 stream << " ("
                         << pluralise( totals.assertions.passed, "assertion" ) << " in "
                         << pluralise( totals.testCases.passed, "test case" ) << ")"
@@ -10217,11 +10217,11 @@ namespace Catch {
         };
 
         // Colour, message variants:
-        // - white: No tests ran.
+        // - white: No specs ran.
         // -   red: Failed [both/all] N test cases, failed [both/all] M assertions.
         // - white: Passed [both/all] N test cases (no assertions).
-        // -   red: Failed N tests cases, failed M assertions.
-        // - green: Passed [both/all] N tests cases with M assertions.
+        // -   red: Failed N specs cases, failed M assertions.
+        // - green: Passed [both/all] N specs cases with M assertions.
 
         std::string bothOrAll( std::size_t count ) const {
             return count == 1 ? "" : count == 2 ? "both " : "all " ;
@@ -10229,7 +10229,7 @@ namespace Catch {
 
         void printTotals( const Totals& totals ) const {
             if( totals.testCases.total() == 0 ) {
-                stream << "No tests ran.";
+                stream << "No specs ran.";
             }
             else if( totals.testCases.failed == totals.testCases.total() ) {
                 Colour colour( Colour::ResultError );
