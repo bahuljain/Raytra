@@ -13,7 +13,6 @@ using namespace Imf;
 using namespace std;
 using namespace Imath;
 
-
 void writeRgba(const char fileName[], const Rgba *pixels,
                int width, int height) {
     //

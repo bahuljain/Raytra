@@ -5,3 +5,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -I. -I/usr/local/include/OpenEX
 
 set(SOURCE_FILES main.cc Vector.cc include/Vector.h Camera.cc include/Camera.h Point.cc include/Point.h Ray.cc include/Ray.h include/Surface.h Sphere.cc include/Sphere.h Material.cc include/Material.h include/RGB.h include/parser.h parser.cc Triangle.cc include/Triangle.h Plane.cc include/Plane.h Light.cc include/Light.h AmbientLight.cc include/AmbientLight.h)
 add_executable(Raytra ${SOURCE_FILES})
+
+file(GLOB TEST_FILES "tests/*.cc")
+add_executable(test_out ${TEST_FILES} tests/VectorSpecs.cc)
