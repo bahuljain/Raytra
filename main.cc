@@ -47,6 +47,20 @@ void cleanMemory(Camera *cam,
     }
 }
 
+void displayProgress(float completed, float total) {
+    static int progress = 0;
+    float percent_completed = completed / total * 100;
+
+    if (percent_completed - progress >= 4) {
+        progress += 4;
+
+        if (progress % 20 == 0 && progress < 100)
+            cout << flush << "=|" << progress << "%|";
+        else
+            cout << flush << "=";
+    }
+}
+
 std::tuple<int, float> getClosestSurface(
         const vector<Surface *> &surfaces,
         const Ray &ray) {
@@ -116,8 +130,11 @@ void render(Array2D <Rgba> &pixels,
             const vector<Material *> &materials,
             const vector<Light *> &lights) {
 
+    cout << "[";
+
     float w = cam->right - cam->left;
     float h = cam->top - cam->bottom;
+    float total_pixels = cam->ph * cam->pw;
 
     pixels.resizeErase(cam->ph, cam->pw);
 
@@ -165,8 +182,11 @@ void render(Array2D <Rgba> &pixels,
                     }
                 }
             }
+            displayProgress((i + 1) * (j + 1), total_pixels);
         }
     }
+
+    cout << "] \xF0\x9F\x8D\xBA \xF0\x9F\x8D\xBA " << endl;
 }
 
 int main(int argc, char **argv) {
