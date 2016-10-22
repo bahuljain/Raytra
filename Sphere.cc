@@ -26,6 +26,10 @@ float Sphere::getIntersection(const Ray &ray) const {
     return fminf(t1, t2);
 }
 
-Vector Sphere::getSurfaceNormal(const Point &p, const Ray &ray) const {
+Vector Sphere::getSurfaceNormal(const Point &p) const {
     return Vector(p.x - center.x, p.y - center.y, p.z - center.z).norm();
+}
+
+bool Sphere::isFrontFaced(const Ray &ray) const {
+    return true;
 }

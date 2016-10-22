@@ -88,6 +88,13 @@ RGB phongShading(const Surface *surface,
     Vector v, normal, I, bisector;
     Material *material;
 
+    /* Vector to the viewer */
+    v = -view_ray.direction;
+
+    if (!surface->isFrontFaced(view_ray)) {
+        return RGB(1, 1, 0);
+    }
+
     material = surface->getMaterial();
 
     /* Distance of light from the point of intersection */
@@ -97,11 +104,8 @@ RGB phongShading(const Surface *surface,
     if (d2 == 0)
         d2 = 1;
 
-    /* Vector to the viewer */
-    v = -view_ray.direction;
-
     /* Vector normal to the surface at the given intersection point */
-    normal = surface->getSurfaceNormal(intersection, light_ray);
+    normal = surface->getSurfaceNormal(intersection);
 
     /* Vector to the light source */
     I = -light_ray.direction;

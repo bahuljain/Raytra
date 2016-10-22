@@ -1,4 +1,7 @@
 default:
+	g++ -O3 *.cc -I. -I/usr/local/include/OpenEXR -lIlmImf -lImath -lHalf -Wall -pthread -std=c++11 -o prog_out
+
+debug:
 	g++ -g *.cc -I. -I/usr/local/include/OpenEXR -lIlmImf -lImath -lHalf -Wall -pthread -std=c++11 -o prog_out
 
 clean:

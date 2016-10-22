@@ -20,6 +20,10 @@ float Plane::getIntersection(const Ray &ray) const {
     return t;
 }
 
-Vector Plane::getSurfaceNormal(const Point &p, const Ray &ray) const {
-    return (normal.dot(ray.direction) <= 0) ? normal : - normal;
+Vector Plane::getSurfaceNormal(const Point &p) const {
+    return normal;
+}
+
+bool Plane::isFrontFaced(const Ray &ray) const {
+    return (normal.dot(ray.direction) <= 0);
 }

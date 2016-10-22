@@ -18,7 +18,9 @@ public:
     virtual ~Surface() {}
 
     virtual float getIntersection(const Ray &) const = 0;
-    virtual Vector getSurfaceNormal(const Point &, const Ray &) const = 0;
+    virtual Vector getSurfaceNormal(const Point &) const = 0;
+    virtual bool isFrontFaced(const Ray &) const = 0;
+
 
     bool intercepts(const Ray &ray, float t_max) {
         float t = this->getIntersection(ray);
