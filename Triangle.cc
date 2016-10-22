@@ -58,6 +58,6 @@ float Triangle::getIntersection(const Ray &ray) const {
     return t;
 }
 
-Vector Triangle::getSurfaceNormal(const Point &p) const {
-    return normal;
+Vector Triangle::getSurfaceNormal(const Point &p, const Ray &ray) const {
+    return (normal.dot(ray.direction) <= 0) ? normal : - normal;
 }

@@ -101,7 +101,7 @@ RGB phongShading(const Surface *surface,
     v = -view_ray.direction;
 
     /* Vector normal to the surface at the given intersection point */
-    normal = surface->getSurfaceNormal(intersection);
+    normal = surface->getSurfaceNormal(intersection, light_ray);
 
     /* Vector to the light source */
     I = -light_ray.direction;
