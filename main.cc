@@ -8,6 +8,7 @@
 #include <limits>
 
 #include "include/Parser.h"
+#include "include/ProgressBar.h"
 
 using namespace Imf;
 using namespace std;
@@ -134,7 +135,8 @@ void render(Array2D <Rgba> &pixels,
             const vector<Material *> &materials,
             const vector<Light *> &lights) {
 
-    cout << "[";
+    ProgressBar progress = ProgressBar();
+    progress.start();
 
     float w = cam->right - cam->left;
     float h = cam->top - cam->bottom;
@@ -147,6 +149,10 @@ void render(Array2D <Rgba> &pixels,
             Point px_center;
             px_center = cam->getPixelCenter(j, i, w, h);
 
+            /* TODO:
+             * rethink whether the view_ray should originate from camera position or the
+             * pixel center.
+             */
             Ray view_ray(cam->eye, px_center.sub(cam->eye).norm());
 
             /* Get closest surface along the ray */
@@ -188,11 +194,10 @@ void render(Array2D <Rgba> &pixels,
                     }
                 }
             }
-            displayProgress((i + 1) * (j + 1), total_pixels);
+            progress.log((i + 1) * (j + 1), total_pixels);
         }
     }
-
-    cout << "] \xF0\x9F\x8D\xBA \xF0\x9F\x8D\xBA " << endl;
+    progress.done();
 }
 
 int main(int argc, char **argv) {
