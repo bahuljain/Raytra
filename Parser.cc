@@ -6,7 +6,7 @@
 #include <fstream>
 #include <cstring>
 #include <sstream>
-#include "include/parser.h"
+#include "include/Parser.h"
 #include "include/Sphere.h"
 #include "include/Plane.h"
 #include "include/Triangle.h"
@@ -76,8 +76,8 @@ float getTokenAsFloat(string inString, int whichToken) {
 //
 void read_wavefront_file(
         const char *file,
-        std::vector<int> &tris,
-        std::vector<float> &verts) {
+        vector<int> &tris,
+        vector<float> &verts) {
 
     // clear out the tris and verts vectors:
     tris.clear();
@@ -160,9 +160,9 @@ void read_wavefront_file(
 //
 //
 void parseSceneFile(char *filename,
-                    std::vector<Surface *> &surfaces,
-                    std::vector<Material *> &materials,
-                    std::vector<Light *> &lights,
+                    vector<Surface *> &surfaces,
+                    vector<Material *> &materials,
+                    vector<Light *> &lights,
                     Camera *cam) {
     int Cams = 0;
 
@@ -335,6 +335,39 @@ void parseSceneFile(char *filename,
 
                 lastMaterial = new Material(dr, dg, db, sr, sg, sb, r, ir, ig, ib);
                 materials.push_back(lastMaterial);
+
+                break;
+            }
+
+            case 'w': { // read .obj file
+                string filename;
+                vector<int> triangles;
+                vector<float> vertices;
+
+                filename = line.substr(2);
+
+                read_wavefront_file(filename.c_str(), triangles, vertices);
+
+                for (unsigned int i = 0; i < triangles.size() / 3; i++) {
+                    Triangle *triangle;
+                    float x1, y1, z1, x2, y2, z2, x3, y3, z3;
+
+                    x1 = vertices[3 * triangles[3 * i]];
+                    y1 = vertices[3 * triangles[3 * i] + 1];
+                    z1 = vertices[3 * triangles[3 * i] + 2];
+
+                    x2 = vertices[3 * triangles[3 * i + 1]];
+                    y2 = vertices[3 * triangles[3 * i + 1] + 1];
+                    z2 = vertices[3 * triangles[3 * i + 1] + 2];
+
+                    x3 = vertices[3 * triangles[3 * i + 2]];
+                    y3 = vertices[3 * triangles[3 * i + 2] + 1];
+                    z3 = vertices[3 * triangles[3 * i + 2] + 2];
+
+                    triangle = new Triangle(x1, y1, z1, x2, y2, z2, x3, y3, z3);
+                    triangle->setMaterial(lastMaterial);
+                    surfaces.push_back(triangle);
+                }
 
                 break;
             }

@@ -16,6 +16,11 @@ using namespace std;
 
 #endif //RAYTRA_PARSER_H
 
+float getTokenAsFloat(string, int);
+
+void read_wavefront_file(const char *,
+                         vector<int> &,
+                         vector<float> &);
 
 void parseSceneFile(char *,
                     vector<Surface *> &,
@@ -23,4 +28,3 @@ void parseSceneFile(char *,
                     vector<Light *> &,
                     Camera *);
 
-float getTokenAsFloat(string, int);

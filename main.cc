@@ -7,7 +7,7 @@
 #include <ImfRgbaFile.h>
 #include <limits>
 
-#include "include/parser.h"
+#include "include/Parser.h"
 
 using namespace Imf;
 using namespace std;
@@ -147,11 +147,13 @@ void render(Array2D <Rgba> &pixels,
             Point px_center;
             px_center = cam->getPixelCenter(j, i, w, h);
 
-            Ray view_ray(px_center, px_center.sub(cam->eye).norm());
+            Ray view_ray(cam->eye, px_center.sub(cam->eye).norm());
 
             /* Get closest surface along the ray */
             std::tuple<int, float> closest_surface = getClosestSurface(surfaces, view_ray);
             int closest_surface_idx = std::get<0>(closest_surface);
+
+
             float t = std::get<1>(closest_surface);
 
             Rgba &px = pixels[i][j];
@@ -206,13 +208,16 @@ int main(int argc, char **argv) {
     vector<Light *> lights;
 
     parseSceneFile(argv[1], surfaces, materials, lights, cam);
+    cout << "Surfaces: " << surfaces.size() << endl;
+    cout << "Materials: " << materials.size() - 1 << endl;
+    cout << "Lights: " << lights.size() << endl;
 
     Array2D <Rgba> pixels;
 
     render(pixels, cam, surfaces, materials, lights);
 
     if (argc == 2)
-        writeRgba("hw1.2.exr", &pixels[0][0], cam->pw, cam->ph);
+        writeRgba("hw1.3.exr", &pixels[0][0], cam->pw, cam->ph);
     else
         writeRgba(argv[2], &pixels[0][0], cam->pw, cam->ph);
 

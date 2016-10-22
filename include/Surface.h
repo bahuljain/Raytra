@@ -5,7 +5,7 @@
 #ifndef RAYTRA_SURFACE_H
 #define RAYTRA_SURFACE_H
 
-
+#include <iostream>
 #include "Point.h"
 #include "Ray.h"
 #include "Material.h"
