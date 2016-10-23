@@ -4,6 +4,16 @@
 
 #include "include/Surface.h"
 
+/// Determines if the surface intercepts the ray before it reaches it
+/// final destination.
+///
+/// @param ray - the ray which needs to be checked if it is intercepted
+///              by the surface.
+/// @param t_max - the destination of the ray; the ray should be intercepted
+///                before reaching this point; represented in terms of the
+///                parameter on the ray.
+/// @returns - a boolean indicating whether the surface has intercepted the
+///            ray or not.
 bool Surface::intercepts(const Ray &ray, float t_max) const {
     float t = this->getIntersection(ray);
 
@@ -13,6 +23,14 @@ bool Surface::intercepts(const Ray &ray, float t_max) const {
     return (t >= 0 && t < t_max);
 }
 
+/// Determines the shade on the surface at a given point on it.
+///
+/// @param light - the light source used for shading.
+/// @param light_ray - a ray originating from the light source to the surface.
+/// @param view_ray - a ray originating from the camera to the surface.
+/// @param intersection - the point on the surface where the view ray intersects it.
+/// @returns - an RGB object representing the shade on the surface determined using
+///            phong's shading model.
 RGB Surface::phongShading(const Light *light,
                           const Ray &light_ray,
                           const Ray &view_ray,

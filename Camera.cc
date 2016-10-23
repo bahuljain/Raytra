@@ -59,6 +59,13 @@ void Camera::setValues(float x, float y, float z,
     this->ph = ph;
 }
 
+/// Finds the co-ordinates of center of the given pixel
+///
+/// @param i - the row index of the pixel
+/// @param j - the column index of the pixel
+/// @param width - the width of the image plane
+/// @param height - the height of the image plane
+/// @returns - the pixel center co-ordinates for the given pixel
 Point Camera::getPixelCenter(int i, int j,
                              float width, float height) const {
     Point center;
@@ -74,6 +81,14 @@ Point Camera::getPixelCenter(int i, int j,
     return center;
 }
 
+/// Finds the closest surface to the camera along a given ray
+///
+/// @param surfaces - a vector of all the surfaces in the scene.
+/// @param ray - a ray originating from the camera and passing through
+///              the pixel center of the image.
+/// @returns - a tuple containing the index of the closest intersecting
+///            surface and the parameter representing the intersection
+///            point on the view ray.
 tuple<int, float> Camera::getClosestSurface(
         const vector<Surface *> &surfaces,
         const Ray &ray) const {
@@ -92,6 +107,12 @@ tuple<int, float> Camera::getClosestSurface(
     return make_tuple(min_i, min_t);
 }
 
+/// Renders the image using the ray tracing algorithm
+
+/// @param pixels - a two dimensional array of pixels representing the image.
+/// @param surfaces - a vector of all the surfaces in the scene.
+/// @param materials - a vector of all the materials used.
+/// @param lights - a vector of all the lights in the scene.
 void Camera::render(Array2D <Rgba> &pixels,
                     const vector<Surface *> &surfaces,
                     const vector<Material *> &materials,

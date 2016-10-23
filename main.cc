@@ -8,6 +8,12 @@
 using namespace Imf;
 using namespace std;
 
+/// Writes the image out to a file
+///
+/// @param fileName - name of the output image file.
+/// @param pixels - a two dimensional array holding the image pixels.
+/// @param width - number of columns (width) in the image.
+/// @param height - number of rows (height) in the image.
 void writeRgba(const char fileName[], const Rgba *pixels,
                int width, int height) {
     //
@@ -24,9 +30,9 @@ void writeRgba(const char fileName[], const Rgba *pixels,
 }
 
 void cleanMemory(Camera *cam,
-                 std::vector<Surface *> &surfaces,
-                 std::vector<Material *> &materials,
-                 std::vector<Light *> &lights) {
+                 vector<Surface *> &surfaces,
+                 vector<Material *> &materials,
+                 vector<Light *> &lights) {
     delete cam;
 
     for (Surface *surface : surfaces) {
