@@ -85,3 +85,12 @@ RGB Surface::phongShading(const Light *light,
 
     return RGB(r, g, b);
 }
+
+/// Determines if the surface is reflective or not
+///
+/// @returns - a boolean indicating whether the surface is reflective or not
+bool Surface::isReflective() const {
+    return material->ideal_specular.r > 0 ||
+           material->ideal_specular.g > 0 ||
+           material->ideal_specular.b > 0;
+}

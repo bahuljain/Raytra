@@ -8,21 +8,17 @@
 using namespace Imf;
 using namespace std;
 
-/// Writes the image out to a file
+/// Write an RGBA image using class RgbaOutputFile.
 ///
+/// - open the file
+///	- describe the memory layout of the pixels
+///	- store the pixels in the file
 /// @param fileName - name of the output image file.
 /// @param pixels - a two dimensional array holding the image pixels.
 /// @param width - number of columns (width) in the image.
 /// @param height - number of rows (height) in the image.
 void writeRgba(const char fileName[], const Rgba *pixels,
                int width, int height) {
-    //
-    // Write an RGBA image using class RgbaOutputFile.
-    //
-    //	- open the file
-    //	- describe the memory layout of the pixels
-    //	- store the pixels in the file
-    //
 
     RgbaOutputFile file(fileName, width, height, WRITE_RGBA);
     file.setFrameBuffer(pixels, 1, width);

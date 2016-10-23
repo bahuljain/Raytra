@@ -34,6 +34,8 @@ public:
                      const Ray &,
                      const Ray &,
                      const Point &) const;
+
+    bool isReflective() const;
 };
 
 
