@@ -39,18 +39,10 @@ public:
     tuple<int, float> getClosestSurface(const vector<Surface *> &,
                                         const Ray &) const;
 
-    RGB phongShading(const Surface *,
-                 const Light *,
-                 const Ray &,
-                 const Ray &,
-                 const Point &) const;
-
     void render(Array2D <Rgba> &,
                 const vector<Surface *> &,
                 const vector<Material *> &,
                 const vector<Light *> &) const;
-
-
 };
 
 

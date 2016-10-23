@@ -92,55 +92,6 @@ tuple<int, float> Camera::getClosestSurface(
     return make_tuple(min_i, min_t);
 }
 
-RGB Camera::phongShading(const Surface *surface,
-                 const Light *light,
-                 const Ray &light_ray,
-                 const Ray &view_ray,
-                 const Point &intersection) const {
-    float r, g, b, d2, diffuse_factor, specular_factor;
-    Vector v, normal, I, bisector;
-    Material *material;
-
-    /* Vector to the viewer */
-    v = -view_ray.direction;
-
-    if (!surface->isFrontFaced(view_ray)) {
-        return RGB(1, 1, 0);
-    }
-
-    material = surface->getMaterial();
-
-    /* Distance of light from the point of intersection */
-    d2 = light->position.distance2(intersection);
-
-    /* Accounting for zero distance, in which case there shouldn't be any distance attenuation */
-    if (d2 == 0)
-        d2 = 1;
-
-    /* Vector normal to the surface at the given intersection point */
-    normal = surface->getSurfaceNormal(intersection);
-
-    /* Vector to the light source */
-    I = -light_ray.direction;
-
-    /* Vector bisecting the view vector and light vector */
-    bisector = v.plus(I).norm();
-
-    diffuse_factor = light->intensity * fmaxf(0, normal.dot(I));
-    specular_factor = light->intensity * powf(fmaxf(0, normal.dot(bisector)), material->phong);
-
-    r = (material->diffuse.r * diffuse_factor
-         + material->specular.r * specular_factor) * light->color.r / d2;
-
-    g = (material->diffuse.g * diffuse_factor
-         + material->specular.g * specular_factor) * light->color.g / d2;
-
-    b = (material->diffuse.b * diffuse_factor
-         + material->specular.b * specular_factor) * light->color.b / d2;
-
-    return RGB(r, g, b);
-}
-
 void Camera::render(Array2D <Rgba> &pixels,
                     const vector<Surface *> &surfaces,
                     const vector<Material *> &materials,
@@ -167,10 +118,10 @@ void Camera::render(Array2D <Rgba> &pixels,
             Ray view_ray(this->eye, px_center.sub(this->eye).norm());
 
             /* Get closest surface along the ray */
-            std::tuple<int, float> closest_surface = this->getClosestSurface(surfaces, view_ray);
+            tuple<int, float> closest_surface = getClosestSurface(surfaces, view_ray);
 
-            int closest_surface_idx = std::get<0>(closest_surface);
-            float t = std::get<1>(closest_surface);
+            int closest_surface_idx = get<0>(closest_surface);
+            float t = get<1>(closest_surface);
 
             Rgba &px = pixels[i][j];
             px.r = 0;
@@ -196,7 +147,7 @@ void Camera::render(Array2D <Rgba> &pixels,
                     if (!isIntercepted) {
                         Surface *surface = surfaces[closest_surface_idx];
 
-                        RGB shade = this->phongShading(surface, light, light_ray, view_ray, intersection);
+                        RGB shade = surface->phongShading(light, light_ray, view_ray, intersection);
 
                         px.r += shade.r;
                         px.g += shade.g;

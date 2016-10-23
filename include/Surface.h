@@ -9,6 +9,7 @@
 #include "Point.h"
 #include "Ray.h"
 #include "Material.h"
+#include "Light.h"
 #include <math.h>
 
 class Surface {
@@ -18,26 +19,21 @@ public:
     virtual ~Surface() {}
 
     virtual float getIntersection(const Ray &) const = 0;
+
     virtual Vector getSurfaceNormal(const Point &) const = 0;
+
     virtual bool isFrontFaced(const Ray &) const = 0;
-
-
-    bool intercepts(const Ray &ray, float t_max) {
-        float t = this->getIntersection(ray);
-
-        if (fabsf(t - t_max) <= 0.01)
-            t = -1;
-
-        return (t >= 0 && t < t_max);
-    }
 
     void setMaterial(Material *m) {
         this->material = m;
     }
 
-    Material *getMaterial() const {
-        return this->material;
-    }
+    bool intercepts(const Ray &, float) const;
+
+    RGB phongShading(const Light *,
+                     const Ray &,
+                     const Ray &,
+                     const Point &) const;
 };
 
 
