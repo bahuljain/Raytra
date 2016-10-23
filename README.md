@@ -23,3 +23,15 @@ make
 ```
 make test
 ```
+
+### View Rendered Image
+
+Using exr-viewer:
+```
+exrdisplay <output_image_name.exr>
+```
+
+On Mac:
+```
+open <output_image_name.exr>
+```
