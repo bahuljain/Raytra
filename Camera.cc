@@ -163,8 +163,11 @@ bool Camera::isIntercepted(const vector<Surface *> &surfaces,
  * @param lights      - a list of all the light sources in the scene.
  * @param refl_limit  - the number of reflections allowed before the light
  *                      fades away.
- * @param surface_idx - the surface from which the ray is coming from.
- * @returns           -
+ * @param surface_idx - the index of the surface from which the ray is coming
+ *                      from. Set to any negative value if ray is coming from
+ *                      the viewer and not some surface.
+ * @returns           - the RGB value (spectral distribution) obtained along
+ *                      the given view ray
  */
 RGB Camera::shadeAlongRay(const Ray &view_ray,
                           const vector<Surface *> &surfaces,
@@ -210,15 +213,15 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
                           intersection.sub(light->position).norm());
 
             /*
-             * The parameterized value of the intersection point with the
-             * surface on the light ray.
+             * The parameterized representation of the intersection point with
+             * the surface on the light ray.
              */
             float t_max = light_ray.getOffsetFromOrigin(intersection);
 
             /*
              * If a light ray is not intercepted by another surface on its way
-             * to its destination then compute the diffuse and specular shading
-             * on the surface
+             * to the intersection point then compute the diffuse and specular
+             * shading on the surface.
              */
             if (!isIntercepted(surfaces, light_ray, t_max,
                                closest_surface_idx))
