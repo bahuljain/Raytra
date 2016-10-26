@@ -112,7 +112,7 @@ tuple<int, float> Camera::getClosestSurface(
     int min_i = -1;
 
     for (unsigned int i = 0; i < surfaces.size(); i++) {
-        if (i != (unsigned int) origin_surface) {
+        if ((int) i != origin_surface) {
             float t = surfaces[i]->getIntersection(ray);
 
             if (t >= 0 && t < min_t) {
@@ -144,7 +144,7 @@ bool Camera::isIntercepted(const vector<Surface *> &surfaces,
                            float t_max,
                            int origin_surface) const {
     for (unsigned int i = 0; i < surfaces.size(); i++) {
-        if (i != (unsigned int) origin_surface) {
+        if ((int) i != origin_surface) {
             float t = surfaces[i]->getIntersection(ray);
 
             if (t >= 0 && t < t_max)
@@ -297,7 +297,8 @@ void Camera::render(Array2D <Rgba> &pixels,
              */
             Ray view_ray(this->eye, px_center.sub(this->eye).norm());
 
-            RGB shade = this->shadeAlongRay(view_ray, surfaces, lights, 10, -1);
+            RGB shade = this->shadeAlongRay(view_ray, surfaces, lights,
+                                            MAX_RECURSIVE_LIMIT, -1);
 
             px.r = shade.r;
             px.g = shade.g;
