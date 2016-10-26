@@ -28,14 +28,18 @@ public:
         this->material = m;
     }
 
+    bool isReflective() const;
+
+    RGB getDiffuseComponent() const;
+    RGB getReflectiveComponent() const;
+    RGB getSpecularComponent() const;
+
     bool intercepts(const Ray &, float) const;
 
     RGB phongShading(const Light *,
                      const Ray &,
                      const Ray &,
                      const Point &) const;
-
-    bool isReflective() const;
 };
 
 

@@ -39,6 +39,11 @@ public:
     tuple<int, float> getClosestSurface(const vector<Surface *> &,
                                         const Ray &) const;
 
+    RGB shadeAlongRay(const Ray &,
+                      const vector<Surface *> &,
+                      const vector<Light *> &,
+                      const int) const;
+
     void render(Array2D <Rgba> &,
                 const vector<Surface *> &,
                 const vector<Material *> &,

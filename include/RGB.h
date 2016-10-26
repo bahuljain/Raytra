@@ -27,6 +27,16 @@ public:
         this->g = g;
         this->b = b;
     }
+
+    void addRGB(const RGB shade) {
+        r += shade.r;
+        g += shade.g;
+        b += shade.b;
+    };
+
+    RGB scaleRGB(const RGB shade) const {
+        return RGB(r * shade.r, g * shade.g, b * shade.b);
+    };
 };
 
 
