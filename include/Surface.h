@@ -34,8 +34,6 @@ public:
     RGB getReflectiveComponent() const;
     RGB getSpecularComponent() const;
 
-    bool intercepts(const Ray &, float) const;
-
     RGB phongShading(const Light *,
                      const Ray &,
                      const Ray &,

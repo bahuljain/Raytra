@@ -92,44 +92,84 @@ Point Camera::getPixelCenter(int i, int j,
  * @name    getClosestSurface
  * @brief   Finds the closest surface to the camera along a given ray.
  *
- * @param surfaces - a vector of all the surfaces in the scene.
- * @param ray      - a ray originating from the camera and passing through the
- *                   pixel center of the image.
+ * @param surfaces       - a vector of all the surfaces in the scene.
+ * @param ray            - a ray originating from the camera and passing
+ *                         through the pixel center of the image.
+ * @param origin_surface - the surface from which the ray has originated and
+ *                         therefore needs to be ignored if an intersection is
+ *                         found with it.
+ *
  * @returns        - a tuple containing the index of the closest intersecting
  *                   surface and the parameter representing the intersection
  *                   point on the view ray.
  */
 tuple<int, float> Camera::getClosestSurface(
         const vector<Surface *> &surfaces,
-        const Ray &ray) const {
+        const Ray &ray,
+        int origin_surface) const {
 
     float min_t = numeric_limits<float>::infinity();
     int min_i = -1;
 
     for (unsigned int i = 0; i < surfaces.size(); i++) {
-        float t = surfaces[i]->getIntersection(ray);
+        if (i != (unsigned int) origin_surface) {
+            float t = surfaces[i]->getIntersection(ray);
 
-        if (t >= 0.01 && t < min_t) {
-            min_t = t;
-            min_i = i;
+            if (t >= 0 && t < min_t) {
+                min_t = t;
+                min_i = i;
+            }
         }
     }
     return make_tuple(min_i, min_t);
 }
 
 /**
- * @name    shadeAlongRay
- * @brief   Returns the RGB shading obtained along the given view ray
+ * @name    isIntercepted
+ * @brief   Determines if a surface intercepts the ray before it reaches it
+ *          final destination.
  *
- * @param view_ray -
- * @param surfaces -
- * @param lights -
- * @returns -
+ * @param ray   - the ray which needs to be checked if it is intercepted
+ *                by the surface.
+ * @param t_max - the destination of the ray; the ray should be intercepted
+ *                before reaching this point; represented in terms of the
+ *                parameter on the ray.
+ *
+ * @retval TRUE  - A surface intercepts the ray before reaching its destination.
+ * @retval FALSE - A surface doesn't intercept the ray before reaching its
+ *                 destination.
+ */
+bool Camera::isIntercepted(const vector<Surface *> &surfaces,
+                           const Ray &ray,
+                           float t_max,
+                           int origin_surface) const {
+    for (unsigned int i = 0; i < surfaces.size(); i++) {
+        if (i != (unsigned int) origin_surface) {
+            float t = surfaces[i]->getIntersection(ray);
+
+            if (t >= 0 && t < t_max)
+                return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * @name    shadeAlongRay
+ * @brief   Computes the shading along the given view ray
+ *
+ * @param view_ray    - the ray along which shading needs to be computed.
+ * @param surfaces    - a list of all the surfaces in the scene.
+ * @param lights      - a list of all the light sources in the scene.
+ * @param refl_limit  - the number of reflections allowed before the light
+ *                      fades away.
+ * @param surface_idx - the surface from which the ray is coming from.
+ * @returns           -
  */
 RGB Camera::shadeAlongRay(const Ray &view_ray,
                           const vector<Surface *> &surfaces,
                           const vector<Light *> &lights,
-                          const int refl_limit) const {
+                          int refl_limit, int surface_idx) const {
     RGB shade(0, 0, 0);
 
     /*
@@ -140,8 +180,8 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
         return shade;
 
     /* Get closest surface along the ray */
-    tuple<int, float> closest_surface = this->getClosestSurface(surfaces,
-                                                                view_ray);
+    tuple<int, float> closest_surface =
+            this->getClosestSurface(surfaces, view_ray, surface_idx);
 
     int closest_surface_idx = get<0>(closest_surface);
     float t = get<1>(closest_surface);
@@ -152,19 +192,26 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
         Surface *surface = surfaces[closest_surface_idx];
 
         for (Light *light : lights) {
+
+            /*
+             * A light ray going from the light source to the point of
+             * intersection on the surface.
+             */
             Ray light_ray(light->position,
                           intersection.sub(light->position).norm());
+
+            /*
+             * The parameterized value of the intersection point with the
+             * surface on the light ray.
+             */
             float t_max = light_ray.getOffsetFromOrigin(intersection);
-            bool isIntercepted = false;
 
-            for (Surface *surface : surfaces) {
-                if (surface->intercepts(light_ray, t_max)) {
-                    isIntercepted = true;
-                    break;
-                }
-            }
-
-            if (!isIntercepted)
+            /*
+             * If a light ray is not intercepted by another surface on its way
+             * to its destination then compute the shading on the surface
+             */
+            if (!isIntercepted(surfaces, light_ray, t_max,
+                               closest_surface_idx))
                 shade.addRGB(surface->phongShading(light, light_ray, view_ray,
                                                    intersection));
 
@@ -185,7 +232,8 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
 
             /* The shade obtained from the ray that reflected off the surface. */
             RGB reflection = this->shadeAlongRay(reflected_ray, surfaces,
-                                                 lights, refl_limit - 1);
+                                                 lights, refl_limit - 1,
+                                                 closest_surface_idx);
 
             shade.addRGB(
                     reflection.scaleRGB(surface->getReflectiveComponent()));
@@ -237,7 +285,7 @@ void Camera::render(Array2D <Rgba> &pixels,
              */
             Ray view_ray(this->eye, px_center.sub(this->eye).norm());
 
-            RGB shade = this->shadeAlongRay(view_ray, surfaces, lights, 2);
+            RGB shade = this->shadeAlongRay(view_ray, surfaces, lights, 5, -1);
 
             px.r = shade.r;
             px.g = shade.g;
@@ -248,4 +296,5 @@ void Camera::render(Array2D <Rgba> &pixels,
     }
     progress.done();
 }
+
 

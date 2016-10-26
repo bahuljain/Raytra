@@ -9,32 +9,6 @@
 
 
 /**
- * @name    intercepts
- * @brief   Determines if the surface intercepts the ray before it reaches it
- *          final destination.
- *
- * @param ray   - the ray which needs to be checked if it is intercepted
- *                by the surface.
- * @param t_max - the destination of the ray; the ray should be intercepted
- *                before reaching this point; represented in terms of the
- *                parameter on the ray.
- *
- * @retval TRUE  - Surface intercepts the ray before reaching its destination.
- * @retval FALSE - Surface doesn't intercept the ray before reaching its
- *                 destination.
- */
-bool Surface::intercepts(const Ray &ray, float t_max) const {
-    float t = this->getIntersection(ray);
-
-    if (fabsf(t - t_max) <= 0.01)
-        t = -1;
-
-    return (t >= 0 && t < t_max);
-}
-
-
-
-/**
  * @name    phongShading
  * @brief   Determines the shade on the surface at a given point on it.
  *
@@ -63,10 +37,10 @@ RGB Surface::phongShading(const Light *light,
     /* Vector to the viewer */
     v = -view_ray.direction;
 
-    /*if (!this->isFrontFaced(view_ray)) {
-        std::cout << "Surface not oriented correctly!" << std::endl;
+    if (!this->isFrontFaced(view_ray)) {
+        /* std::cout << "Surface not oriented correctly!" << std::endl; */
         return RGB(1, 1, 0);
-    }*/
+    }
 
     /* Distance of light from the point of intersection */
     d2 = light->position.distance2(intersection);
