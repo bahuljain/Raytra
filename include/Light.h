@@ -10,12 +10,22 @@
 #include "RGB.h"
 
 class Light {
+private:
+    char type;
 public:
     Point position;
     RGB color;
     float intensity;
 
     virtual ~Light() {}
+
+    void setType(char type) {
+        this->type = type;
+    }
+
+    char getType() {
+        return this->type;
+    }
 };
 
 

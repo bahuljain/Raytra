@@ -192,6 +192,15 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
         Surface *surface = surfaces[closest_surface_idx];
 
         for (Light *light : lights) {
+            /*
+             * If the light source is an ambient light then simply add it to the
+             * shading.
+             */
+            if (light->getType() == 'a') {
+                shade.addRGB(surface->getDiffuseComponent()
+                                     .scaleRGB(light->color));
+                continue;
+            }
 
             /*
              * A light ray going from the light source to the point of
@@ -208,13 +217,13 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
 
             /*
              * If a light ray is not intercepted by another surface on its way
-             * to its destination then compute the shading on the surface
+             * to its destination then compute the diffuse and specular shading
+             * on the surface
              */
             if (!isIntercepted(surfaces, light_ray, t_max,
                                closest_surface_idx))
                 shade.addRGB(surface->phongShading(light, light_ray, view_ray,
                                                    intersection));
-
         }
 
         if (surface->isReflective()) {
@@ -285,7 +294,7 @@ void Camera::render(Array2D <Rgba> &pixels,
              */
             Ray view_ray(this->eye, px_center.sub(this->eye).norm());
 
-            RGB shade = this->shadeAlongRay(view_ray, surfaces, lights, 5, -1);
+            RGB shade = this->shadeAlongRay(view_ray, surfaces, lights, 10, -1);
 
             px.r = shade.r;
             px.g = shade.g;

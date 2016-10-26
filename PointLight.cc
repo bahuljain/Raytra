@@ -9,4 +9,6 @@ PointLight::PointLight(float x, float y, float z,
     this->position = Point(x, y, z);
     this->color = RGB(r, g, b);
     this->intensity = I;
+
+    this->setType('p');
 }

@@ -296,7 +296,6 @@ void parseSceneFile(char *filename,
                         break;
 */
                     case 'a': {  // ambient light
-/*
                         float r, g, b;
 
                         r = getTokenAsFloat(line, 2);
@@ -305,7 +304,6 @@ void parseSceneFile(char *filename,
 
                         AmbientLight *light = new AmbientLight(r, g, b);
                         lights.push_back(light);
-*/
 
                         break;
                     }
