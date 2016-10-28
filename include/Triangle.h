@@ -24,7 +24,7 @@ public:
 
     virtual Vector getSurfaceNormal(const Point &) const;
 
-    virtual bool isFrontFaced(const Ray &) const;
+    virtual bool isFrontFacedTo(const Vector &) const;
 };
 
 

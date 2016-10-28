@@ -24,6 +24,7 @@ public:
     Vector u;
     Vector v;
 
+    /* Focal length */
     float d;
     int pw, ph;
 

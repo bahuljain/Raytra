@@ -62,6 +62,6 @@ Vector Triangle::getSurfaceNormal(const Point &p) const {
     return normal;
 }
 
-bool Triangle::isFrontFaced(const Ray &ray) const {
-    return (normal.dot(ray.direction) <= 0);
+bool Triangle::isFrontFacedTo(const Vector &vec) const {
+    return (normal.dot(vec) <= 0);
 }

@@ -24,6 +24,6 @@ Vector Plane::getSurfaceNormal(const Point &p) const {
     return normal;
 }
 
-bool Plane::isFrontFaced(const Ray &ray) const {
-    return (normal.dot(ray.direction) <= 0);
+bool Plane::isFrontFacedTo(const Vector &vec) const {
+    return (normal.dot(vec) <= 0);
 }

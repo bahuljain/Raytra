@@ -30,6 +30,6 @@ Vector Sphere::getSurfaceNormal(const Point &p) const {
     return Vector(p.x - center.x, p.y - center.y, p.z - center.z).norm();
 }
 
-bool Sphere::isFrontFaced(const Ray &ray) const {
+bool Sphere::isFrontFacedTo(const Vector &vec) const {
     return true;
 }

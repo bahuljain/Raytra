@@ -27,6 +27,7 @@ RGB Surface::phongShading(const Light *light,
 
     float r, g, b, d2, diffuse_factor, specular_factor;
     Vector v, normal, I, bisector;
+    RGB material_diffuse, material_specular;
 
     /* Material not defined for the surface */
     if (!material) {
@@ -34,26 +35,32 @@ RGB Surface::phongShading(const Light *light,
         return RGB(0, 0, 0);
     }
 
+    /* Vector normal to the surface at the given intersection point */
+    normal = this->getSurfaceNormal(intersection);
+
+    /*
+     * TODO: rethink if necessary to do it in this particular way.
+     * If the light hits the back side of the surface then simply give it a
+     * unique diffuse and specular values and invert the surface normal.
+     */
+    if (this->isFrontFacedTo(view_ray.direction)) {
+        material_diffuse = material->diffuse;
+        material_specular = material->specular;
+    } else {
+        material_diffuse = RGB(1, 1, 0);
+        material_specular = RGB(0, 0, 0);
+        normal = - normal;
+    }
+
     /* Vector to the viewer */
     v = -view_ray.direction;
 
-    if (!this->isFrontFaced(view_ray)) {
-        /* std::cout << "Surface not oriented correctly!" << std::endl; */
-        return RGB(1, 1, 0);
-    }
-
-    /* Distance of light from the point of intersection */
-    d2 = light->position.distance2(intersection);
-
     /*
-     * Accounting for zero distance, in which case there shouldn't
-     * be any distance attenuation.
+     * Distance of light from the point of intersection squared.
+     * Note: distance cannot be less than 1 else intensity values will get
+     * scaled up which shouldn't happen.
      */
-    if (d2 == 0)
-        d2 = 1;
-
-    /* Vector normal to the surface at the given intersection point */
-    normal = this->getSurfaceNormal(intersection);
+    d2 = fmaxf(1, light->position.distance2(intersection));
 
     /* Vector to the light source */
     I = -light_ray.direction;
@@ -66,14 +73,14 @@ RGB Surface::phongShading(const Light *light,
     specular_factor = light->intensity *
                       powf(fmaxf(0, normal.dot(bisector)), material->phong);
 
-    r = (material->diffuse.r * diffuse_factor
-         + material->specular.r * specular_factor) * light->color.r / d2;
+    r = (material_diffuse.r * diffuse_factor
+         + material_specular.r * specular_factor) * light->color.r / d2;
 
-    g = (material->diffuse.g * diffuse_factor
-         + material->specular.g * specular_factor) * light->color.g / d2;
+    g = (material_diffuse.g * diffuse_factor
+         + material_specular.g * specular_factor) * light->color.g / d2;
 
-    b = (material->diffuse.b * diffuse_factor
-         + material->specular.b * specular_factor) * light->color.b / d2;
+    b = (material_diffuse.b * diffuse_factor
+         + material_specular.b * specular_factor) * light->color.b / d2;
 
     return RGB(r, g, b);
 }
