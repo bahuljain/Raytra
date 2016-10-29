@@ -163,16 +163,16 @@ bool Camera::isIntercepted(const vector<Surface *> &surfaces,
  * @param lights      - a list of all the light sources in the scene.
  * @param refl_limit  - the number of reflections allowed before the light
  *                      fades away.
- * @param surface_idx - the index of the surface from which the ray is coming
- *                      from. Set to any negative value if ray is coming from
- *                      the viewer and not some surface.
+ * @param origin_surface_idx - the index of the surface from which the ray is
+ *                      coming from. Set to any negative value if ray is coming
+ *                      from the viewer and not some surface.
  * @returns           - the RGB value (spectral distribution) obtained along
  *                      the given view ray
  */
 RGB Camera::shadeAlongRay(const Ray &view_ray,
                           const vector<Surface *> &surfaces,
                           const vector<Light *> &lights,
-                          int refl_limit, int surface_idx) const {
+                          int refl_limit, int origin_surface_idx) const {
     RGB shade(0, 0, 0);
 
     /*
@@ -184,7 +184,7 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
 
     /* Get closest surface along the ray */
     tuple<int, float> closest_surface =
-            this->getClosestSurface(surfaces, view_ray, surface_idx);
+            this->getClosestSurface(surfaces, view_ray, origin_surface_idx);
 
     int closest_surface_idx = get<0>(closest_surface);
     float t = get<1>(closest_surface);
@@ -198,8 +198,10 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
             /*
              * If the light source is an ambient light then simply add it to the
              * shading.
+             * Note: Only add ambient light if computing shading for view ray
+             * and not reflected/refracted rays.
              */
-            if (light->getType() == 'a') {
+            if (light->getType() == 'a' && origin_surface_idx == -1) {
                 shade.addRGB(surface->getDiffuseComponent()
                                      .scaleRGB(light->color));
                 continue;
