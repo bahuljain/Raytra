@@ -7,7 +7,7 @@
 
 
 #include "Point.h"
-#include "Surface.h"
+#include "Ray.h"
 
 class BoundingBox {
 private:

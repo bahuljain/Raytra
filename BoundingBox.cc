@@ -6,6 +6,7 @@
  */
 
 #include <limits>
+#include <math.h>
 #include "include/BoundingBox.h"
 
 BoundingBox::BoundingBox(float x_min, float x_max,

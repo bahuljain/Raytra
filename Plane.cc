@@ -27,3 +27,7 @@ Vector Plane::getSurfaceNormal(const Point &p) const {
 bool Plane::isFrontFacedTo(const Ray &ray) const {
     return (normal.dot(ray.direction) <= 0);
 }
+
+BoundingBox Plane::getBoundingBox() const {
+    return BoundingBox(0, 0, 0, 0, 0, 0);
+}

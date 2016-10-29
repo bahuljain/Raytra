@@ -36,3 +36,9 @@ Vector Sphere::getSurfaceNormal(const Point &p) const {
 bool Sphere::isFrontFacedTo(const Ray &ray) const {
     return true;
 }
+
+BoundingBox Sphere::getBoundingBox() const {
+    return BoundingBox(center.x - radius, center.x + radius,
+                       center.y - radius, center.y + radius,
+                       center.z - radius, center.z + radius);
+}

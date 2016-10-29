@@ -65,3 +65,16 @@ Vector Triangle::getSurfaceNormal(const Point &p) const {
 bool Triangle::isFrontFacedTo(const Ray &ray) const {
     return (normal.dot(ray.direction) <= 0);
 }
+
+BoundingBox Triangle::getBoundingBox() const {
+    float x_min, x_max, y_min, y_max, z_min, z_max;
+
+    x_min = fminf(a.x, fminf(b.x, c.x));
+    x_max = fmaxf(a.x, fmaxf(b.x, c.x));
+    y_min = fminf(a.y, fminf(b.y, c.y));
+    y_max = fmaxf(a.y, fmaxf(b.y, c.y));
+    z_min = fminf(a.z, fminf(b.z, c.z));
+    z_max = fmaxf(a.z, fmaxf(b.z, c.z));
+
+    return BoundingBox(x_min, x_max, y_min, y_max, z_min, z_max);
+}

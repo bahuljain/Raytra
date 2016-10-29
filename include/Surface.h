@@ -25,6 +25,8 @@ public:
 
     virtual bool isFrontFacedTo(const Ray &) const = 0;
 
+    virtual BoundingBox getBoundingBox() const = 0;
+
     void setMaterial(Material *m) {
         this->material = m;
     }
