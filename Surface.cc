@@ -43,7 +43,7 @@ RGB Surface::phongShading(const Light *light,
      * If the light hits the back side of the surface then simply give it a
      * unique diffuse and specular values and invert the surface normal.
      */
-    if (this->isFrontFacedTo(view_ray.direction)) {
+    if (this->isFrontFacedTo(view_ray)) {
         material_diffuse = material->diffuse;
         material_specular = material->specular;
     } else {

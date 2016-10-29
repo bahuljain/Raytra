@@ -236,7 +236,7 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
          * the view ray then compute shading from the reflected ray.
          */
         if (surface->isReflective() &&
-                surface->isFrontFacedTo(view_ray.direction)) {
+                surface->isFrontFacedTo(view_ray)) {
             Vector normal = surface->getSurfaceNormal(intersection);
 
             /*

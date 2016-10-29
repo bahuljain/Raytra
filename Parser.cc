@@ -44,7 +44,8 @@ float getTokenAsFloat(string inString, int whichToken) {
         p = strtok(0, " ");
 
         if (p == 0) {
-            cerr << "error: the line is not long enough for your token request!" << endl;
+            cerr << "error: the line is not long enough for your token request!"
+                 << endl;
             exit(-1);
         }
     }
@@ -124,7 +125,8 @@ void read_wavefront_file(
             tris.push_back(j - 1);
             tris.push_back(k - 1);
         } else {
-            std::cerr << "Parser error: invalid command at line " << line << std::endl;
+            std::cerr << "Parser error: invalid command at line " << line
+                      << std::endl;
         }
 
     }
@@ -228,7 +230,8 @@ void parseSceneFile(char *filename,
                 y3 = getTokenAsFloat(line, 8);
                 z3 = getTokenAsFloat(line, 9);
 
-                Triangle *triangle = new Triangle(x1, y1, z1, x2, y2, z2, x3, y3, z3);
+                Triangle *triangle = new Triangle(x1, y1, z1, x2, y2, z2, x3,
+                                                  y3, z3);
                 triangle->setMaterial(lastMaterial);
 
                 surfaces.push_back(triangle);
@@ -236,6 +239,7 @@ void parseSceneFile(char *filename,
                 break;
             }
             case 'p': {  // plane
+                /*
                 float nx, ny, nz, d;
 
                 nx = getTokenAsFloat(line, 1);
@@ -247,6 +251,7 @@ void parseSceneFile(char *filename,
                 plane->setMaterial(lastMaterial);
 
                 surfaces.push_back(plane);
+                */
             }
                 break;
 
@@ -286,7 +291,8 @@ void parseSceneFile(char *filename,
                         g = getTokenAsFloat(line, 6);
                         b = getTokenAsFloat(line, 7);
 
-                        PointLight *light = new PointLight(x, y, z, r, g, b, 1.0);
+                        PointLight *light = new PointLight(x, y, z,
+                                                           r, g, b, 1.0);
                         lights.push_back(light);
 
                         break;
@@ -331,7 +337,8 @@ void parseSceneFile(char *filename,
                 ig = getTokenAsFloat(line, 9);
                 ib = getTokenAsFloat(line, 10);
 
-                lastMaterial = new Material(dr, dg, db, sr, sg, sb, r, ir, ig, ib);
+                lastMaterial = new Material(dr, dg, db, sr, sg, sb, r, ir, ig,
+                                            ib);
                 materials.push_back(lastMaterial);
 
                 break;

@@ -28,6 +28,8 @@ public:
     void setBoundedSurface(int index);
 
     int getBoundedSurface();
+
+    virtual bool intersects(const Ray &) const;
 };
 
 

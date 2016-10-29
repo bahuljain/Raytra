@@ -23,7 +23,7 @@ TEST_CASE("Moving a Point along a Vector", "[point_moveAlong]") {
     Vector v, v2;
 
     p1 = Point(0, 0, 0);
-    v = Vector (15, 46, 10);
+    v = Vector(15, 46, 10);
     p2 = p1.moveAlong(v);
 
     REQUIRE(p2.x == 15);

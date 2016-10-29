@@ -30,6 +30,9 @@ Vector Sphere::getSurfaceNormal(const Point &p) const {
     return Vector(p.x - center.x, p.y - center.y, p.z - center.z).norm();
 }
 
-bool Sphere::isFrontFacedTo(const Vector &vec) const {
+/*
+ * Will always be front faced to any ray since its an enclosed object.
+ */
+bool Sphere::isFrontFacedTo(const Ray &ray) const {
     return true;
 }

@@ -10,6 +10,7 @@
 #include "Ray.h"
 #include "Material.h"
 #include "Light.h"
+#include "BoundingBox.h"
 #include <math.h>
 
 class Surface {
@@ -22,7 +23,7 @@ public:
 
     virtual Vector getSurfaceNormal(const Point &) const = 0;
 
-    virtual bool isFrontFacedTo(const Vector &) const = 0;
+    virtual bool isFrontFacedTo(const Ray &) const = 0;
 
     void setMaterial(Material *m) {
         this->material = m;
