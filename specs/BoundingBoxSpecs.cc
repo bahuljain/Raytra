@@ -4,8 +4,6 @@
 
 #include "lib/catch.hpp"
 #include "../include/BoundingBox.h"
-#include "../include/Ray.h"
-
 
 TEST_CASE("Intersection of Ray with BoundingBox", "[bounding_box_intersects]") {
     BoundingBox bb(0, 10, 0, 10, 0, 10);
