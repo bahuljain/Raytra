@@ -16,6 +16,10 @@ private:
                        const std::vector<Surface *> &,
                        const Ray &, float, int) const;
 
+    std::tuple<int, float> getClosestSurface(const BVHNode *node,
+                                             const std::vector<Surface *> &,
+                                             const Ray &, int) const;
+
 public:
     BVHNode *root;
 
@@ -30,6 +34,13 @@ public:
     bool isIntercepted(const Ray &,
                        const std::vector<Surface *> &,
                        float, int) const;
+
+    std::tuple<int, float> getClosestSurface(const std::vector<Surface *> &,
+                                             const Ray &, int) const;
+
+    void printTree() const;
+    void printTree(BVHNode *node) const;
+
 };
 
 

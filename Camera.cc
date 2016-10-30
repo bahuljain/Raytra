@@ -186,11 +186,12 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
 
     /* Get closest surface along the ray */
     tuple<int, float> closest_surface =
-            this->getClosestSurface(surfaces, view_ray, origin_surface_idx);
+            surfacesTree.getClosestSurface(surfaces, view_ray,
+                                           origin_surface_idx);
+            // this->getClosestSurface(surfaces, view_ray, origin_surface_idx);
 
     int closest_surface_idx = get<0>(closest_surface);
     float t = get<1>(closest_surface);
-
 
     if (closest_surface_idx != -1) {
         Point intersection = view_ray.getPointOnIt(t);
@@ -324,11 +325,6 @@ void Camera::render(Array2D <Rgba> &pixels,
             px.g = shade.g;
             px.b = shade.b;
 
-            /*cout << surfaceTree.
-                        isIntercepted(view_ray,
-                                      surfaces,
-                                      std::numeric_limits<float>::infinity(),
-                                      -1);*/
             progress.log((i + 1) * (j + 1), total_pixels);
         }
     }

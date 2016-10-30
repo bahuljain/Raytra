@@ -7,9 +7,11 @@
 
 #include <limits>
 #include <math.h>
+#include <iostream>
 #include "include/BoundingBox.h"
 
 BoundingBox::BoundingBox() {
+    this->id = -1;
     this->x_min = 0;
     this->x_max = 0;
     this->y_min = 0;
@@ -25,6 +27,11 @@ BoundingBox::BoundingBox() {
 BoundingBox::BoundingBox(float x_min, float x_max,
                          float y_min, float y_max,
                          float z_min, float z_max) {
+
+//    srand(time(NULL));
+
+    this->id = rand() % 10000;
+
     this->x_min = x_min;
     this->x_max = x_max;
     this->y_min = y_min;
@@ -164,5 +171,12 @@ BoundingBox::compare(int axis) {
             return a.x_min < b.x_min;
         };
     }
+}
+
+void BoundingBox::printBox() const {
+    std::cout << id << ": "
+              << "(" << x_min << ", " << x_max << ") "
+              << "(" << y_min << ", " << y_max << ") "
+              << "(" << z_min << ", " << z_max << ") " << std::endl;
 }
 

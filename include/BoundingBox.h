@@ -15,6 +15,7 @@ private:
     int bounded_surface_idx;
 
 public:
+    int id;
     float x_min;
     float x_max;
     float y_min;
@@ -39,6 +40,8 @@ public:
 
     static std::function<bool(const BoundingBox &,
                               const BoundingBox &)> compare(int);
+
+    void printBox() const;
 
 };
 

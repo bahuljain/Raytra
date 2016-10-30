@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
     parseSceneFile(argv[1], surfaces, materials, lights, cam);
     cout << "Surfaces: " << surfaces.size() << endl;
     cout << "Materials: " << materials.size() - 1 << endl;
-    cout << "Lights: " << lights.size() << endl;
+    cout << "Lights: " << lights.size() << endl << endl;
 
     Array2D <Rgba> pixels;
 
