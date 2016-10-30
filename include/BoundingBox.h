@@ -6,6 +6,7 @@
 #define RAYTRA_BOUNDINGBOX_H
 
 
+#include <functional>
 #include "Point.h"
 #include "Ray.h"
 
@@ -23,13 +24,22 @@ public:
 
     Point center;
 
+    BoundingBox();
+
     BoundingBox(float, float, float, float, float, float);
 
     void setBoundedSurface(int index);
 
-    int getBoundedSurface();
+    int getBoundedSurface() const ;
 
-    virtual bool intersects(const Ray &) const;
+    bool intersects(const Ray &) const;
+
+    static BoundingBox groupBoundingBoxes(std::vector<BoundingBox> &,
+                                          int, int);
+
+    static std::function<bool(const BoundingBox &,
+                              const BoundingBox &)> compare(int);
+
 };
 
 

@@ -172,7 +172,9 @@ bool Camera::isIntercepted(const vector<Surface *> &surfaces,
 RGB Camera::shadeAlongRay(const Ray &view_ray,
                           const vector<Surface *> &surfaces,
                           const vector<Light *> &lights,
-                          int refl_limit, int origin_surface_idx) const {
+                          int refl_limit,
+                          int origin_surface_idx,
+                          const BVHTree &surfacesTree) const {
     RGB shade(0, 0, 0);
 
     /*
@@ -225,10 +227,16 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
              * to the intersection point then compute the diffuse and specular
              * shading on the surface.
              */
-            if (!isIntercepted(surfaces, light_ray, t_max,
+            if (!surfacesTree.isIntercepted(light_ray, surfaces, t_max,
+                                            closest_surface_idx))
+                shade.addRGB(
+                        surface->phongShading(light, light_ray, view_ray,
+                                              intersection));
+            /*if (!isIntercepted(surfaces, light_ray, t_max,
                                closest_surface_idx))
-                shade.addRGB(surface->phongShading(light, light_ray, view_ray,
-                                                   intersection));
+                shade.addRGB(
+                        surface->phongShading(light, light_ray, view_ray,
+                                              intersection));*/
         }
 
         /*
@@ -236,7 +244,7 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
          * the view ray then compute shading from the reflected ray.
          */
         if (surface->isReflective() &&
-                surface->isFrontFacedTo(view_ray)) {
+            surface->isFrontFacedTo(view_ray)) {
             Vector normal = surface->getSurfaceNormal(intersection);
 
             /*
@@ -252,7 +260,8 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
             /* The shade obtained from the ray that reflected off the surface. */
             RGB reflection = this->shadeAlongRay(reflected_ray, surfaces,
                                                  lights, refl_limit - 1,
-                                                 closest_surface_idx);
+                                                 closest_surface_idx,
+                                                 surfacesTree);
 
             shade.addRGB(
                     reflection.scaleRGB(surface->getReflectiveComponent()));
@@ -276,14 +285,17 @@ void Camera::render(Array2D <Rgba> &pixels,
                     const vector<Material *> &materials,
                     const vector<Light *> &lights) const {
 
-    ProgressBar progress = ProgressBar();
-    progress.start();
-
     float w = this->right - this->left;
     float h = this->top - this->bottom;
     float total_pixels = this->ph * this->pw;
+    BVHTree surfaceTree;
 
     pixels.resizeErase(this->ph, this->pw);
+
+    surfaceTree.makeBVHTree(surfaces);
+
+    ProgressBar progress = ProgressBar();
+    progress.start();
 
     for (int i = 0; i < this->ph; i++) {
         for (int j = 0; j < this->pw; j++) {
@@ -305,16 +317,20 @@ void Camera::render(Array2D <Rgba> &pixels,
             Ray view_ray(this->eye, px_center.sub(this->eye).norm());
 
             RGB shade = this->shadeAlongRay(view_ray, surfaces, lights,
-                                            MAX_RECURSIVE_LIMIT, -1);
+                                            MAX_RECURSIVE_LIMIT, -1,
+                                            surfaceTree);
 
             px.r = shade.r;
             px.g = shade.g;
             px.b = shade.b;
 
+            /*cout << surfaceTree.
+                        isIntercepted(view_ray,
+                                      surfaces,
+                                      std::numeric_limits<float>::infinity(),
+                                      -1);*/
             progress.log((i + 1) * (j + 1), total_pixels);
         }
     }
     progress.done();
 }
-
-

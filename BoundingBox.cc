@@ -9,6 +9,19 @@
 #include <math.h>
 #include "include/BoundingBox.h"
 
+BoundingBox::BoundingBox() {
+    this->x_min = 0;
+    this->x_max = 0;
+    this->y_min = 0;
+    this->y_max = 0;
+    this->z_min = 0;
+    this->z_max = 0;
+
+    this->setBoundedSurface(-1);
+
+    center = Point();
+}
+
 BoundingBox::BoundingBox(float x_min, float x_max,
                          float y_min, float y_max,
                          float z_min, float z_max) {
@@ -30,7 +43,7 @@ void BoundingBox::setBoundedSurface(int index) {
     this->bounded_surface_idx = index;
 }
 
-int BoundingBox::getBoundedSurface() {
+int BoundingBox::getBoundedSurface() const {
     return this->bounded_surface_idx;
 }
 
@@ -89,3 +102,67 @@ bool BoundingBox::intersects(const Ray &ray) const {
     return max >= t_z_min;
 
 }
+
+/**
+ * @name    groupBoundingBoxes
+ * @brief   Forms a bounding box that engulfs a group of given bounding boxes.
+ *
+ * @param bboxes - a vector of bounding boxes of which a part of them need to
+ *                 be grouped into a single bounding box.
+ * @param start  - the index in the above list representing the starting box
+ * @param end    - the index in the above list representing the last box
+ * @returns        A bounding box formed after grouping all the given
+ *                 bounding boxes.
+ */
+BoundingBox BoundingBox::groupBoundingBoxes(std::vector<BoundingBox> &bboxes,
+                                            int start, int end) {
+    float x_min, x_max, y_min, y_max, z_min, z_max;
+
+    x_min = y_min = z_min = std::numeric_limits<float>::infinity();
+    x_max = y_max = z_max = -std::numeric_limits<float>::infinity();
+
+    for (int i = start; i <= end; i++) {
+        x_min = fminf(x_min, bboxes[i].x_min);
+        y_min = fminf(y_min, bboxes[i].y_min);
+        z_min = fminf(z_min, bboxes[i].z_min);
+
+        x_max = fmaxf(x_max, bboxes[i].x_max);
+        y_max = fmaxf(y_max, bboxes[i].y_max);
+        z_max = fmaxf(z_max, bboxes[i].z_max);
+    }
+
+    return BoundingBox(x_min, x_max, y_min, y_max, z_min, z_max);
+}
+
+/**
+ * @name    compare
+ * @brief   returns a comparision function for two BoundingBoxes given the
+ *          axis along which comparison is to be done.
+ *
+ * @param axis - the axis along which comparision needs to be done
+ *              0 - x-axis
+ *              1 - y-axis
+ *              2 - z-axis
+ *
+ * @returns a lambda function that takes two BoundingBoxes and returns a
+ *          boolean value indicating which BoundingBox is appears first along
+ *          the given axis.
+ */
+std::function<bool(const BoundingBox &, const BoundingBox &)>
+BoundingBox::compare(int axis) {
+
+    if (axis == 2) {
+        return [](const BoundingBox &a, const BoundingBox &b) {
+            return a.z_min < b.z_min;
+        };
+    } else if (axis == 1) {
+        return [](const BoundingBox &a, const BoundingBox &b) {
+            return a.y_min < b.y_min;
+        };
+    } else {
+        return [](const BoundingBox &a, const BoundingBox &b) {
+            return a.x_min < b.x_min;
+        };
+    }
+}
+

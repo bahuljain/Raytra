@@ -9,6 +9,7 @@
 #include "Point.h"
 #include "Surface.h"
 #include "Light.h"
+#include "BVHTree.h"
 #include <ImfRgba.h>
 #include <ImfArray.h>
 
@@ -48,7 +49,8 @@ public:
     RGB shadeAlongRay(const Ray &,
                       const vector<Surface *> &,
                       const vector<Light *> &,
-                      int, int) const;
+                      int, int,
+                      const BVHTree &surfacesTree) const;
 
     void render(Array2D <Rgba> &,
                 const vector<Surface *> &,
