@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
     cam->render(pixels, surfaces, materials, lights);
 
     if (argc == 2)
-        writeRgba("hw1.3.exr", &pixels[0][0], cam->pw, cam->ph);
+        writeRgba("hw1.4.exr", &pixels[0][0], cam->pw, cam->ph);
     else
         writeRgba(argv[2], &pixels[0][0], cam->pw, cam->ph);
 
