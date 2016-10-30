@@ -16,17 +16,22 @@ BVHTree::~BVHTree() {
 }
 
 /**
- * @name makeBVHTree
- * @brief
+ * @name    makeBVHTree
+ * @brief   Given a list of surfaces it creates a Bounding Volume
+ *          Hierarchical Tree structure.
  *
- * @param surfaces -
- * @returns
+ * @param surfaces - a list of surfaces that need to be converted to a BVHTree.
+ * @returns          a BVHTree for the corresponding list of surfaces.
  */
 int BVHTree::makeBVHTree(const vector<Surface *> &surfaces) {
     vector<BoundingBox> bboxes;
 
     cout << "Constructing a bounding box for each surface. ";
 
+    /*
+     * A list of BoundingBox objects are created each corresponding to a
+     * surface.
+     */
     for (unsigned int i = 0; i < surfaces.size(); i++) {
         BoundingBox bbox = surfaces[i]->getBoundingBox();
 
@@ -44,7 +49,27 @@ int BVHTree::makeBVHTree(const vector<Surface *> &surfaces) {
 
 }
 
-BVHNode *BVHTree::makeBVHTree(vector<BoundingBox> &bboxes,
+/**
+ * @name    makeBVHTree
+ * @private used in BVHTree class only
+ * @brief   Given a list of bounding boxes and a section given by the start
+ *          and end indices it forms a BVHTree for the same.
+ *
+ * @param bboxes - list of bounding boxes a part of which needs to be
+ *                 converted to a BVHTree node.
+ * @param start  - start index of the section to be considered in bboxes list.
+ * @param end    - end index of the section to be considered in bboxes list.
+ * @param axis   - the axis along which the bounding boxes need to
+ *                 partially sorted.
+ * @returns        a pointer to the root of the BVHTree constructed.
+ *
+ * @details BoundingBoxes are partially sorted at each step (based on a given
+ * axis which is chosen in a round-robin fashion) and then split into two groups
+ * on which the same process is applied recursively. At each step a new
+ * BoundingBox is created for the entire group until the group contains only
+ * a single BoundingBox.
+ */
+BVHNode* BVHTree::makeBVHTree(vector<BoundingBox> &bboxes,
                               int start, int end, int axis) const {
     BVHNode *node;
 
@@ -70,6 +95,11 @@ BVHNode *BVHTree::makeBVHTree(vector<BoundingBox> &bboxes,
      */
     node->thisBound = BoundingBox::groupBoundingBoxes(bboxes, start, end);
 
+    /**
+     * Partially sort for the middle element.
+     * If odd elements the middle element is the [(n + 1) / 2]th element
+     * If even elements the middle element in the [n / 2 + 1]th element
+     */
     nth_element(bboxes.begin() + start,
                 bboxes.begin() + (end - start + 1) / 2,
                 bboxes.begin() + end + 1,
@@ -77,6 +107,10 @@ BVHNode *BVHTree::makeBVHTree(vector<BoundingBox> &bboxes,
 
     int mid = start + (end - start + 1) / 2;
 
+    /*
+     * Recursively create tree for the left and right partitions from the
+     * middle element.
+     */
     node->left = this->makeBVHTree(bboxes, start, mid - 1, (axis + 1) % 3);
     node->right = this->makeBVHTree(bboxes, mid, end, (axis + 1) % 3);
 
