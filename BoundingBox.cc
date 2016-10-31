@@ -105,7 +105,6 @@ bool BoundingBox::intersects(const Ray &ray) const {
         std::swap(t_z_min, t_z_max);
 
     return max >= t_z_min;
-
 }
 
 /**
@@ -158,19 +157,24 @@ BoundingBox::compare(int axis) {
 
     if (axis == 2) {
         return [](const BoundingBox &a, const BoundingBox &b) {
-            return a.z_min < b.z_min;
+            return a.center.z < b.center.z;
         };
     } else if (axis == 1) {
         return [](const BoundingBox &a, const BoundingBox &b) {
-            return a.y_min < b.y_min;
+            return a.center.y < b.center.y;
         };
     } else {
         return [](const BoundingBox &a, const BoundingBox &b) {
-            return a.x_min < b.x_min;
+            return a.center.x < b.center.x;
         };
     }
 }
 
+/**
+ * @name    printBox
+ * @brief   prints the min and max values of the box along each axis.
+ * @note    used only for debugging purposes.
+ */
 void BoundingBox::printBox() const {
     std::cout << id << ": "
               << "(" << x_min << ", " << x_max << ") "

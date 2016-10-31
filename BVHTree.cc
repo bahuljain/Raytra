@@ -117,21 +117,53 @@ BVHNode* BVHTree::makeBVHTree(vector<BoundingBox> &bboxes,
     return node;
 }
 
-
+/**
+ * @name    isIntercepted
+ * @brief   Determines if a surface intercepts the ray before it reaches it
+ *          final destination.
+ *
+ * @param surfaces - list of all surfaces in the scene.
+ * @param ray   - the ray which needs to be checked if it is intercepted
+ *                by the surface.
+ * @param t_max - the destination of the ray; the ray should be intercepted
+ *                before reaching this point; represented in terms of the
+ *                parameter on the ray.
+ *
+ * @returns a boolean indicating if the ray was intercepted by any surface on
+ *          it's way to the destination.
+ */
 bool BVHTree::isIntercepted(const Ray &ray,
                             const vector<Surface *> &surfaces,
                             float t_max,
                             int origin_surface_idx) const {
-    return this->isIntercepted(this->root,
-                               surfaces, ray, t_max,
-                               origin_surface_idx);
+    return this->_isIntercepted(this->root,
+                                surfaces, ray, t_max,
+                                origin_surface_idx);
 }
 
-bool BVHTree::isIntercepted(const BVHNode *node,
-                            const vector<Surface *> &surfaces,
-                            const Ray &ray,
-                            float t_max,
-                            int origin_surface_idx) const {
+/**
+ * @name    _isIntercepted
+ * @private used internally by BVHTree class
+ * @brief   Determines if a surface intercepts the ray before it reaches it
+ *          final destination.
+ *
+ * @param node  - the BVHTree root node.
+ * @param surfaces - list of all surfaces in the scene.
+ * @param ray   - the ray which needs to be checked if it is intercepted
+ *                by the surface.
+ * @param t_max - the destination of the ray; the ray should be intercepted
+ *                before reaching this point; represented in terms of the
+ *                parameter on the ray.
+ *
+ * @retval TRUE  - A surface intercepts the ray before reaching its destination.
+ * @retval FALSE - A surface doesn't intercept the ray before reaching its
+ *                 destination.
+ */
+bool BVHTree::_isIntercepted(const BVHNode *node,
+                             const vector<Surface *> &surfaces,
+                             const Ray &ray,
+                             float t_max,
+                             int origin_surface_idx) const {
     if (node == NULL)
         return false;
 
@@ -162,10 +194,10 @@ bool BVHTree::isIntercepted(const BVHNode *node,
      * traverse the left and right nodes to find intersections. If either one
      * of the node returns an interception return true.
      */
-    return isIntercepted(node->left, surfaces, ray,
-                         t_max, origin_surface_idx) ||
-           isIntercepted(node->right, surfaces, ray,
-                         t_max, origin_surface_idx);
+    return _isIntercepted(node->left, surfaces, ray,
+                          t_max, origin_surface_idx) ||
+            _isIntercepted(node->right, surfaces, ray,
+                           t_max, origin_surface_idx);
 }
 
 tuple<int, float>
