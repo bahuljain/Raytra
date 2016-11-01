@@ -16,7 +16,10 @@
 class Surface {
 private:
     Material *material;
+
 public:
+    BoundingBox *bbox;
+
     virtual ~Surface() {}
 
     virtual float getIntersection(const Ray &) const = 0;
@@ -25,8 +28,6 @@ public:
 
     virtual bool isFrontFacedTo(const Ray &) const = 0;
 
-    virtual BoundingBox getBoundingBox() const = 0;
-
     void setMaterial(Material *m) {
         this->material = m;
     }
@@ -34,13 +35,16 @@ public:
     bool isReflective() const;
 
     RGB getDiffuseComponent() const;
+
     RGB getReflectiveComponent() const;
+
     RGB getSpecularComponent() const;
 
-    RGB phongShading(const Light *,
-                     const Ray &,
-                     const Ray &,
-                     const Point &) const;
+    RGB phongShading(const Light *light,
+                     const Ray &light_ray,
+                     const Ray &view_ray,
+                     const Point &intersection,
+                     int mode) const;
 };
 
 

@@ -10,17 +10,19 @@
 
 class BVHNode {
 public:
-    BoundingBox thisBound;
+    BoundingBox *thisBound;
 
     BVHNode *left;
     BVHNode *right;
 
     BVHNode() {
-        this->left = NULL;
-        this->right = NULL;
+        this->thisBound = nullptr;
+        this->left = nullptr;
+        this->right = nullptr;
     };
 
     ~BVHNode() {
+        delete this->thisBound;
         delete this->left;
         delete this->right;
     };

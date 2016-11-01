@@ -14,31 +14,47 @@ class BVHTree {
 private:
     BVHNode *root;
 
-    BVHNode* makeBVHTree(std::vector<BoundingBox> &, int, int, int) const;
+    BVHNode *_makeBVHTree(std::vector<BoundingBox *> &, int, int, int) const;
 
     bool _isIntercepted(const BVHNode *node,
-                        const std::vector<Surface *> &,
-                        const Ray &, float, int) const;
+                        const std::vector<Surface *> &surfaces,
+                        const Ray &ray,
+                        float t_max,
+                        int origin_surface_idx,
+                        int mode) const;
 
-    std::tuple<int, float> getClosestSurface(const BVHNode *node,
-                                             const std::vector<Surface *> &,
-                                             const Ray &, int) const;
+    std::tuple<int, float>
+    _getClosestSurface(const BVHNode *node,
+                       const std::vector<Surface *> &surfaces,
+                       const Ray &ray,
+                       int origin_surface_idx,
+                       int mode) const;
 
     void printTree(BVHNode *node) const;
+
+    int _getMaxHeight(BVHNode *node) const;
+
 public:
 
     BVHTree();
 
     ~BVHTree();
 
-    int makeBVHTree(const std::vector<Surface *> &);
+    int makeBVHTree(const std::vector<Surface *> &surfaces);
 
-    bool isIntercepted(const Ray &,
-                       const std::vector<Surface *> &,
-                       float, int) const;
+    bool isIntercepted(const Ray &ray,
+                       const std::vector<Surface *> &surfaces,
+                       float t_max,
+                       int origin_surface_idx,
+                       int mode) const;
 
-    std::tuple<int, float> getClosestSurface(const std::vector<Surface *> &,
-                                             const Ray &, int) const;
+    std::tuple<int, float>
+    getClosestSurface(const std::vector<Surface *> &surfaces,
+                      const Ray &ray,
+                      int origin_surface_idx,
+                      int mode) const;
+
+    int getMaxHeight();
 
     void printTree() const;
 

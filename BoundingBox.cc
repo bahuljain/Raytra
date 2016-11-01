@@ -118,24 +118,24 @@ bool BoundingBox::intersects(const Ray &ray) const {
  * @returns        A bounding box formed after grouping all the given
  *                 bounding boxes.
  */
-BoundingBox BoundingBox::groupBoundingBoxes(std::vector<BoundingBox> &bboxes,
-                                            int start, int end) {
+BoundingBox *BoundingBox::groupBoundingBoxes(std::vector<BoundingBox *> &bboxes,
+                                             int start, int end) {
     float x_min, x_max, y_min, y_max, z_min, z_max;
 
     x_min = y_min = z_min = std::numeric_limits<float>::infinity();
     x_max = y_max = z_max = -std::numeric_limits<float>::infinity();
 
     for (int i = start; i <= end; i++) {
-        x_min = fminf(x_min, bboxes[i].x_min);
-        y_min = fminf(y_min, bboxes[i].y_min);
-        z_min = fminf(z_min, bboxes[i].z_min);
+        x_min = fminf(x_min, bboxes[i]->x_min);
+        y_min = fminf(y_min, bboxes[i]->y_min);
+        z_min = fminf(z_min, bboxes[i]->z_min);
 
-        x_max = fmaxf(x_max, bboxes[i].x_max);
-        y_max = fmaxf(y_max, bboxes[i].y_max);
-        z_max = fmaxf(z_max, bboxes[i].z_max);
+        x_max = fmaxf(x_max, bboxes[i]->x_max);
+        y_max = fmaxf(y_max, bboxes[i]->y_max);
+        z_max = fmaxf(z_max, bboxes[i]->z_max);
     }
 
-    return BoundingBox(x_min, x_max, y_min, y_max, z_min, z_max);
+    return new BoundingBox(x_min, x_max, y_min, y_max, z_min, z_max);
 }
 
 /**
@@ -152,20 +152,20 @@ BoundingBox BoundingBox::groupBoundingBoxes(std::vector<BoundingBox> &bboxes,
  *          boolean value indicating which BoundingBox is appears first along
  *          the given axis.
  */
-std::function<bool(const BoundingBox &, const BoundingBox &)>
+std::function<bool(BoundingBox *, BoundingBox *)>
 BoundingBox::compare(int axis) {
 
     if (axis == 2) {
-        return [](const BoundingBox &a, const BoundingBox &b) {
-            return a.center.z < b.center.z;
+        return [](BoundingBox *a, BoundingBox *b) -> bool {
+            return a->center.z < b->center.z;
         };
     } else if (axis == 1) {
-        return [](const BoundingBox &a, const BoundingBox &b) {
-            return a.center.y < b.center.y;
+        return [](BoundingBox *a, BoundingBox *b) -> bool {
+            return a->center.y < b->center.y;
         };
     } else {
-        return [](const BoundingBox &a, const BoundingBox &b) {
-            return a.center.x < b.center.x;
+        return [](BoundingBox *a, BoundingBox *b) -> bool {
+            return a->center.x < b->center.x;
         };
     }
 }
@@ -180,5 +180,72 @@ void BoundingBox::printBox() const {
               << "(" << x_min << ", " << x_max << ") "
               << "(" << y_min << ", " << y_max << ") "
               << "(" << z_min << ", " << z_max << ") " << std::endl;
+}
+
+bool BoundingBox::isFrontFacedTo(const Ray &ray) const {
+    return true;
+}
+
+Vector BoundingBox::getSurfaceNormal(const Point &p) const {
+    if (p.x == x_min)
+        return Vector(-1, 0, 0);
+
+    if (p.x == x_max)
+        return Vector(1, 0, 0);
+
+    if (p.y == y_min)
+        return Vector(0, -1, 0);
+
+    if (p.y == y_max)
+        return Vector(0, 1, 0);
+
+    if (p.z == z_min)
+        return Vector(0, 0, -1);
+
+    return Vector(0, 0, 1);
+}
+
+float BoundingBox::getIntersection(const Ray &ray) const {
+    float t_x_min, t_x_max, t_y_min, t_y_max, t_z_min, t_z_max;
+    float t_min = 0;
+    float t_max = std::numeric_limits<float>::infinity();
+
+    if (ray.direction.i == 0 && (ray.origin.x < x_min || ray.origin.x > x_max))
+        return -1;
+
+    t_x_min = (x_min - ray.origin.x) / ray.direction.i;
+    t_x_max = (x_max - ray.origin.x) / ray.direction.i;
+
+    if (ray.direction.i < 0)
+        std::swap(t_x_min, t_x_max);
+
+    t_min = fmaxf(t_min, t_x_min);
+    t_max = fminf(t_max, t_x_max);
+
+    if (ray.direction.j == 0 && (ray.origin.y < y_min || ray.origin.y > y_max))
+        return -1;
+
+    t_y_min = (y_min - ray.origin.y) / ray.direction.j;
+    t_y_max = (y_max - ray.origin.y) / ray.direction.j;
+
+    if (ray.direction.j < 0)
+        std::swap(t_y_min, t_y_max);
+
+    if (t_y_min > t_max)
+        return -1;
+
+    t_min = fmaxf(t_min, t_y_min);
+    t_max = fminf(t_max, t_y_max);
+
+    if (ray.direction.k == 0 && (ray.origin.z < z_min || ray.origin.z > z_max))
+        return -1;
+
+    t_z_min = (z_min - ray.origin.z) / ray.direction.k;
+    t_z_max = (z_max - ray.origin.z) / ray.direction.k;
+
+    if (ray.direction.k < 0)
+        std::swap(t_z_min, t_z_max);
+
+    return (t_z_min > t_max) ? -1 : fmaxf(t_min, t_z_min);
 }
 

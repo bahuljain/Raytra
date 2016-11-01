@@ -8,6 +8,10 @@
 Sphere::Sphere(float x, float y, float z, float r) {
     this->center = Point(x, y, z);
     this->radius = r;
+
+    this->bbox = new BoundingBox(center.x - radius, center.x + radius,
+                                 center.y - radius, center.y + radius,
+                                 center.z - radius, center.z + radius);
 }
 
 float Sphere::getIntersection(const Ray &ray) const {
@@ -35,10 +39,4 @@ Vector Sphere::getSurfaceNormal(const Point &p) const {
  */
 bool Sphere::isFrontFacedTo(const Ray &ray) const {
     return true;
-}
-
-BoundingBox Sphere::getBoundingBox() const {
-    return BoundingBox(center.x - radius, center.x + radius,
-                       center.y - radius, center.y + radius,
-                       center.z - radius, center.z + radius);
 }

@@ -5,8 +5,6 @@ m 0.7 0.0 0.0 0.5 0.5 0.5 100. 0.0 0.0 0.0
 
 / one sphere in the above material
 s 0. 13.67 -62.57 10.
-s 80. 23.67 -92.57 10.
-
 
 / a grey material with no specular, no reflection
 m 0.5 0.5 0.5 0.0 0.0 0.0 0.0 0.0 0.0 0.0

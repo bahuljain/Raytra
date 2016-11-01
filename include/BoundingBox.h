@@ -27,19 +27,27 @@ public:
 
     BoundingBox();
 
-    BoundingBox(float, float, float, float, float, float);
+    BoundingBox(float x_min, float x_max,
+                float y_min, float y_max,
+                float z_min, float z_max);
 
     void setBoundedSurface(int index);
 
-    int getBoundedSurface() const ;
+    int getBoundedSurface() const;
 
-    bool intersects(const Ray &) const;
+    bool intersects(const Ray &ray) const;
 
-    static BoundingBox groupBoundingBoxes(std::vector<BoundingBox> &,
-                                          int, int);
+    float getIntersection(const Ray &ray) const;
 
-    static std::function<bool(const BoundingBox &,
-                              const BoundingBox &)> compare(int);
+    Vector getSurfaceNormal(const Point &p) const;
+
+    bool isFrontFacedTo(const Ray &ray) const;
+
+    static BoundingBox *groupBoundingBoxes(std::vector<BoundingBox *> &,
+                                           int, int);
+
+    static std::function<bool(BoundingBox *,
+                              BoundingBox *)> compare(int);
 
     void printBox() const;
 

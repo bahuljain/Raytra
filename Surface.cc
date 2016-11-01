@@ -23,7 +23,8 @@
 RGB Surface::phongShading(const Light *light,
                           const Ray &light_ray,
                           const Ray &view_ray,
-                          const Point &intersection) const {
+                          const Point &intersection,
+                          int mode) const {
 
     float r, g, b, d2, diffuse_factor, specular_factor;
     Vector v, normal, I, bisector;
@@ -36,20 +37,22 @@ RGB Surface::phongShading(const Light *light,
     }
 
     /* Vector normal to the surface at the given intersection point */
-    normal = this->getSurfaceNormal(intersection);
+    normal = (mode == 0)
+             ? this->getSurfaceNormal(intersection)
+             : this->bbox->getSurfaceNormal(intersection);
 
     /*
      * TODO: rethink if necessary to do it in this particular way.
      * If the light hits the back side of the surface then simply give it a
      * unique diffuse and specular values and invert the surface normal.
      */
-    if (this->isFrontFacedTo(view_ray)) {
+    if (mode == 1 || this->isFrontFacedTo(view_ray)) {
         material_diffuse = material->diffuse;
         material_specular = material->specular;
     } else {
         material_diffuse = RGB(1, 1, 0);
         material_specular = RGB(0, 0, 0);
-        normal = - normal;
+        normal = -normal;
     }
 
     /* Vector to the viewer */

@@ -8,7 +8,6 @@
 #include <sstream>
 #include "include/Parser.h"
 #include "include/Sphere.h"
-#include "include/Plane.h"
 #include "include/Triangle.h"
 #include "include/PointLight.h"
 
@@ -235,25 +234,8 @@ void parseSceneFile(char *filename,
                 triangle->setMaterial(lastMaterial);
 
                 surfaces.push_back(triangle);
-
                 break;
             }
-            case 'p': {  // plane
-                /*
-                float nx, ny, nz, d;
-
-                nx = getTokenAsFloat(line, 1);
-                ny = getTokenAsFloat(line, 2);
-                nz = getTokenAsFloat(line, 3);
-                d = getTokenAsFloat(line, 4);
-
-                Plane *plane = new Plane(nx, ny, nz, d);
-                plane->setMaterial(lastMaterial);
-
-                surfaces.push_back(plane);
-                */
-            }
-                break;
 
             case 'c': {  // camera
                 float x, y, z, vx, vy, vz, d, iw, ih;
