@@ -226,7 +226,7 @@ void Camera::render(Array2D <Rgba> &pixels,
 
     surfaceTree.makeBVHTree(surfaces);
     cout << "BVHTree Height: " << surfaceTree.getMaxHeight() << endl << endl;
-    surfaceTree.printTree();
+//    surfaceTree.printTree();
 
     ProgressBar progress = ProgressBar();
     progress.start();

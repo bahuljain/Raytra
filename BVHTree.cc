@@ -307,7 +307,7 @@ int BVHTree::_getMaxHeight(BVHNode *node) const {
     if (node == nullptr)
         return 0;
 
-    node->thisBound->printBox();
+//    node->thisBound->printBox();
     return 1 + max(this->_getMaxHeight(node->left),
                    this->_getMaxHeight(node->right));
 }
