@@ -19,26 +19,8 @@ using namespace Imf;
 static const int MAX_RECURSIVE_LIMIT = 20;
 
 class Camera {
-public:
-    Point eye;
-    Vector w;
-    Vector u;
-    Vector v;
-
-    /* Focal length */
-    float d;
-    int pw, ph;
-
-    float left, right, top, bottom;
-
-    Camera();
-
-    void setValues(float, float, float,
-                   float, float, float,
-                   float, float, float,
-                   int, int);
-
-    Point getPixelCenter(int, int, float, float) const;
+private:
+    Point _getPixelCenter(int, int, float, float) const;
 
     tuple<int, float> getClosestSurface(const BVHTree &surfacesTree,
                                         const vector<Surface *> &surfaces,
@@ -58,6 +40,27 @@ public:
                       int origin_surface_idx,
                       const BVHTree &surfacesTree,
                       int mode) const;
+
+public:
+    Point eye;
+    Vector w;
+    Vector u;
+    Vector v;
+
+    /* Focal length */
+    float d;
+    int pw, ph;
+
+    float left, right, top, bottom;
+
+    Camera();
+
+    void setValues(float, float, float,
+                   float, float, float,
+                   float, float, float,
+                   int, int);
+
+
 
     void render(Array2D <Rgba> &,
                 const vector<Surface *> &,

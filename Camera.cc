@@ -73,8 +73,8 @@ void Camera::setValues(float x, float y, float z,
  * @param height    - the height of the image plane
  * @returns         - the pixel center co-ordinates for the given pixel
  */
-Point Camera::getPixelCenter(int i, int j,
-                             float width, float height) const {
+Point Camera::_getPixelCenter(int i, int j,
+                              float width, float height) const {
     Point center;
 
     float x = left + width * (i + 0.5f) / pw;
@@ -296,7 +296,7 @@ void Camera::render(Array2D <Rgba> &pixels,
             px.b = 0;
             px.a = 1;
 
-            px_center = this->getPixelCenter(j, i, w, h);
+            px_center = this->_getPixelCenter(j, i, w, h);
 
             /* TODO:
              * rethink whether the view_ray should originate from camera
