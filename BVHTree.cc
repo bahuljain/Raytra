@@ -22,6 +22,7 @@ BVHTree::~BVHTree() {
  *
  * @param surfaces - a list of surfaces that need to be converted to a BVHTree.
  * @returns          a BVHTree for the corresponding list of surfaces.
+ * @see     _makeBVHTree function
  */
 int BVHTree::makeBVHTree(const vector<Surface *> &surfaces) {
     vector<BoundingBox *> bboxes;
@@ -118,16 +119,7 @@ BVHNode *BVHTree::_makeBVHTree(vector<BoundingBox *> &bboxes,
 
 /**
  * @name    isIntercepted
- * @brief   Determines if a surface intercepts the ray before it reaches it
- *          final destination.
- *
- * @param surfaces - list of all surfaces in the scene.
- * @param ray   - the ray which needs to be checked if it is intercepted
- *                by the surface.
- * @param t_max - the destination of the ray; the ray should be intercepted
- *                before reaching this point; represented in terms of the
- *                parameter on the ray.
- *
+ * @see     _isIntercepted
  * @returns a boolean indicating if the ray was intercepted by any surface on
  *          it's way to the destination.
  */
@@ -144,7 +136,7 @@ bool BVHTree::isIntercepted(const Ray &ray,
 
 /**
  * @name    _isIntercepted
- * @private used internally by BVHTree class
+ * @private used internally by BVHTree class (called by inIntercepted)
  * @brief   Determines if a surface intercepts the ray before it reaches it
  *          final destination.
  *

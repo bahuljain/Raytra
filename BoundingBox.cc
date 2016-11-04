@@ -52,60 +52,6 @@ int BoundingBox::getBoundedSurface() const {
     return this->bounded_surface_idx;
 }
 
-/**
- * @name intersects
- * @brief determines if a ray intersects with a bounding box or no.
- *
- * @param ray    - the ray with which intersection needs to be checked.
- * @retval TRUE  - when ray intersects with bounding box.
- * @retval FALSE - when ray doesn't intersect with bounding box.
- *
- * @note - remember the case when ray is parallel to any of the axes.
- * @note - if ray direction along any axis is negative the max side will be
- *         struck first on that axis. In such a case the intersection points
- *         corresponding to the min and max planes should be swapped with
- *         each other.
- */
-bool BoundingBox::intersects(const Ray &ray) const {
-    float t_x_min, t_x_max, t_y_min, t_y_max, t_z_min, t_z_max;
-    float max = std::numeric_limits<float>::infinity();
-
-    if (ray.direction.i == 0 && (ray.origin.x < x_min || ray.origin.x > x_max))
-        return false;
-
-    t_x_min = (x_min - ray.origin.x) / ray.direction.i;
-    t_x_max = (x_max - ray.origin.x) / ray.direction.i;
-
-    if (ray.direction.i < 0)
-        std::swap(t_x_min, t_x_max);
-
-    max = fminf(max, t_x_max);
-
-    if (ray.direction.j == 0 && (ray.origin.y < y_min || ray.origin.y > y_max))
-        return false;
-
-    t_y_min = (y_min - ray.origin.y) / ray.direction.j;
-    t_y_max = (y_max - ray.origin.y) / ray.direction.j;
-
-    if (ray.direction.j < 0)
-        std::swap(t_y_min, t_y_max);
-
-    if (t_y_min > max)
-        return false;
-
-    max = fminf(max, t_y_max);
-
-    if (ray.direction.k == 0 && (ray.origin.z < z_min || ray.origin.z > z_max))
-        return false;
-
-    t_z_min = (z_min - ray.origin.z) / ray.direction.k;
-    t_z_max = (z_max - ray.origin.z) / ray.direction.k;
-
-    if (ray.direction.k < 0)
-        std::swap(t_z_min, t_z_max);
-
-    return max >= t_z_min;
-}
 
 /**
  * @name    groupBoundingBoxes
@@ -205,6 +151,20 @@ Vector BoundingBox::getSurfaceNormal(const Point &p) const {
     return Vector(0, 0, 1);
 }
 
+/**
+ * @name intersects
+ * @brief determines the intersection point of a ray with the bounding box
+ *
+ * @param ray    - the ray with which intersection needs to be checked.
+ * @returns      - the parameterized location of the intersection point on
+ *                 the ray.
+ *
+ * @note - remember the case when ray is parallel to any of the axes.
+ * @note - if ray direction along any axis is negative the max side will be
+ *         struck first on that axis. In such a case the intersection points
+ *         corresponding to the min and max planes should be swapped with
+ *         each other.
+ */
 float BoundingBox::getIntersection(const Ray &ray) const {
     float t_x_min, t_x_max, t_y_min, t_y_max, t_z_min, t_z_max;
     float t_min = 0;
@@ -248,4 +208,3 @@ float BoundingBox::getIntersection(const Ray &ray) const {
 
     return (t_z_min > t_max) ? -1 : fmaxf(t_min, t_z_min);
 }
-

@@ -35,8 +35,6 @@ public:
 
     int getBoundedSurface() const;
 
-    bool intersects(const Ray &ray) const;
-
     float getIntersection(const Ray &ray) const;
 
     Vector getSurfaceNormal(const Point &p) const;
