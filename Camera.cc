@@ -88,11 +88,10 @@ Point Camera::_getPixelCenter(int i, int j,
     return center;
 }
 
-tuple<int, float> Camera::getClosestSurface(
-        const BVHTree &surfacesTree,
-        const vector<Surface *> &surfaces,
-        const Ray &ray,
-        int origin_surface) const {
+tuple<int, float> Camera::getClosestSurface(const BVHTree &surfacesTree,
+                                            const vector<Surface *> &surfaces,
+                                            const Ray &ray, int origin_surface,
+                                            int mode) const {
 
     float min_t = numeric_limits<float>::infinity();
     int min_i = -1;
@@ -114,12 +113,11 @@ tuple<int, float> Camera::getClosestSurface(
     return make_tuple(min_i, min_t);
 }
 
-bool Camera::isIntercepted(
-        const BVHTree &surfacesTree,
-        const vector<Surface *> &surfaces,
-        const Ray &ray,
-        float t_max,
-        int origin_surface) const {
+bool Camera::isIntercepted(const BVHTree &surfacesTree,
+                           const vector<Surface *> &surfaces,
+                           const Ray &ray,
+                           float t_max, int origin_surface,
+                           int mode) const {
     std::vector<int> intersection_indices;
     surfacesTree.intercepts(ray, intersection_indices);
 
@@ -167,12 +165,12 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
         return shade;
 
     /* Get closest surface along the ray */
-    /*tuple<int, float> closest_surface =
-            this->getClosestSurface(surfacesTree, surfaces, view_ray,
-                                    origin_surface_idx);*/
     tuple<int, float> closest_surface =
+            this->getClosestSurface(surfacesTree, surfaces, view_ray,
+                                    origin_surface_idx, mode);
+    /*tuple<int, float> closest_surface =
             surfacesTree.getClosestSurface(surfaces, view_ray,
-                                           origin_surface_idx, mode);
+                                           origin_surface_idx, mode);*/
 
     int closest_surface_idx = get<0>(closest_surface);
     float t = get<1>(closest_surface);
@@ -212,10 +210,10 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
              * to the intersection point then compute the diffuse and specular
              * shading on the surface.
              */
-            if (!surfacesTree.isIntercepted(light_ray, surfaces, t_max,
-                                            closest_surface_idx, mode)) {
-                /*if (!this->isIntercepted(surfacesTree, surfaces, light_ray, t_max,
-                                         closest_surface_idx)) {*/
+            /*if (!surfacesTree.isIntercepted(light_ray, surfaces, t_max,
+                                            closest_surface_idx, mode)) {*/
+            if (!this->isIntercepted(surfacesTree, surfaces, light_ray, t_max,
+                                     closest_surface_idx, mode)) {
                 shade.addRGB(surface->phongShading(light, light_ray, view_ray,
                                                    intersection, mode));
             }
@@ -265,7 +263,7 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
  * @param materials - a vector of all the materials used.
  * @param lights    - a vector of all the lights in the scene.
  */
-void Camera::render(Array2D <Rgba> &pixels,
+void Camera::render(Array2D<Rgba> &pixels,
                     const vector<Surface *> &surfaces,
                     const vector<Material *> &materials,
                     const vector<Light *> &lights) const {

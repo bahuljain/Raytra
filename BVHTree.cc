@@ -304,6 +304,7 @@ int BVHTree::_getMaxHeight(BVHNode *node) const {
                    this->_getMaxHeight(node->right));
 }
 
+
 void BVHTree::intercepts(const Ray &ray,
                          std::vector<int> &intersection_indices) const {
     this->_intercepts(this->root, ray, intersection_indices);
