@@ -34,6 +34,10 @@ private:
 
     int _getMaxHeight(BVHNode *node) const;
 
+    void _intercepts(const BVHNode *node,
+                     const Ray &ray,
+                     std::vector<int> &intersection_indices) const;
+
 public:
 
     BVHTree();
@@ -47,6 +51,9 @@ public:
                        float t_max,
                        int origin_surface_idx,
                        int mode) const;
+
+    void intercepts(const Ray &ray,
+                    std::vector<int> &intersection_indices) const;
 
     std::tuple<int, float>
     getClosestSurface(const std::vector<Surface *> &surfaces,

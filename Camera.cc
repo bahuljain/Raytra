@@ -88,6 +88,53 @@ Point Camera::getPixelCenter(int i, int j,
     return center;
 }
 
+tuple<int, float> Camera::getClosestSurface(
+        const BVHTree &surfacesTree,
+        const vector<Surface *> &surfaces,
+        const Ray &ray,
+        int origin_surface) const {
+
+    float min_t = numeric_limits<float>::infinity();
+    int min_i = -1;
+
+    std::vector<int> intersection_indices;
+
+    surfacesTree.intercepts(ray, intersection_indices);
+
+    for (int index: intersection_indices) {
+        if (index != origin_surface) {
+            float t = surfaces[index]->getIntersection(ray);
+
+            if (t >= 0 && t < min_t) {
+                min_t = t;
+                min_i = index;
+            }
+        }
+    }
+    return make_tuple(min_i, min_t);
+}
+
+bool Camera::isIntercepted(
+        const BVHTree &surfacesTree,
+        const vector<Surface *> &surfaces,
+        const Ray &ray,
+        float t_max,
+        int origin_surface) const {
+    std::vector<int> intersection_indices;
+    surfacesTree.intercepts(ray, intersection_indices);
+
+    for (int index: intersection_indices) {
+        if (index != origin_surface) {
+            float t = surfaces[index]->getIntersection(ray);
+
+            if (t >= 0 && t < t_max) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 /**
  * @name    shadeAlongRay
  * @brief   Computes the shading along the given view ray
@@ -120,6 +167,9 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
         return shade;
 
     /* Get closest surface along the ray */
+    /*tuple<int, float> closest_surface =
+            this->getClosestSurface(surfacesTree, surfaces, view_ray,
+                                    origin_surface_idx);*/
     tuple<int, float> closest_surface =
             surfacesTree.getClosestSurface(surfaces, view_ray,
                                            origin_surface_idx, mode);
@@ -163,43 +213,46 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
              * shading on the surface.
              */
             if (!surfacesTree.isIntercepted(light_ray, surfaces, t_max,
-                                            closest_surface_idx, mode))
+                                            closest_surface_idx, mode)) {
+                /*if (!this->isIntercepted(surfacesTree, surfaces, light_ray, t_max,
+                                         closest_surface_idx)) {*/
                 shade.addRGB(surface->phongShading(light, light_ray, view_ray,
                                                    intersection, mode));
-        }
-
-        /*
-         * If the surface is reflective and is front-faced with respect to
-         * the view ray then compute shading from the reflected ray.
-         */
-        bool isFrontFaced = (mode == 0 && surface->isFrontFacedTo(view_ray)) ||
-                            (mode == 1);
-        if (surface->isReflective() && isFrontFaced) {
-            Vector normal = (mode == 0)
-                            ? surface->getSurfaceNormal(intersection)
-                            : surface->bbox->getSurfaceNormal(intersection);
+            }
 
             /*
-             * Directional vector generated when the view_ray reflects off the
-             * surface.
+             * If the surface is reflective and is front-faced with respect to
+             * the view ray then compute shading from the reflected ray.
              */
-            Vector reflected_vector = view_ray.direction
-                    .plus(-normal.times(2 * view_ray.direction.dot(normal)))
-                    .norm();
+            bool isFrontFaced =
+                    (mode == 0 && surface->isFrontFacedTo(view_ray)) ||
+                    (mode == 1);
+            if (surface->isReflective() && isFrontFaced) {
+                Vector normal = (mode == 0)
+                                ? surface->getSurfaceNormal(intersection)
+                                : surface->bbox->getSurfaceNormal(intersection);
 
-            Ray reflected_ray(intersection, reflected_vector);
+                /*
+                 * Directional vector generated when the view_ray reflects off the
+                 * surface.
+                 */
+                Vector reflected_vector = view_ray.direction
+                        .plus(-normal.times(2 * view_ray.direction.dot(normal)))
+                        .norm();
 
-            /* The shade obtained from the ray that reflected off the surface. */
-            RGB reflection = this->shadeAlongRay(reflected_ray, surfaces,
-                                                 lights, refl_limit - 1,
-                                                 closest_surface_idx,
-                                                 surfacesTree, mode);
+                Ray reflected_ray(intersection, reflected_vector);
 
-            shade.addRGB(
-                    reflection.scaleRGB(surface->getReflectiveComponent()));
+                /* The shade obtained from the ray that reflected off the surface. */
+                RGB reflection = this->shadeAlongRay(reflected_ray, surfaces,
+                                                     lights, refl_limit - 1,
+                                                     closest_surface_idx,
+                                                     surfacesTree, mode);
+
+                shade.addRGB(
+                        reflection.scaleRGB(surface->getReflectiveComponent()));
+            }
         }
     }
-
     return shade;
 }
 
@@ -225,7 +278,8 @@ void Camera::render(Array2D <Rgba> &pixels,
     pixels.resizeErase(this->ph, this->pw);
 
     surfaceTree.makeBVHTree(surfaces);
-    cout << "BVHTree Height: " << surfaceTree.getMaxHeight() << endl << endl;
+    cout << "BVHTree Height: " << surfaceTree.getMaxHeight() << endl
+         << endl;
 //    surfaceTree.printTree();
 
     ProgressBar progress = ProgressBar();

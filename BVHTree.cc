@@ -311,3 +311,26 @@ int BVHTree::_getMaxHeight(BVHNode *node) const {
     return 1 + max(this->_getMaxHeight(node->left),
                    this->_getMaxHeight(node->right));
 }
+
+void BVHTree::intercepts(const Ray &ray,
+                         std::vector<int> &intersection_indices) const {
+    this->_intercepts(this->root, ray, intersection_indices);
+}
+
+void BVHTree::_intercepts(const BVHNode *node,
+                          const Ray &ray,
+                          std::vector<int> &intersection_indices) const {
+    if (node == nullptr)
+        return;
+
+    if (node->thisBound->getIntersection(ray) == -1)
+        return;
+
+    if (node->left == nullptr && node->right == nullptr) {
+        intersection_indices.push_back(node->thisBound->getBoundedSurface());
+        return;
+    }
+
+    this->_intercepts(node->left, ray, intersection_indices);
+    this->_intercepts(node->right, ray, intersection_indices);
+}

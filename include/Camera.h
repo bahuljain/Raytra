@@ -40,6 +40,17 @@ public:
 
     Point getPixelCenter(int, int, float, float) const;
 
+    tuple<int, float> getClosestSurface(const BVHTree &surfacesTree,
+                                        const vector<Surface *> &surfaces,
+                                        const Ray &ray,
+                                        int origin_surface) const;
+
+    bool isIntercepted(const BVHTree &surfacesTree,
+                       const vector<Surface *> &surfaces,
+                       const Ray &ray,
+                       float t_max,
+                       int origin_surface) const;
+
     RGB shadeAlongRay(const Ray &view_ray,
                       const vector<Surface *> &surfaces,
                       const vector<Light *> &lights,
