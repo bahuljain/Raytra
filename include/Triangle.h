@@ -20,11 +20,11 @@ public:
 
     ~Triangle() {};
 
-    virtual float getIntersection(const Ray &) const;
+    float getIntersection(const Ray &) const;
 
-    virtual Vector getSurfaceNormal(const Point &) const;
+    Vector getSurfaceNormal(const Point &) const;
 
-    virtual bool isFrontFacedTo(const Ray &) const;
+    bool isFrontFacedTo(const Ray &) const;
 };
 
 
