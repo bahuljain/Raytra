@@ -62,10 +62,11 @@ public:
                    int, int);
 
 
-    void render(Array2D <Rgba> &,
-                const vector<Surface *> &,
-                const vector<Material *> &,
-                const vector<Light *> &) const;
+    void render(Array2D <Rgba> &pixels,
+                const vector<Surface *> &surfaces,
+                const vector<Material *> &materials,
+                const vector<Light *> &lights,
+                int mode) const;
 };
 
 

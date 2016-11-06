@@ -88,46 +88,76 @@ Point Camera::_getPixelCenter(int i, int j,
     return center;
 }
 
+/**
+ * @name    getClosestSurface
+ * @brief   Finds the closest surface to the camera along a given ray.
+ *
+ * @param surfacesTree   -
+ * @param surfaces       - a vector of all the surfaces in the scene.
+ * @param ray            - a ray originating from the camera and passing
+ *                         through the pixel center of the image.
+ * @param origin_surface - the surface from which the ray has originated and
+ *                         therefore needs to be ignored if an intersection is
+ *                         found with it.
+ *
+ * @returns        - a tuple containing the index of the closest intersecting
+ *                   surface and the parameter representing the intersection
+ *                   point on the view ray.
+ */
 tuple<int, float> Camera::getClosestSurface(const BVHTree &surfacesTree,
                                             const vector<Surface *> &surfaces,
                                             const Ray &ray, int origin_surface,
                                             int mode) const {
+    if (mode != 0)
+        return surfacesTree.getClosestSurface(surfaces, ray,
+                                              origin_surface, mode);
 
     float min_t = numeric_limits<float>::infinity();
     int min_i = -1;
 
-    std::vector<int> intersection_indices;
-
-    surfacesTree.intercepts(ray, intersection_indices);
-
-    for (int index: intersection_indices) {
-        if (index != origin_surface) {
-            float t = surfaces[index]->getIntersection(ray);
+    for (unsigned int i = 0; i < surfaces.size(); i++) {
+        if ((int) i != origin_surface) {
+            float t = surfaces[i]->getIntersection(ray);
 
             if (t >= 0 && t < min_t) {
                 min_t = t;
-                min_i = index;
+                min_i = i;
             }
         }
     }
     return make_tuple(min_i, min_t);
 }
 
+/**
+ * @name    isIntercepted
+ * @brief   Determines if a surface intercepts the ray before it reaches it
+ *          final destination.
+ *
+ * @param surfacesTree -
+ * @param ray   - the ray which needs to be checked if it is intercepted
+ *                by the surface.
+ * @param t_max - the destination of the ray; the ray should be intercepted
+ *                before reaching this point; represented in terms of the
+ *                parameter on the ray.
+ *
+ * @retval TRUE  - A surface intercepts the ray before reaching its destination.
+ * @retval FALSE - A surface doesn't intercept the ray before reaching its
+ *                 destination.
+ */
 bool Camera::isIntercepted(const BVHTree &surfacesTree,
                            const vector<Surface *> &surfaces,
                            const Ray &ray,
                            float t_max, int origin_surface,
                            int mode) const {
-    std::vector<int> intersection_indices;
-    surfacesTree.intercepts(ray, intersection_indices);
+    if (mode != 0)
+        return surfacesTree.isIntercepted(ray, surfaces, t_max,
+                                          origin_surface, mode);
 
-    for (int index: intersection_indices) {
-        if (index != origin_surface) {
-            float t = surfaces[index]->getIntersection(ray);
+    for (unsigned int i = 0; i < surfaces.size(); i++) {
+        if ((int) i != origin_surface) {
+            float t = surfaces[i]->getIntersection(ray);
 
-            if (t >= 0 && t < t_max) {
-                return true;
-            }
+            if (t >= 0 && t < t_max) return true;
         }
     }
     return false;
@@ -168,9 +198,6 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
     tuple<int, float> closest_surface =
             this->getClosestSurface(surfacesTree, surfaces, view_ray,
                                     origin_surface_idx, mode);
-    /*tuple<int, float> closest_surface =
-            surfacesTree.getClosestSurface(surfaces, view_ray,
-                                           origin_surface_idx, mode);*/
 
     int closest_surface_idx = get<0>(closest_surface);
     float t = get<1>(closest_surface);
@@ -210,25 +237,22 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
              * to the intersection point then compute the diffuse and specular
              * shading on the surface.
              */
-            /*if (!surfacesTree.isIntercepted(light_ray, surfaces, t_max,
-                                            closest_surface_idx, mode)) {*/
             if (!this->isIntercepted(surfacesTree, surfaces, light_ray, t_max,
-                                     closest_surface_idx, mode)) {
+                                     closest_surface_idx, mode))
                 shade.addRGB(surface->phongShading(light, light_ray, view_ray,
                                                    intersection, mode));
-            }
 
             /*
              * If the surface is reflective and is front-faced with respect to
              * the view ray then compute shading from the reflected ray.
              */
-            bool isFrontFaced =
-                    (mode == 0 && surface->isFrontFacedTo(view_ray)) ||
-                    (mode == 1);
+            bool isFrontFaced = ((mode == 0 || mode == -1) &&
+                                 surface->isFrontFacedTo(view_ray)) ||
+                                (mode == 1);
             if (surface->isReflective() && isFrontFaced) {
-                Vector normal = (mode == 0)
-                                ? surface->getSurfaceNormal(intersection)
-                                : surface->bbox->getSurfaceNormal(intersection);
+                Vector normal = (mode == 1)
+                                ? surface->bbox->getSurfaceNormal(intersection)
+                                : surface->getSurfaceNormal(intersection);
 
                 /*
                  * Directional vector generated when the view_ray reflects off the
@@ -263,10 +287,11 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
  * @param materials - a vector of all the materials used.
  * @param lights    - a vector of all the lights in the scene.
  */
-void Camera::render(Array2D<Rgba> &pixels,
+void Camera::render(Array2D <Rgba> &pixels,
                     const vector<Surface *> &surfaces,
                     const vector<Material *> &materials,
-                    const vector<Light *> &lights) const {
+                    const vector<Light *> &lights,
+                    int mode) const {
 
     float w = this->right - this->left;
     float h = this->top - this->bottom;
@@ -274,6 +299,13 @@ void Camera::render(Array2D<Rgba> &pixels,
     BVHTree surfaceTree;
 
     pixels.resizeErase(this->ph, this->pw);
+
+    if (mode == 0)
+        cout << "Rendering without using acceleration structures" << endl;
+    if (mode == -1)
+        cout << "Rendering using acceleration structures" << endl;
+    else
+        cout << "Rendering only bounding boxes" << endl;
 
     surfaceTree.makeBVHTree(surfaces);
     cout << "BVHTree Height: " << surfaceTree.getMaxHeight() << endl
@@ -304,7 +336,7 @@ void Camera::render(Array2D<Rgba> &pixels,
 
             RGB shade = this->shadeAlongRay(view_ray, surfaces, lights,
                                             MAX_RECURSIVE_LIMIT, -1,
-                                            surfaceTree, 0);
+                                            surfaceTree, mode);
 
             px.r = shade.r;
             px.g = shade.g;

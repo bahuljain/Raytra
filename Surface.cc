@@ -37,9 +37,9 @@ RGB Surface::phongShading(const Light *light,
     }
 
     /* Vector normal to the surface at the given intersection point */
-    normal = (mode == 0)
-             ? this->getSurfaceNormal(intersection)
-             : this->bbox->getSurfaceNormal(intersection);
+    normal = (mode == 1)
+             ? this->bbox->getSurfaceNormal(intersection)
+             : this->getSurfaceNormal(intersection);
 
     /*
      * TODO: rethink if necessary to do it in this particular way.

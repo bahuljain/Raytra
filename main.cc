@@ -46,8 +46,8 @@ void cleanMemory(Camera *cam,
 
 int main(int argc, char **argv) {
 
-    if (argc < 2) {
-        cerr << "usage: raytra scenefilename outputfilename.exr" << endl;
+    if (argc < 3) {
+        cerr << "usage: raytra scenefilename outputfilename.exr <mode>" << endl;
         return -1;
     }
 
@@ -63,12 +63,20 @@ int main(int argc, char **argv) {
 
     Array2D <Rgba> pixels;
 
-    cam->render(pixels, surfaces, materials, lights);
+    if (argc == 3)
+        cam->render(pixels, surfaces, materials, lights, -1);
+    else {
+        int mode = atoi(argv[3]);
 
-    if (argc == 2)
-        writeRgba("hw1.4.exr", &pixels[0][0], cam->pw, cam->ph);
-    else
-        writeRgba(argv[2], &pixels[0][0], cam->pw, cam->ph);
+        if (mode != 0 && mode != 1) {
+            cerr << "error: incorrect mode of operation" << endl;
+            return -1;
+        }
+
+        cam->render(pixels, surfaces, materials, lights, mode);
+    }
+
+    writeRgba(argv[2], &pixels[0][0], cam->pw, cam->ph);
 
     cleanMemory(cam, surfaces, materials, lights);
     return 0;
