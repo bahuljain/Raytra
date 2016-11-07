@@ -15,9 +15,21 @@ public:
     RGB ideal_specular;
     float phong;
 
-    Material();
+    Material() {
+        this->diffuse = RGB(0, 0, 0);
+        this->specular = RGB(0, 0, 0);
+        this->ideal_specular = RGB(0, 0, 0);
+        this->phong = 1;
+    };
 
-    Material(float, float, float, float, float, float, float, float, float, float);
+    Material(float dr, float dg, float db,
+             float sr, float sg, float sb,
+             float r, float ir, float ig, float ib) {
+        this->diffuse = RGB(dr, dg, db);
+        this->specular = RGB(sr, sg, sb);
+        this->ideal_specular = RGB(ir, ig, ib);
+        this->phong = r;
+    };
 };
 
 
