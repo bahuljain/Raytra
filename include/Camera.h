@@ -25,15 +25,11 @@ private:
 
     tuple<int, float> getClosestSurface(const BVHTree &surfacesTree,
                                         const vector<Surface *> &surfaces,
-                                        const Ray &ray,
-                                        int origin_surface,
-                                        int mode) const;
+                                        const Ray &ray, int mode) const;
 
     bool isIntercepted(const BVHTree &surfacesTree,
                        const vector<Surface *> &surfaces,
-                       const Ray &ray, float t_max,
-                       int origin_surface,
-                       int mode) const;
+                       const Ray &ray, float t_max, int mode) const;
 
     RGB getShadeAlongRay(const Ray &view_ray,
                          const vector<Surface *> &surfaces,
