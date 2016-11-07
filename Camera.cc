@@ -106,8 +106,7 @@ Point Camera::getPixelCenter(int i, int j,
  */
 tuple<int, float> Camera::getClosestSurface(const BVHTree &surfacesTree,
                                             const vector<Surface *> &surfaces,
-                                            const Ray &ray, int origin_surface,
-                                            int mode) const {
+                                            const Ray &ray, int mode) const {
     if (mode != 0)
         return surfacesTree.getClosestSurface(ray, mode);
 
@@ -141,11 +140,8 @@ tuple<int, float> Camera::getClosestSurface(const BVHTree &surfacesTree,
  * @retval FALSE - A surface doesn't intercept the ray before reaching its
  *                 destination.
  */
-bool Camera::isIntercepted(const BVHTree &surfacesTree,
-                           const vector<Surface *> &surfaces,
-                           const Ray &ray,
-                           float t_max, int origin_surface,
-                           int mode) const {
+bool Camera::isIntercepted(const BVHTree &surfacesTree, const vector<Surface *> &surfaces,
+                           const Ray &ray, float t_max, int mode) const {
     if (mode != 0)
         return surfacesTree.isIntercepted(ray, t_max, mode);
 
@@ -190,8 +186,7 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
 
     /* Get closest surface along the ray */
     tuple<int, float> closest_surface;
-    closest_surface = getClosestSurface(surfacesTree, surfaces, view_ray,
-                                        origin_surface_idx, mode);
+    closest_surface = getClosestSurface(surfacesTree, surfaces, view_ray, mode);
 
     int closest_surface_idx = get<0>(closest_surface);
     float t = get<1>(closest_surface);
@@ -231,8 +226,7 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
              * to the intersection point then compute the diffuse and specular
              * shading on the surface.
              */
-            if (!this->isIntercepted(surfacesTree, surfaces, light_ray, t_max,
-                                     closest_surface_idx, mode))
+            if (!isIntercepted(surfacesTree, surfaces, light_ray, t_max, mode))
                 shade.addRGB(surface->phongShading(light, light_ray, view_ray,
                                                    intersection, mode));
         }
