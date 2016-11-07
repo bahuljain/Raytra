@@ -158,7 +158,7 @@ bool Camera::isIntercepted(const BVHTree &surfacesTree,
 }
 
 /**
- * @name    shadeAlongRay
+ * @name    getShadeAlongRay
  * @brief   Computes the shading along the given view ray
  *
  * @param view_ray    - the ray along which shading needs to be computed.
@@ -172,13 +172,13 @@ bool Camera::isIntercepted(const BVHTree &surfacesTree,
  * @returns           - the RGB value (spectral distribution) obtained along
  *                      the given view ray
  */
-RGB Camera::shadeAlongRay(const Ray &view_ray,
-                          const vector<Surface *> &surfaces,
-                          const vector<Light *> &lights,
-                          int refl_limit,
-                          int origin_surface_idx,
-                          const BVHTree &surfacesTree,
-                          int mode) const {
+RGB Camera::getShadeAlongRay(const Ray &view_ray,
+                             const vector<Surface *> &surfaces,
+                             const vector<Light *> &lights,
+                             int refl_limit,
+                             int origin_surface_idx,
+                             const BVHTree &surfacesTree,
+                             int mode) const {
     RGB shade(0, 0, 0);
 
     /*
@@ -189,9 +189,9 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
         return shade;
 
     /* Get closest surface along the ray */
-    tuple<int, float> closest_surface =
-            this->getClosestSurface(surfacesTree, surfaces, view_ray,
-                                    origin_surface_idx, mode);
+    tuple<int, float> closest_surface;
+    closest_surface = getClosestSurface(surfacesTree, surfaces, view_ray,
+                                        origin_surface_idx, mode);
 
     int closest_surface_idx = get<0>(closest_surface);
     float t = get<1>(closest_surface);
@@ -260,10 +260,10 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
             /* The shade obtained from the ray that reflected off the
              * surface.
              */
-            RGB reflection = this->shadeAlongRay(reflected_ray, surfaces,
-                                                 lights, refl_limit - 1,
-                                                 closest_surface_idx,
-                                                 surfacesTree, mode);
+            RGB reflection = this->getShadeAlongRay(reflected_ray, surfaces,
+                                                    lights, refl_limit - 1,
+                                                    closest_surface_idx,
+                                                    surfacesTree, mode);
 
             shade.addRGB(
                     reflection.scaleRGB(surface->getReflectiveComponent()));
@@ -280,6 +280,13 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
  * @param surfaces  - a vector of all the surfaces in the scene.
  * @param materials - a vector of all the materials used.
  * @param lights    - a vector of all the lights in the scene.
+ *
+ * @details For every pixel in the image, construct a ray that originates
+ *          from the camera eye and passes via the pixel center. Now trace
+ *          the ray in the scene to find intersection with objects. The
+ *          closest object encountered along the ray will get rendered at
+ *          that pixel. Use the various light sources and materials to obtain
+ *          the shading for each pixel.
  */
 void Camera::render(Array2D <Rgba> &pixels,
                     const vector<Surface *> &surfaces,
@@ -327,15 +334,12 @@ void Camera::render(Array2D <Rgba> &pixels,
 
             px_center = this->getPixelCenter(j, i, w, h);
 
-            /* TODO:
-             * rethink whether the view_ray should originate from camera
-             * position or the pixel center.
-             */
+            // TODO: should this ray originate from px_center or eye?
             Ray view_ray(this->eye, px_center.sub(this->eye).norm());
 
-            RGB shade = this->shadeAlongRay(view_ray, surfaces, lights,
-                                            MAX_RECURSIVE_LIMIT, -1,
-                                            surfaceTree, mode);
+            RGB shade = getShadeAlongRay(view_ray, surfaces, lights,
+                                         MAX_RECURSIVE_LIMIT, -1,
+                                         surfaceTree, mode);
 
             px.r = shade.r;
             px.g = shade.g;

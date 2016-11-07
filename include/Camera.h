@@ -20,7 +20,8 @@ static const int MAX_RECURSIVE_LIMIT = 20;
 
 class Camera {
 private:
-    Point getPixelCenter(int, int, float, float) const;
+    Point getPixelCenter(int i, int j,
+                         float width, float height) const;
 
     tuple<int, float> getClosestSurface(const BVHTree &surfacesTree,
                                         const vector<Surface *> &surfaces,
@@ -34,13 +35,13 @@ private:
                        int origin_surface,
                        int mode) const;
 
-    RGB shadeAlongRay(const Ray &view_ray,
-                      const vector<Surface *> &surfaces,
-                      const vector<Light *> &lights,
-                      int refl_limit,
-                      int origin_surface_idx,
-                      const BVHTree &surfacesTree,
-                      int mode) const;
+    RGB getShadeAlongRay(const Ray &view_ray,
+                         const vector<Surface *> &surfaces,
+                         const vector<Light *> &lights,
+                         int refl_limit,
+                         int origin_surface_idx,
+                         const BVHTree &surfacesTree,
+                         int mode) const;
 
 public:
     Point eye;
