@@ -23,40 +23,40 @@ public:
         this->k = k;
     };
 
-    float mag() const {
+    inline float mag() const {
         return sqrtf(powf(i, 2.0) + powf(j, 2.0) + powf(k, 2.0));
     };
 
-    Vector norm() const {
+    inline Vector norm() const {
         float mag = this->mag();
         assert (mag != 0.0);
 
         return Vector(i / mag, j / mag, k / mag);
     };
 
-    Vector times(float c) const {
+    inline Vector times(float c) const {
         return Vector(i * c, j * c, k * c);
     };
 
-    Vector cross(const Vector &vec) const {
+    inline Vector cross(const Vector &vec) const {
         return Vector(j * vec.k - k * vec.j,
                       k * vec.i - i * vec.k,
                       i * vec.j - j * vec.i);
     };
 
-    float dot(const Vector &vec) const {
+    inline float dot(const Vector &vec) const {
         return i * vec.i + j * vec.j + k * vec.k;
     };
 
-    Vector plus(const Vector &vec) const {
+    inline Vector plus(const Vector &vec) const {
         return Vector(i + vec.i, j + vec.j, k + vec.k);
     };
 
-    Vector operator-() const {
+    inline Vector operator-() const {
         return Vector(-i, -j, -k);
     };
 
-    void printVector() const {
+    inline void printVector() const {
         std::cout << i << "i + " << j << "j + " << k << "k" << std::endl;
     };
 };

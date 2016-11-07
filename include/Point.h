@@ -23,19 +23,19 @@ public:
         this->z = z;
     };
 
-    Vector sub(const Point &p) const {
+    inline Vector sub(const Point &p) const {
         return Vector(x - p.x, y - p.y, z - p.z);
     };
 
-    Point moveAlong(const Vector &vec) const {
+    inline Point moveAlong(const Vector &vec) const {
         return Point(x + vec.i, y + vec.j, z + vec.k);
     };
 
-    float distance2(const Point &p) const {
+    inline float distance2(const Point &p) const {
         return powf(x - p.x, 2.0) + powf(y - p.y, 2.0) + powf(z - p.z, 2.0);
     };
 
-    void printPoint() const {
+    inline void printPoint() const {
         std::cout << "(" << x << ", " << y << ", " << z << ")" << std::endl;
     };
 };

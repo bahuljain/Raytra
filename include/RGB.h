@@ -21,20 +21,14 @@ public:
         this->g = g;
         this->b = b;
     }
-
-    void setRGB(float r, float g, float b) {
-        this->r = r;
-        this->g = g;
-        this->b = b;
-    }
-
-    void addRGB(const RGB shade) {
+    
+    inline void addRGB(const RGB shade) {
         r += shade.r;
         g += shade.g;
         b += shade.b;
     };
 
-    RGB scaleRGB(const RGB shade) const {
+    inline RGB scaleRGB(const RGB shade) const {
         return RGB(r * shade.r, g * shade.g, b * shade.b);
     };
 };
