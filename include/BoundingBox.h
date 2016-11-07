@@ -39,8 +39,6 @@ public:
 
     Vector getSurfaceNormal(const Point &p) const;
 
-    bool isFrontFacedTo(const Ray &ray) const;
-
     static BoundingBox *groupBoundingBoxes(std::vector<BoundingBox *> &,
                                            int, int);
 

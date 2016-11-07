@@ -4,10 +4,6 @@
 
 #include "include/Triangle.h"
 
-inline bool approx_eq(float x, float y) {
-    return fabsf(x - y) <= 0.001;
-}
-
 Triangle::Triangle(float x1, float y1, float z1,
                    float x2, float y2, float z2,
                    float x3, float y3, float z3) {
@@ -23,18 +19,10 @@ Triangle::Triangle(float x1, float y1, float z1,
 
     x_min = fminf(a.x, fminf(b.x, c.x));
     x_max = fmaxf(a.x, fmaxf(b.x, c.x));
-
-    if (x_min == x_max) x_min -= 0.01;
-
     y_min = fminf(a.y, fminf(b.y, c.y));
     y_max = fmaxf(a.y, fmaxf(b.y, c.y));
-
-    if (y_min == y_max) y_min -= 0.01;
-
     z_min = fminf(a.z, fminf(b.z, c.z));
     z_max = fmaxf(a.z, fmaxf(b.z, c.z));
-
-    if (z_min == z_max) z_min -= 0.01;
 
     this->bbox = new BoundingBox(x_min, x_max, y_min, y_max, z_min, z_max);
 }

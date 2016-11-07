@@ -15,17 +15,14 @@ private:
     BVHNode *root;
     const std::vector<Surface *> *surfaces;
 
-    BVHNode *_makeBVHTree(std::vector<BoundingBox *> &, int, int, int) const;
+    BVHNode *_makeBVHTree(std::vector<BoundingBox *> &bboxes, int start,
+                          int end, int axis) const;
 
-    bool _isIntercepted(const BVHNode *node,
-                        const Ray &ray,
-                        float t_max,
-                        int mode) const;
+    bool _isIntercepted(const BVHNode *node, const Ray &ray,
+                        float t_max, int mode) const;
 
     std::tuple<int, float>
-    _getClosestSurface(const BVHNode *node,
-                       const Ray &ray,
-                       int mode) const;
+    _getClosestSurface(const BVHNode *node, const Ray &ray, int mode) const;
 
     void printTree(BVHNode *node) const;
 
@@ -39,13 +36,9 @@ public:
 
     int makeBVHTree();
 
-    bool isIntercepted(const Ray &ray,
-                       float t_max,
-                       int mode) const;
+    bool isIntercepted(const Ray &ray, float t_max, int mode) const;
 
-    std::tuple<int, float>
-    getClosestSurface(const Ray &ray,
-                      int mode) const;
+    std::tuple<int, float> getClosestSurface(const Ray &ray, int mode) const;
 
     bool isEmpty() const;
 
@@ -54,6 +47,5 @@ public:
     void printTree() const;
 
 };
-
 
 #endif //RAYTRA_BVHTREE_H

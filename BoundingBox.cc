@@ -10,10 +10,6 @@
 #include <iostream>
 #include "include/BoundingBox.h"
 
-inline bool approx_eq(float x, float y) {
-    return fabsf(x - y) <= 0.001;
-}
-
 BoundingBox::BoundingBox() {
     this->id = -1;
     this->x_min = 0;
@@ -40,6 +36,11 @@ BoundingBox::BoundingBox(float x_min, float x_max,
     this->y_max = y_max;
     this->z_min = z_min;
     this->z_max = z_max;
+
+    /* Need to make adjustments if bbox is completely flat */
+    if (x_min == x_max) this->x_min -= 0.01;
+    if (y_min == y_max) this->y_min -= 0.01;
+    if (z_min == z_max) this->z_min -= 0.01;
 
     this->setBoundedSurface(-1);
 
@@ -132,40 +133,41 @@ void BoundingBox::printBox() const {
               << "(" << z_min << ", " << z_max << ") " << std::endl;
 }
 
-bool BoundingBox::isFrontFacedTo(const Ray &ray) const {
-    return true;
-}
-
-
+/**
+ * @name    getSurfaceNormal
+ * @brief   returns the normal on surface of the bounding box.
+ *
+ * @param p - the point on the surface at which the normal has to be computed.
+ * @attention @param p has to lie on the surface else shit will go down.
+ *
+ * @returns normal vector to the surface at the given point.
+ *
+ * @note at times due to rounding errors the point might slightly be inside
+ * or outside the bounding box. Such cases need to be handled.
+ */
 Vector BoundingBox::getSurfaceNormal(const Point &p) const {
-    if (approx_eq(p.x, x_min))
-        return Vector(-1, 0, 0);
+    auto approx_eq = [](float x, float y) -> bool {
+        return fabsf(x - y) <= 0.001;
+    };
 
-    if (approx_eq(p.x, x_max))
-        return Vector(1, 0, 0);
-
-    if (approx_eq(p.y, y_min))
-        return Vector(0, -1, 0);
-
-    if (approx_eq(p.y, y_max))
-        return Vector(0, 1, 0);
-
-    if (approx_eq(p.z, z_min))
-        return Vector(0, 0, -1);
-
-    if (approx_eq(p.z, z_max))
-        return Vector(0, 0, 1);
+    if (approx_eq(p.x, x_min)) return Vector(-1, 0, 0);
+    if (approx_eq(p.x, x_max)) return Vector(1, 0, 0);
+    if (approx_eq(p.y, y_min)) return Vector(0, -1, 0);
+    if (approx_eq(p.y, y_max)) return Vector(0, 1, 0);
+    if (approx_eq(p.z, z_min)) return Vector(0, 0, -1);
+    if (approx_eq(p.z, z_max)) return Vector(0, 0, 1);
 
     return Vector(0, 0, -1);
 }
 
 /**
- * @name intersects
- * @brief determines the intersection point of a ray with the bounding box
+ * @name    getIntersection
+ * @brief   determines the intersection point of a ray with the bounding box.
  *
  * @param ray    - the ray with which intersection needs to be checked.
  * @returns      - the parameterized location of the intersection point on
  *                 the ray.
+ * @retval   -1  - if the ray doesn't intersect with the bounding box.
  *
  * @note - remember the case when ray is parallel to any of the axes.
  * @note - if ray direction along any axis is negative the max side will be
@@ -184,8 +186,7 @@ float BoundingBox::getIntersection(const Ray &ray) const {
     t_x_min = (x_min - ray.origin.x) / ray.direction.i;
     t_x_max = (x_max - ray.origin.x) / ray.direction.i;
 
-    if (ray.direction.i < 0)
-        std::swap(t_x_min, t_x_max);
+    if (ray.direction.i < 0) std::swap(t_x_min, t_x_max);
 
     t_min = fmaxf(t_min, t_x_min);
     t_max = fminf(t_max, t_x_max);
@@ -196,11 +197,9 @@ float BoundingBox::getIntersection(const Ray &ray) const {
     t_y_min = (y_min - ray.origin.y) / ray.direction.j;
     t_y_max = (y_max - ray.origin.y) / ray.direction.j;
 
-    if (ray.direction.j < 0)
-        std::swap(t_y_min, t_y_max);
+    if (ray.direction.j < 0) std::swap(t_y_min, t_y_max);
 
-    if (t_y_min > t_max)
-        return -1;
+    if (t_y_min > t_max) return -1;
 
     t_min = fmaxf(t_min, t_y_min);
     t_max = fminf(t_max, t_y_max);
@@ -211,14 +210,10 @@ float BoundingBox::getIntersection(const Ray &ray) const {
     t_z_min = (z_min - ray.origin.z) / ray.direction.k;
     t_z_max = (z_max - ray.origin.z) / ray.direction.k;
 
-    if (ray.direction.k < 0)
-        std::swap(t_z_min, t_z_max);
+    if (ray.direction.k < 0) std::swap(t_z_min, t_z_max);
 
     t_min = fmaxf(t_min, t_z_min);
     t_max = fminf(t_max, t_z_max);
 
-    if (t_min > t_max)
-        return -1;
-
-    return t_min;
+    return (t_min > t_max) ? -1 : t_min;
 }

@@ -21,7 +21,7 @@ public:
         this->g = g;
         this->b = b;
     }
-    
+
     inline void addRGB(const RGB shade) {
         r += shade.r;
         g += shade.g;

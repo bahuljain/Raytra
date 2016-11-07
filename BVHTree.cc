@@ -21,8 +21,8 @@ BVHTree::~BVHTree() {
  * @brief   Given a list of surfaces it creates a Bounding Volume
  *          Hierarchical Tree structure.
  *
- * @returns          a BVHTree for the corresponding list of surfaces.
- * @see     _makeBVHTree function
+ * @returns  a BVHTree for the corresponding list of surfaces.
+ * @see      _makeBVHTree function
  */
 int BVHTree::makeBVHTree() {
     vector<BoundingBox *> bboxes;
@@ -63,7 +63,8 @@ int BVHTree::makeBVHTree() {
  *                 partially sorted.
  * @returns        a pointer to the root of the BVHTree constructed.
  *
- * @details BoundingBoxes are partially sorted at each step (based on a given
+ * @details
+ * BoundingBoxes are partially sorted at each step (based on a given
  * axis which is chosen in a round-robin fashion) and then split into two groups
  * on which the same process is applied recursively. At each step a new
  * BoundingBox is created for the entire group until the group contains only
@@ -120,8 +121,6 @@ BVHNode *BVHTree::_makeBVHTree(vector<BoundingBox *> &bboxes,
 /**
  * @name    isIntercepted
  * @see     _isIntercepted
- * @returns a boolean indicating if the ray was intercepted by any surface on
- *          it's way to the destination.
  */
 bool BVHTree::isIntercepted(const Ray &ray, float t_max, int mode) const {
     return this->_isIntercepted(this->root, ray, t_max, mode);
@@ -129,21 +128,22 @@ bool BVHTree::isIntercepted(const Ray &ray, float t_max, int mode) const {
 
 /**
  * @name    _isIntercepted
- * @private used internally by BVHTree class (called by inIntercepted)
+ * @private used internally by BVHTree class (called by isIntercepted)
  * @brief   Determines if a surface intercepts the ray before it reaches it
  *          final destination.
  *
  * @param node  - the BVHTree root node.
- * @param surfaces - list of all surfaces in the scene.
  * @param ray   - the ray which needs to be checked if it is intercepted
  *                by the surface.
  * @param t_max - the destination of the ray; the ray should be intercepted
  *                before reaching this point; represented in terms of the
  *                parameter on the ray.
+ * @param mode  - 0|-1 => check interception with leaf node surfaces.
+ *                1    => check interception with leaf node bounding box.
  *
- * @retval TRUE  - A surface intercepts the ray before reaching its destination.
- * @retval FALSE - A surface doesn't intercept the ray before reaching its
- *                 destination.
+ *
+ * @returns a boolean indicating if the ray was intercepted by any surface on
+ *          it's way to the destination.
  */
 bool BVHTree::_isIntercepted(const BVHNode *node,
                              const Ray &ray, float t_max, int mode) const {
@@ -192,7 +192,18 @@ BVHTree::getClosestSurface(const Ray &ray, int mode) const {
 }
 
 /**
+ * @name    _getClosestSurface
+ * @private used internally by BVHTree class (called by getClosestSurface)
+ * @brief   Returns the closest surface along the given ray
  *
+ * @param node - the BVHTree root node.
+ * @param ray  - the ray along which the closest surface is to be computed.
+ * @param mode - 0|-1 => check interception with leaf node surfaces.
+ *               1    => check interception with leaf node bounding box.
+ *
+ * @returns a tuple containing the index of the surface that was closest
+ *          along with the intersection point of the ray and the surface or its
+ *          bounding box depending on the mode.
  */
 tuple<int, float>
 BVHTree::_getClosestSurface(const BVHNode *node,
@@ -225,9 +236,7 @@ BVHTree::_getClosestSurface(const BVHNode *node,
 
         float t = surfaces->at(surface_idx)->getIntersection(ray);
 
-        return (t >= 0.01)
-               ? make_tuple(surface_idx, t)
-               : invalid;
+        return (t >= 0.01) ? make_tuple(surface_idx, t) : invalid;
     }
 
     /**
