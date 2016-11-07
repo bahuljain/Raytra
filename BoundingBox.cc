@@ -10,6 +10,10 @@
 #include <iostream>
 #include "include/BoundingBox.h"
 
+inline bool approx_eq(float x, float y) {
+    return fabsf(x - y) <= 0.001;
+}
+
 BoundingBox::BoundingBox() {
     this->id = -1;
     this->x_min = 0;
@@ -132,27 +136,27 @@ bool BoundingBox::isFrontFacedTo(const Ray &ray) const {
     return true;
 }
 
+
 Vector BoundingBox::getSurfaceNormal(const Point &p) const {
-    if (p.x == x_min)
+    if (approx_eq(p.x, x_min))
         return Vector(-1, 0, 0);
 
-    if (p.x == x_max)
+    if (approx_eq(p.x, x_max))
         return Vector(1, 0, 0);
 
-    if (p.y == y_min)
+    if (approx_eq(p.y, y_min))
         return Vector(0, -1, 0);
 
-    if (p.y == y_max)
+    if (approx_eq(p.y, y_max))
         return Vector(0, 1, 0);
 
-    if (p.z == z_min)
+    if (approx_eq(p.z, z_min))
         return Vector(0, 0, -1);
 
-    if (p.z == z_max)
+    if (approx_eq(p.z, z_max))
         return Vector(0, 0, 1);
 
-//    std::cout << "Wrong!!!" << std::endl;
-    return Vector(-1, -1, -1);
+    return Vector(0, 0, -1);
 }
 
 /**

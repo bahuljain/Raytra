@@ -237,37 +237,38 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
                                      closest_surface_idx, mode))
                 shade.addRGB(surface->phongShading(light, light_ray, view_ray,
                                                    intersection, mode));
+        }
+
+        /*
+         * If the surface is reflective and is front-faced with respect to
+         * the view ray then compute shading from the reflected ray.
+         */
+        bool isFrontFaced = mode == 1 || surface->isFrontFacedTo(view_ray);
+        if (surface->isReflective() && isFrontFaced) {
+            Vector normal = (mode == 1)
+                            ? surface->bbox->getSurfaceNormal(intersection)
+                            : surface->getSurfaceNormal(intersection);
 
             /*
-             * If the surface is reflective and is front-faced with respect to
-             * the view ray then compute shading from the reflected ray.
+             * Directional vector generated when the view_ray reflects off the
+             * surface.
              */
-            bool isFrontFaced = mode == 1 || surface->isFrontFacedTo(view_ray);
-            if (surface->isReflective() && isFrontFaced) {
-                Vector normal = (mode == 1)
-                                ? surface->bbox->getSurfaceNormal(intersection)
-                                : surface->getSurfaceNormal(intersection);
+            Vector reflected_vector = view_ray.direction
+                    .plus(-normal.times(2 * view_ray.direction.dot(normal)))
+                    .norm();
 
-                /*
-                 * Directional vector generated when the view_ray reflects off the
-                 * surface.
-                 */
-                Vector reflected_vector = view_ray.direction
-                        .plus(-normal.times(2 * view_ray.direction.dot(normal)))
-                        .norm();
+            Ray reflected_ray(intersection, reflected_vector);
 
-                Ray reflected_ray(intersection, reflected_vector);
+            /* The shade obtained from the ray that reflected off the
+             * surface.
+             */
+            RGB reflection = this->shadeAlongRay(reflected_ray, surfaces,
+                                                 lights, refl_limit - 1,
+                                                 closest_surface_idx,
+                                                 surfacesTree, mode);
 
-                /* The shade obtained from the ray that reflected off the                         * surface.
-                 */
-                RGB reflection = this->shadeAlongRay(reflected_ray, surfaces,
-                                                     lights, refl_limit - 1,
-                                                     closest_surface_idx,
-                                                     surfacesTree, mode);
-
-                shade.addRGB(
-                        reflection.scaleRGB(surface->getReflectiveComponent()));
-            }
+            shade.addRGB(
+                    reflection.scaleRGB(surface->getReflectiveComponent()));
         }
     }
     return shade;

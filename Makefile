@@ -4,6 +4,9 @@ default:
 debug:
 	g++ -g *.cc -I. -I/usr/local/include/OpenEXR -lIlmImf -lImath -lHalf -Wall -pthread -std=c++11 -o prog_out
 
+profile:
+	g++ -g -pg *.cc -I. -I/usr/local/include/OpenEXR -lIlmImf -lImath -lHalf -Wall -pthread -std=c++11 -o prog_out
+
 clean:
 	rm -rf CMakeFiles/ Raytra CMakeCache.txt cmake_install.cmake raytra_render.exr prog_out
 
