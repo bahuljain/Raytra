@@ -296,17 +296,20 @@ void Camera::render(Array2D <Rgba> &pixels,
 
     pixels.resizeErase(this->ph, this->pw);
 
-    if (mode == 0)
-        cout << "Rendering without using acceleration structures" << endl;
+    if (mode == 0) {
+        cout << "Rendering without acceleration" << endl;
+        goto render;
+    }
+
     if (mode == -1)
-        cout << "Rendering using acceleration structures" << endl;
-    else if (mode == 1)
+        cout << "Rendering with acceleration" << endl;
+    if (mode == 1)
         cout << "Rendering only bounding boxes" << endl;
+    cout << endl;
 
     surfaceTree.makeBVHTree(surfaces);
-    cout << "BVHTree Height: " << surfaceTree.getMaxHeight() << endl
-         << endl;
-//    surfaceTree.printTree();
+
+    render:
 
     ProgressBar progress = ProgressBar();
     progress.start();

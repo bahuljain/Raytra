@@ -26,8 +26,7 @@ BVHTree::~BVHTree() {
  */
 int BVHTree::makeBVHTree(const vector<Surface *> &surfaces) {
     vector<BoundingBox *> bboxes;
-
-    cout << "Constructing a bounding box for each surface. ";
+    clock_t time;
 
     /*
      * A list of BoundingBox objects each corresponding to a surface.
@@ -39,11 +38,12 @@ int BVHTree::makeBVHTree(const vector<Surface *> &surfaces) {
         bboxes.push_back(bbox);
     }
 
-    cout << "[Done]" << endl << "Constructing BVH Tree. ";
-
+    cout << "Constructing BVH Tree. ";
+    time = clock();
     this->root = this->_makeBVHTree(bboxes, 0, (int) (bboxes.size() - 1), 0);
-
-    cout << "[Done]" << endl;
+    time = clock() - time;
+    cout << "[Done] [" << ((float) time) / CLOCKS_PER_SEC << "s]"
+         << endl << endl;
 
     return (this->root != nullptr);
 
@@ -299,26 +299,6 @@ int BVHTree::_getMaxHeight(BVHNode *node) const {
                    this->_getMaxHeight(node->right));
 }
 
-
-void BVHTree::intercepts(const Ray &ray,
-                         std::vector<int> &intersection_indices) const {
-    this->_intercepts(this->root, ray, intersection_indices);
-}
-
-void BVHTree::_intercepts(const BVHNode *node,
-                          const Ray &ray,
-                          std::vector<int> &intersection_indices) const {
-    if (node == nullptr)
-        return;
-
-    if (node->thisBound->getIntersection(ray) == -1)
-        return;
-
-    if (node->left == nullptr && node->right == nullptr) {
-        intersection_indices.push_back(node->thisBound->getBoundedSurface());
-        return;
-    }
-
-    this->_intercepts(node->left, ray, intersection_indices);
-    this->_intercepts(node->right, ray, intersection_indices);
+bool BVHTree::isEmpty() const {
+    return (this->root == nullptr);
 }

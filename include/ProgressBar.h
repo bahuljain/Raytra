@@ -12,10 +12,15 @@ using namespace std;
 
 class ProgressBar {
 public:
+    clock_t time;
+
     ProgressBar() {};
+
+
 
     void start() {
         cout << "[";
+        time = clock();
     }
 
     void log(float completed, float total) {
@@ -33,7 +38,11 @@ public:
     }
 
     void done() {
-        cout << "] \xF0\x9F\x8D\xBA \xF0\x9F\x8D\xBA " << endl;
+        time = clock() - time;
+        cout << "] [Done] ["
+             << ((float) time) / CLOCKS_PER_SEC
+             << "s] \xF0\x9F\x8D\xBA \xF0\x9F\x8D\xBA "
+             << endl << endl;
     }
 };
 
