@@ -116,13 +116,11 @@ tuple<int, float> Camera::getClosestSurface(const BVHTree &surfacesTree,
     int min_i = -1;
 
     for (unsigned int i = 0; i < surfaces.size(); i++) {
-        if ((int) i != origin_surface) {
-            float t = surfaces[i]->getIntersection(ray);
+        float t = surfaces[i]->getIntersection(ray);
 
-            if (t >= 0 && t < min_t) {
-                min_t = t;
-                min_i = i;
-            }
+        if (t >= 0.01 && t < min_t) {
+            min_t = t;
+            min_i = i;
         }
     }
     return make_tuple(min_i, min_t);
@@ -154,11 +152,9 @@ bool Camera::isIntercepted(const BVHTree &surfacesTree,
                                           origin_surface, mode);
 
     for (unsigned int i = 0; i < surfaces.size(); i++) {
-        if ((int) i != origin_surface) {
-            float t = surfaces[i]->getIntersection(ray);
+        float t = surfaces[i]->getIntersection(ray);
 
-            if (t >= 0 && t < t_max) return true;
-        }
+        if (t >= 0 && t < fabsf(t_max - 0.01f)) return true;
     }
     return false;
 }
@@ -246,9 +242,7 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
              * If the surface is reflective and is front-faced with respect to
              * the view ray then compute shading from the reflected ray.
              */
-            bool isFrontFaced = ((mode == 0 || mode == -1) &&
-                                 surface->isFrontFacedTo(view_ray)) ||
-                                (mode == 1);
+            bool isFrontFaced = mode == 1 || surface->isFrontFacedTo(view_ray);
             if (surface->isReflective() && isFrontFaced) {
                 Vector normal = (mode == 1)
                                 ? surface->bbox->getSurfaceNormal(intersection)
@@ -264,7 +258,8 @@ RGB Camera::shadeAlongRay(const Ray &view_ray,
 
                 Ray reflected_ray(intersection, reflected_vector);
 
-                /* The shade obtained from the ray that reflected off the surface. */
+                /* The shade obtained from the ray that reflected off the                         * surface.
+                 */
                 RGB reflection = this->shadeAlongRay(reflected_ray, surfaces,
                                                      lights, refl_limit - 1,
                                                      closest_surface_idx,
@@ -304,7 +299,7 @@ void Camera::render(Array2D <Rgba> &pixels,
         cout << "Rendering without using acceleration structures" << endl;
     if (mode == -1)
         cout << "Rendering using acceleration structures" << endl;
-    else
+    else if (mode == 1)
         cout << "Rendering only bounding boxes" << endl;
 
     surfaceTree.makeBVHTree(surfaces);

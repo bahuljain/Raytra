@@ -165,7 +165,8 @@ bool BVHTree::_isIntercepted(const BVHNode *node,
      * If the bounding box doesn't intercepts the ray don't bother going any
      * further.
      */
-    if (node->thisBound->getIntersection(ray) == -1)
+    float t_bbox = node->thisBound->getIntersection(ray);
+    if (t_bbox == -1)
         return false;
 
     /*
@@ -175,15 +176,12 @@ bool BVHTree::_isIntercepted(const BVHNode *node,
     if (node->left == nullptr && node->right == nullptr) {
         int surface_idx = node->thisBound->getBoundedSurface();
 
-        if (surface_idx == origin_surface_idx)
-            return false;
-
-        if (mode == 1)
+        if (mode == 1 && t_bbox < fabsf(t_max - 0.01f))
             return true;
 
         float t = surfaces[surface_idx]->getIntersection(ray);
 
-        return (t >= 0 && t < t_max);
+        return (t >= 0 && t < fabsf(t_max - 0.01f));
     }
 
     /*
@@ -242,15 +240,12 @@ BVHTree::_getClosestSurface(const BVHNode *node,
     if (node->left == nullptr && node->right == nullptr) {
         int surface_idx = node->thisBound->getBoundedSurface();
 
-        if (surface_idx == origin_surface_idx || surface_idx == -1)
-            return invalid;
-
-        if (mode == 1)
+        if (mode == 1 && t_bbox >= 0.01)
             return make_tuple(surface_idx, t_bbox);
 
         float t = surfaces[surface_idx]->getIntersection(ray);
 
-        return (t >= 0)
+        return (t >= 0.01)
                ? make_tuple(surface_idx, t)
                : invalid;
     }

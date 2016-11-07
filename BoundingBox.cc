@@ -148,7 +148,11 @@ Vector BoundingBox::getSurfaceNormal(const Point &p) const {
     if (p.z == z_min)
         return Vector(0, 0, -1);
 
-    return Vector(0, 0, 1);
+    if (p.z == z_max)
+        return Vector(0, 0, 1);
+
+//    std::cout << "Wrong!!!" << std::endl;
+    return Vector(-1, -1, -1);
 }
 
 /**
@@ -206,5 +210,11 @@ float BoundingBox::getIntersection(const Ray &ray) const {
     if (ray.direction.k < 0)
         std::swap(t_z_min, t_z_max);
 
-    return (t_z_min > t_max) ? -1 : fmaxf(t_min, t_z_min);
+    t_min = fmaxf(t_min, t_z_min);
+    t_max = fminf(t_max, t_z_max);
+
+    if (t_min > t_max)
+        return -1;
+
+    return t_min;
 }
