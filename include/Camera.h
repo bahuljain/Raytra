@@ -20,7 +20,7 @@ static const int MAX_RECURSIVE_LIMIT = 20;
 
 class Camera {
 private:
-    Point _getPixelCenter(int, int, float, float) const;
+    Point getPixelCenter(int, int, float, float) const;
 
     tuple<int, float> getClosestSurface(const BVHTree &surfacesTree,
                                         const vector<Surface *> &surfaces,

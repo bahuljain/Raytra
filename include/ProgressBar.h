@@ -16,8 +16,6 @@ public:
 
     ProgressBar() {};
 
-
-
     void start() {
         cout << "[";
         time = clock();

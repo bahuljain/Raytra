@@ -6,3 +6,4 @@ raytra_render.exr
 hw*
 gmon.out
 *.txt
+outputs/*

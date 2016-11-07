@@ -73,8 +73,8 @@ void Camera::setValues(float x, float y, float z,
  * @param height    - the height of the image plane
  * @returns         - the pixel center co-ordinates for the given pixel
  */
-Point Camera::_getPixelCenter(int i, int j,
-                              float width, float height) const {
+Point Camera::getPixelCenter(int i, int j,
+                             float width, float height) const {
     Point center;
 
     float x = left + width * (i + 0.5f) / pw;
@@ -109,8 +109,7 @@ tuple<int, float> Camera::getClosestSurface(const BVHTree &surfacesTree,
                                             const Ray &ray, int origin_surface,
                                             int mode) const {
     if (mode != 0)
-        return surfacesTree.getClosestSurface(surfaces, ray,
-                                              origin_surface, mode);
+        return surfacesTree.getClosestSurface(ray, mode);
 
     float min_t = numeric_limits<float>::infinity();
     int min_i = -1;
@@ -148,8 +147,7 @@ bool Camera::isIntercepted(const BVHTree &surfacesTree,
                            float t_max, int origin_surface,
                            int mode) const {
     if (mode != 0)
-        return surfacesTree.isIntercepted(ray, surfaces, t_max,
-                                          origin_surface, mode);
+        return surfacesTree.isIntercepted(ray, t_max, mode);
 
     for (unsigned int i = 0; i < surfaces.size(); i++) {
         float t = surfaces[i]->getIntersection(ray);
@@ -292,7 +290,8 @@ void Camera::render(Array2D <Rgba> &pixels,
     float w = this->right - this->left;
     float h = this->top - this->bottom;
     float total_pixels = this->ph * this->pw;
-    BVHTree surfaceTree;
+
+    BVHTree surfaceTree(&surfaces);
 
     pixels.resizeErase(this->ph, this->pw);
 
@@ -305,11 +304,12 @@ void Camera::render(Array2D <Rgba> &pixels,
         cout << "Rendering with acceleration" << endl;
     if (mode == 1)
         cout << "Rendering only bounding boxes" << endl;
-    cout << endl;
 
-    surfaceTree.makeBVHTree(surfaces);
+    surfaceTree.makeBVHTree();
 
     render:
+
+    cout << endl;
 
     ProgressBar progress = ProgressBar();
     progress.start();
@@ -325,7 +325,7 @@ void Camera::render(Array2D <Rgba> &pixels,
             px.b = 0;
             px.a = 1;
 
-            px_center = this->_getPixelCenter(j, i, w, h);
+            px_center = this->getPixelCenter(j, i, w, h);
 
             /* TODO:
              * rethink whether the view_ray should originate from camera

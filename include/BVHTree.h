@@ -13,21 +13,18 @@
 class BVHTree {
 private:
     BVHNode *root;
+    const std::vector<Surface *> *surfaces;
 
     BVHNode *_makeBVHTree(std::vector<BoundingBox *> &, int, int, int) const;
 
     bool _isIntercepted(const BVHNode *node,
-                        const std::vector<Surface *> &surfaces,
                         const Ray &ray,
                         float t_max,
-                        int origin_surface_idx,
                         int mode) const;
 
     std::tuple<int, float>
     _getClosestSurface(const BVHNode *node,
-                       const std::vector<Surface *> &surfaces,
                        const Ray &ray,
-                       int origin_surface_idx,
                        int mode) const;
 
     void printTree(BVHNode *node) const;
@@ -36,22 +33,18 @@ private:
 
 public:
 
-    BVHTree();
+    BVHTree(const std::vector<Surface *> *surfaces);
 
     ~BVHTree();
 
-    int makeBVHTree(const std::vector<Surface *> &surfaces);
+    int makeBVHTree();
 
     bool isIntercepted(const Ray &ray,
-                       const std::vector<Surface *> &surfaces,
                        float t_max,
-                       int origin_surface_idx,
                        int mode) const;
 
     std::tuple<int, float>
-    getClosestSurface(const std::vector<Surface *> &surfaces,
-                      const Ray &ray,
-                      int origin_surface_idx,
+    getClosestSurface(const Ray &ray,
                       int mode) const;
 
     bool isEmpty() const;

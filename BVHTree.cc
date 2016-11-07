@@ -7,8 +7,9 @@
 
 using namespace std;
 
-BVHTree::BVHTree() {
+BVHTree::BVHTree(const std::vector<Surface *> *surfaces) {
     this->root = nullptr;
+    this->surfaces = surfaces;
 }
 
 BVHTree::~BVHTree() {
@@ -20,19 +21,18 @@ BVHTree::~BVHTree() {
  * @brief   Given a list of surfaces it creates a Bounding Volume
  *          Hierarchical Tree structure.
  *
- * @param surfaces - a list of surfaces that need to be converted to a BVHTree.
  * @returns          a BVHTree for the corresponding list of surfaces.
  * @see     _makeBVHTree function
  */
-int BVHTree::makeBVHTree(const vector<Surface *> &surfaces) {
+int BVHTree::makeBVHTree() {
     vector<BoundingBox *> bboxes;
     clock_t time;
 
     /*
      * A list of BoundingBox objects each corresponding to a surface.
      */
-    for (unsigned int i = 0; i < surfaces.size(); i++) {
-        BoundingBox *bbox = surfaces[i]->bbox;
+    for (unsigned int i = 0; i < surfaces->size(); i++) {
+        BoundingBox *bbox = surfaces->at(i)->bbox;
 
         bbox->setBoundedSurface(i);
         bboxes.push_back(bbox);
@@ -123,15 +123,8 @@ BVHNode *BVHTree::_makeBVHTree(vector<BoundingBox *> &bboxes,
  * @returns a boolean indicating if the ray was intercepted by any surface on
  *          it's way to the destination.
  */
-bool BVHTree::isIntercepted(const Ray &ray,
-                            const std::vector<Surface *> &surfaces,
-                            float t_max,
-                            int origin_surface_idx,
-                            int mode) const {
-    return this->_isIntercepted(this->root,
-                                surfaces, ray, t_max,
-                                origin_surface_idx,
-                                mode);
+bool BVHTree::isIntercepted(const Ray &ray, float t_max, int mode) const {
+    return this->_isIntercepted(this->root, ray, t_max, mode);
 }
 
 /**
@@ -153,11 +146,7 @@ bool BVHTree::isIntercepted(const Ray &ray,
  *                 destination.
  */
 bool BVHTree::_isIntercepted(const BVHNode *node,
-                             const vector<Surface *> &surfaces,
-                             const Ray &ray,
-                             float t_max,
-                             int origin_surface_idx,
-                             int mode) const {
+                             const Ray &ray, float t_max, int mode) const {
     if (node == nullptr)
         return false;
 
@@ -179,7 +168,7 @@ bool BVHTree::_isIntercepted(const BVHNode *node,
         if (mode == 1 && t_bbox < fabsf(t_max - 0.01f))
             return true;
 
-        float t = surfaces[surface_idx]->getIntersection(ray);
+        float t = surfaces->at(surface_idx)->getIntersection(ray);
 
         return (t >= 0 && t < fabsf(t_max - 0.01f));
     }
@@ -189,10 +178,8 @@ bool BVHTree::_isIntercepted(const BVHNode *node,
      * traverse the left and right nodes to find intersections. If either one
      * of the node returns an interception return true.
      */
-    return _isIntercepted(node->left, surfaces, ray,
-                          t_max, origin_surface_idx, mode) ||
-           _isIntercepted(node->right, surfaces, ray,
-                          t_max, origin_surface_idx, mode);
+    return _isIntercepted(node->left, ray, t_max, mode) ||
+           _isIntercepted(node->right, ray, t_max, mode);
 }
 
 /**
@@ -200,12 +187,8 @@ bool BVHTree::_isIntercepted(const BVHNode *node,
  * @see     _getClosestSurface
  */
 std::tuple<int, float>
-BVHTree::getClosestSurface(const std::vector<Surface *> &surfaces,
-                           const Ray &ray,
-                           int origin_surface_idx,
-                           int mode) const {
-    return _getClosestSurface(this->root, surfaces, ray,
-                              origin_surface_idx, mode);
+BVHTree::getClosestSurface(const Ray &ray, int mode) const {
+    return _getClosestSurface(this->root, ray, mode);
 }
 
 /**
@@ -213,10 +196,7 @@ BVHTree::getClosestSurface(const std::vector<Surface *> &surfaces,
  */
 tuple<int, float>
 BVHTree::_getClosestSurface(const BVHNode *node,
-                            const vector<Surface *> &surfaces,
-                            const Ray &ray,
-                            int origin_surface_idx,
-                            int mode) const {
+                            const Ray &ray, int mode) const {
     tuple<int, float> invalid =
             make_tuple(-1, numeric_limits<float>::infinity());
 
@@ -243,7 +223,7 @@ BVHTree::_getClosestSurface(const BVHNode *node,
         if (mode == 1 && t_bbox >= 0.01)
             return make_tuple(surface_idx, t_bbox);
 
-        float t = surfaces[surface_idx]->getIntersection(ray);
+        float t = surfaces->at(surface_idx)->getIntersection(ray);
 
         return (t >= 0.01)
                ? make_tuple(surface_idx, t)
@@ -258,13 +238,8 @@ BVHTree::_getClosestSurface(const BVHNode *node,
      */
     tuple<int, float> closest_surface_left, closest_surface_right;
 
-    closest_surface_left =
-            this->_getClosestSurface(node->left, surfaces,
-                                     ray, origin_surface_idx, mode);
-
-    closest_surface_right =
-            this->_getClosestSurface(node->right, surfaces,
-                                     ray, origin_surface_idx, mode);
+    closest_surface_left = this->_getClosestSurface(node->left, ray, mode);
+    closest_surface_right = this->_getClosestSurface(node->right, ray, mode);
 
     return (get<1>(closest_surface_left) < get<1>(closest_surface_right))
            ? closest_surface_left
