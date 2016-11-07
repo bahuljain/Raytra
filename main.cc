@@ -81,3 +81,6 @@ int main(int argc, char **argv) {
     cleanMemory(cam, surfaces, materials, lights);
     return 0;
 }
+
+
+
