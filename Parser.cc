@@ -9,7 +9,6 @@
 #include "include/Parser.h"
 #include "include/Sphere.h"
 #include "include/Triangle.h"
-#include "include/PointLight.h"
 
 // this is called from the parseSceneFile function, which uses
 // it to get the float from the correspoding position on the line.

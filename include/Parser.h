@@ -6,7 +6,6 @@
 #include "Camera.h"
 #include "Light.h"
 #include "Surface.h"
-#include "AmbientLight.h"
 #include <iostream>
 
 using namespace std;
@@ -22,9 +21,9 @@ void read_wavefront_file(const char *,
                          vector<int> &,
                          vector<float> &);
 
-void parseSceneFile(char *,
-                    vector<Surface *> &,
-                    vector<Material *> &,
-                    vector<Light *> &,
-                    Camera *);
+void parseSceneFile(char *filename,
+                    vector<Surface *> &surfaces,
+                    vector<Material *> &materials,
+                    vector<Light *> &lights,
+                    Camera *cam);
 

@@ -28,5 +28,33 @@ public:
     }
 };
 
+class PointLight : public Light {
+public:
+    PointLight(float x, float y, float z,
+               float r, float g, float b, float I) {
+        this->position = Point(x, y, z);
+        this->color = RGB(r, g, b);
+        this->intensity = I;
+
+        this->setType('p');
+    };
+
+    ~PointLight() {};
+};
+
+
+class AmbientLight : public Light {
+public:
+    AmbientLight(float r, float g, float b) {
+        this->color = RGB(r, g, b);
+        this->position = Point(0, 0, 0);
+        this->intensity = 1;
+
+        this->setType('a');
+    };
+
+    ~AmbientLight() {};
+};
+
 
 #endif //RAYTRA_LIGHT_H
