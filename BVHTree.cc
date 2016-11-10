@@ -206,6 +206,12 @@ BVHTree::getClosestSurface(const Ray &ray, int mode) const {
  * @returns a tuple containing the index of the surface that was closest
  *          along with the intersection point of the ray and the surface or its
  *          bounding box depending on the mode.
+ *
+ * @details to optimize further we first find the closest surface from the
+ * left sub-tree and use that as comparison metric with the right sub-tree.
+ * This prevents traversing down the right sub-tree to the leaf if the
+ * intermediate bounding box is further away from the surface obtained from
+ * the left sub-tree.
  */
 std::tuple<int, float>
 BVHTree::_getClosestSurface(const BVHNode *node, const Ray &ray, int mode,
