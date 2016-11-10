@@ -15,8 +15,14 @@ make
 ### Run
 
 ```
-./prog_out <scene_file_name> <output_image_name.exr>
+./prog_out <scene_file_name> <output_image_name.exr> [mode]
 ```
+
+#### Run Modes
+
+- empty - render using acceleration structures
+- 0     - render without using acceleration structures (this could take a lot of time if the scene has a lot of surfaces).
+- 1     - render the bounding boxes of the surface instead of the surface itself.
 
 ### Run Tests
 
