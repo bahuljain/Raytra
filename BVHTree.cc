@@ -188,7 +188,9 @@ bool BVHTree::_isIntercepted(const BVHNode *node,
  */
 std::tuple<int, float>
 BVHTree::getClosestSurface(const Ray &ray, int mode) const {
-    return _getClosestSurface(this->root, ray, mode);
+    auto closest = std::make_tuple(-1, numeric_limits<float>::infinity());
+
+    return _getClosestSurface(this->root, ray, mode, closest);
 }
 
 /**
@@ -205,22 +207,21 @@ BVHTree::getClosestSurface(const Ray &ray, int mode) const {
  *          along with the intersection point of the ray and the surface or its
  *          bounding box depending on the mode.
  */
-tuple<int, float>
-BVHTree::_getClosestSurface(const BVHNode *node,
-                            const Ray &ray, int mode) const {
-    tuple<int, float> invalid =
-            make_tuple(-1, numeric_limits<float>::infinity());
+std::tuple<int, float>
+BVHTree::_getClosestSurface(const BVHNode *node, const Ray &ray, int mode,
+                            const std::tuple<int, float> &closest) const {
+    float t_max = get<1>(closest);
 
     if (node == nullptr)
-        return invalid;
+        return closest;
 
     /*
      * If bounding box doesn't intersect with ray then dont bother going
      * further and just return (-1, infinity)
      */
     float t_bbox = node->thisBound->getIntersection(ray);
-    if (t_bbox == -1)
-        return invalid;
+    if (t_bbox == -1 || t_bbox > t_max)
+        return closest;
 
     /*
      * If both left and right nodes are nullptr, the node is a leaf node and we
@@ -231,12 +232,13 @@ BVHTree::_getClosestSurface(const BVHNode *node,
     if (node->left == nullptr && node->right == nullptr) {
         int surface_idx = node->thisBound->getBoundedSurface();
 
-        if (mode == 1 && t_bbox >= 0.01)
+        if (mode == 1 && t_bbox >= 0.01 && t_bbox < t_max)
             return make_tuple(surface_idx, t_bbox);
 
         float t = surfaces->at(surface_idx)->getIntersection(ray);
 
-        return (t >= 0.01) ? make_tuple(surface_idx, t) : invalid;
+        return (t >= 0.01 && t < t_max)
+               ? make_tuple(surface_idx, t) : closest;
     }
 
     /**
@@ -245,14 +247,12 @@ BVHTree::_getClosestSurface(const BVHNode *node,
      * closest surface from each side. Between the two of them return the one
      * that is closer.
      */
-    tuple<int, float> closest_surface_left, closest_surface_right;
+    tuple<int, float> closest_l, closest_r;
 
-    closest_surface_left = this->_getClosestSurface(node->left, ray, mode);
-    closest_surface_right = this->_getClosestSurface(node->right, ray, mode);
+    closest_l = this->_getClosestSurface(node->left, ray, mode, closest);
+    closest_r = this->_getClosestSurface(node->right, ray, mode, closest_l);
 
-    return (get<1>(closest_surface_left) < get<1>(closest_surface_right))
-           ? closest_surface_left
-           : closest_surface_right;
+    return closest_r;
 }
 
 void BVHTree::printTree() const {

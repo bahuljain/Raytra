@@ -22,7 +22,8 @@ private:
                         float t_max, int mode) const;
 
     std::tuple<int, float>
-    _getClosestSurface(const BVHNode *node, const Ray &ray, int mode) const;
+    _getClosestSurface(const BVHNode *node, const Ray &ray,
+                       int mode, const std::tuple<int, float> &closest) const;
 
     void printTree(BVHNode *node) const;
 
