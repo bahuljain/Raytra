@@ -140,7 +140,8 @@ tuple<int, float> Camera::getClosestSurface(const BVHTree &surfacesTree,
  * @retval FALSE - A surface doesn't intercept the ray before reaching its
  *                 destination.
  */
-bool Camera::isIntercepted(const BVHTree &surfacesTree, const vector<Surface *> &surfaces,
+bool Camera::isIntercepted(const BVHTree &surfacesTree,
+                           const vector<Surface *> &surfaces,
                            const Ray &ray, float t_max, int mode) const {
     if (mode != 0)
         return surfacesTree.isIntercepted(ray, t_max, mode);
@@ -171,9 +172,9 @@ bool Camera::isIntercepted(const BVHTree &surfacesTree, const vector<Surface *> 
 RGB Camera::getShadeAlongRay(const Ray &view_ray,
                              const vector<Surface *> &surfaces,
                              const vector<Light *> &lights,
+                             const BVHTree &surfacesTree,
                              int refl_limit,
                              int origin_surface_idx,
-                             const BVHTree &surfacesTree,
                              int mode) const {
     RGB shade(0, 0, 0);
 
@@ -255,9 +256,9 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
              * surface.
              */
             RGB reflection = this->getShadeAlongRay(reflected_ray, surfaces,
-                                                    lights, refl_limit - 1,
-                                                    closest_surface_idx,
-                                                    surfacesTree, mode);
+                                                    lights, surfacesTree,
+                                                    refl_limit - 1,
+                                                    closest_surface_idx, mode);
 
             shade.addRGB(
                     reflection.scaleRGB(surface->getReflectiveComponent()));
@@ -331,9 +332,8 @@ void Camera::render(Array2D <Rgba> &pixels,
             // TODO: should this ray originate from px_center or eye?
             Ray view_ray(this->eye, px_center.sub(this->eye).norm());
 
-            RGB shade = getShadeAlongRay(view_ray, surfaces, lights,
-                                         MAX_RECURSIVE_LIMIT, -1,
-                                         surfaceTree, mode);
+            RGB shade = getShadeAlongRay(view_ray, surfaces, lights, surfaceTree
+                                         , MAX_RECURSIVE_LIMIT, -1, mode);
 
             px.r = shade.r;
             px.g = shade.g;

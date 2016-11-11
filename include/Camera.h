@@ -34,9 +34,9 @@ private:
     RGB getShadeAlongRay(const Ray &view_ray,
                          const vector<Surface *> &surfaces,
                          const vector<Light *> &lights,
+                         const BVHTree &surfacesTree,
                          int refl_limit,
                          int origin_surface_idx,
-                         const BVHTree &surfacesTree,
                          int mode) const;
 
 public:

@@ -46,7 +46,6 @@ public:
     int getMaxHeight();
 
     void printTree() const;
-
 };
 
 #endif //RAYTRA_BVHTREE_H
