@@ -63,8 +63,10 @@ int main(int argc, char **argv) {
 
     Array2D <Rgba> pixels;
 
+    int strata = 4;
+
     if (argc == 3)
-        cam->render(pixels, surfaces, materials, lights, -1);
+        cam->render(pixels, surfaces, materials, lights, -1, strata);
     else {
         int mode = atoi(argv[3]);
 
@@ -73,7 +75,7 @@ int main(int argc, char **argv) {
             return -1;
         }
 
-        cam->render(pixels, surfaces, materials, lights, mode);
+        cam->render(pixels, surfaces, materials, lights, mode, strata);
     }
 
     writeRgba(argv[2], &pixels[0][0], cam->pw, cam->ph);

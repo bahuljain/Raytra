@@ -73,17 +73,22 @@ void Camera::setValues(float x, float y, float z,
  * @param height    - the height of the image plane
  * @returns         - the pixel center co-ordinates for the given pixel
  */
-Point Camera::getPixelCenter(int i, int j,
-                             float width, float height) const {
+Point Camera::getPixelCenter(int i, int j, float width, float height,
+                             int p, int q, int strata) const {
     Point center;
 
-    float x = left + width * (i + 0.5f) / pw;
-    float y = bottom + height * (j + 0.5f) / ph;
+    float x_d = (p + ((float) rand() / RAND_MAX)) / strata;
+    float y_d = (q + ((float) rand() / RAND_MAX)) / strata;
+
+    float x = left + width * (i + x_d) / pw;
+    float y = bottom + height * (j + y_d) / ph;
 
     center = eye
             .moveAlong(u.times(x))
             .moveAlong(v.times(y))
             .moveAlong(w.times(-d));
+
+//    center.printPoint();
 
     return center;
 }
@@ -287,15 +292,16 @@ void Camera::render(Array2D <Rgba> &pixels,
                     const vector<Surface *> &surfaces,
                     const vector<Material *> &materials,
                     const vector<Light *> &lights,
-                    int mode) const {
+                    int mode, int p_strata) const {
 
     float w = this->right - this->left;
     float h = this->top - this->bottom;
     float total_pixels = this->ph * this->pw;
 
-    BVHTree surfaceTree(&surfaces);
-
     pixels.resizeErase(this->ph, this->pw);
+
+
+    BVHTree surfaceTree(&surfaces);
 
     if (mode == 0) {
         cout << "Rendering without acceleration" << endl;
@@ -310,7 +316,6 @@ void Camera::render(Array2D <Rgba> &pixels,
     surfaceTree.makeBVHTree();
 
     render:
-
     cout << endl;
 
     ProgressBar progress = ProgressBar();
@@ -319,25 +324,37 @@ void Camera::render(Array2D <Rgba> &pixels,
     for (int i = 0; i < this->ph; i++) {
         for (int j = 0; j < this->pw; j++) {
 
-            Point px_center;
-
             Rgba &px = pixels[i][j];
             px.r = 0;
             px.g = 0;
             px.b = 0;
             px.a = 1;
 
-            px_center = this->getPixelCenter(j, i, w, h);
+            for (int p = 0; p < p_strata; p++) {
+                for (int q = 0; q < p_strata; q++) {
+                    Point px_center;
 
-            // TODO: should this ray originate from px_center or eye?
-            Ray view_ray(this->eye, px_center.sub(this->eye).norm());
+                    px_center = this->getPixelCenter(j, i, w, h, p, q, p_strata);
 
-            RGB shade = getShadeAlongRay(view_ray, surfaces, lights, surfaceTree
-                                         , MAX_RECURSIVE_LIMIT, -1, mode);
+                    // TODO: should this ray originate from px_center or eye?
+                    Ray view_ray(this->eye, px_center.sub(this->eye).norm());
 
-            px.r = shade.r;
-            px.g = shade.g;
-            px.b = shade.b;
+                    RGB shade = getShadeAlongRay(view_ray, surfaces, lights,
+                                                 surfaceTree,
+                                                 MAX_RECURSIVE_LIMIT, -1,
+                                                 mode);
+
+                    px.r += shade.r;
+                    px.g += shade.g;
+                    px.b += shade.b;
+                }
+            }
+
+            int total_samples = p_strata * p_strata;
+
+            px.r /= total_samples;
+            px.g /= total_samples;
+            px.b /= total_samples;
 
             progress.log((i + 1) * (j + 1), total_pixels);
         }
