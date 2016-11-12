@@ -46,8 +46,9 @@ void cleanMemory(Camera *cam,
 
 int main(int argc, char **argv) {
 
-    if (argc < 3) {
-        cerr << "usage: raytra scenefilename outputfilename.exr <mode>" << endl;
+    if (argc < 4) {
+        cerr << "usage: raytra scenefilename outputfilename.exr "
+                "<primary_samples>" << endl;
         return -1;
     }
 
@@ -63,20 +64,14 @@ int main(int argc, char **argv) {
 
     Array2D <Rgba> pixels;
 
-    int strata = 4;
+    int primary_samples = atoi(argv[3]);
 
-    if (argc == 3)
-        cam->render(pixels, surfaces, materials, lights, -1, strata);
-    else {
-        int mode = atoi(argv[3]);
-
-        if (mode != 0 && mode != 1) {
-            cerr << "error: incorrect mode of operation" << endl;
-            return -1;
-        }
-
-        cam->render(pixels, surfaces, materials, lights, mode, strata);
+    if (primary_samples < 1 || primary_samples > 10) {
+        cerr << "error: too less/many number of samples" << endl;
+        return -1;
     }
+
+    cam->render(pixels, surfaces, materials, lights, -1, primary_samples);
 
     writeRgba(argv[2], &pixels[0][0], cam->pw, cam->ph);
 
