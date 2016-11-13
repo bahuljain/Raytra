@@ -48,11 +48,9 @@ int main(int argc, char **argv) {
     Camera *cam = new Camera();
     vector<Surface *> surfaces;
     vector<Material *> materials;
-    vector<Light *> lights;
     vector<PointLight *> plights;
     vector<SquareLight *> slights;
     AmbientLight ambient;
-
 
     parseSceneFile(argv[1], surfaces, materials, plights, slights,
                    ambient, cam);
@@ -85,6 +83,3 @@ int main(int argc, char **argv) {
     cleanMemory(cam, surfaces, materials, plights, slights);
     return 0;
 }
-
-
-

@@ -33,6 +33,22 @@ private:
                        const vector<Surface *> &surfaces,
                        const Ray &ray, float t_max, int mode) const;
 
+    RGB diffuseFromPointLights(const vector<PointLight *> &plights,
+                               const vector<Surface *> &surfaces,
+                               const BVHTree &surfacesTree,
+                               const Surface *surface,
+                               const Ray &view_ray,
+                               const Point &intersection,
+                               int mode) const;
+
+    RGB diffuseFromSquareLights(const vector<SquareLight *> &slights,
+                                const vector<Surface *> &surfaces,
+                                const BVHTree &surfacesTree,
+                                const Surface *surface,
+                                const Ray &view_ray,
+                                const Point &intersection,
+                                int mode, int s_strata) const;
+
     RGB getShadeAlongRay(const Ray &view_ray,
                          const vector<Surface *> &surfaces,
                          const vector<PointLight *> &plights,

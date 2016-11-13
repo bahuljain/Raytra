@@ -22,7 +22,7 @@ public:
         this->b = b;
     }
 
-    inline void addRGB(const RGB shade) {
+    inline void add(const RGB shade) {
         r += shade.r;
         g += shade.g;
         b += shade.b;

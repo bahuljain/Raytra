@@ -159,6 +159,77 @@ bool Camera::isIntercepted(const BVHTree &surfacesTree,
     return false;
 }
 
+RGB Camera::diffuseFromPointLights(const vector<PointLight *> &plights,
+                                   const vector<Surface *> &surfaces,
+                                   const BVHTree &surfacesTree,
+                                   const Surface *surface,
+                                   const Ray &view_ray,
+                                   const Point &intersection,
+                                   int mode) const {
+    RGB shade(0, 0, 0);
+    for (PointLight *light : plights) {
+        /*
+         * A light ray going from the light source to the point of
+         * intersection on the surface.
+         */
+        Ray light_ray(light->position,
+                      intersection.sub(light->position).norm());
+
+        /*
+         * The parameterized representation of the intersection point with
+         * the surface on the light ray.
+         */
+        float t_max = light_ray.getOffsetFromOrigin(intersection);
+
+        /*
+         * If a light ray is not intercepted by another surface on its way
+         * to the intersection point then compute the diffuse and specular
+         * shading on the surface.
+         */
+        if (!isIntercepted(surfacesTree, surfaces, light_ray, t_max, mode))
+            shade.add(
+                    surface->phongShading(light->color, light_ray, view_ray,
+                                          intersection, mode));
+    }
+    return shade;
+}
+
+RGB Camera::diffuseFromSquareLights(const vector<SquareLight *> &slights,
+                                    const vector<Surface *> &surfaces,
+                                    const BVHTree &surfacesTree,
+                                    const Surface *surface,
+                                    const Ray &view_ray,
+                                    const Point &intersection,
+                                    int mode, int s_strata) const {
+    RGB shade(0, 0, 0);
+    for (SquareLight *light :slights) {
+        for (int p = 0; p < s_strata; p++) {
+            for (int q = 0; q < s_strata; q++) {
+                Point light_sample = light->getLightSample(p, q, s_strata);
+
+                Ray light_ray(light_sample,
+                              intersection.sub(light_sample).norm());
+
+                float t_max = light_ray.getOffsetFromOrigin(intersection);
+
+                if (!isIntercepted(surfacesTree, surfaces, light_ray,
+                                   t_max, mode)) {
+                    float cos = fmaxf(0, light_ray.direction.dot(light->w));
+                    RGB light_color = light->color.scaleRGB(cos);
+
+                    RGB c = surface->phongShading(light_color, light_ray,
+                                                  view_ray, intersection,
+                                                  mode);
+
+                    float avg_factor = 1.0f / (s_strata * s_strata);
+                    shade.add(c.scaleRGB(avg_factor));
+                }
+            }
+        }
+    }
+    return shade;
+}
+
 /**
  * @name    getShadeAlongRay
  * @brief   Computes the shading along the given view ray
@@ -185,12 +256,8 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
                              int mode, int s_strata) const {
     RGB shade(0, 0, 0);
 
-    /*
-     * If the number of reflections exceed beyond a limit there shouldn't be
-     * any more light returned.
-     */
-    if (refl_limit == 0)
-        return shade;
+    /* No reflections beyond a limit */
+    if (refl_limit == 0) return shade;
 
     /* Get closest surface along the ray */
     tuple<int, float> closest_surface;
@@ -203,62 +270,21 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
         Point intersection = view_ray.getPointOnIt(t);
         Surface *surface = surfaces[closest_surface_idx];
 
-        for (PointLight *light : plights) {
-            /*
-             * A light ray going from the light source to the point of
-             * intersection on the surface.
-             */
-            Ray light_ray(light->position,
-                          intersection.sub(light->position).norm());
-
-            /*
-             * The parameterized representation of the intersection point with
-             * the surface on the light ray.
-             */
-            float t_max = light_ray.getOffsetFromOrigin(intersection);
-
-            /*
-             * If a light ray is not intercepted by another surface on its way
-             * to the intersection point then compute the diffuse and specular
-             * shading on the surface.
-             */
-            if (!isIntercepted(surfacesTree, surfaces, light_ray, t_max, mode))
-                shade.addRGB(surface->phongShading(light, light_ray, view_ray,
-                                                   intersection, mode));
-        }
-
-        for (SquareLight *light :slights) {
-            for (int p = 0; p < s_strata; p++) {
-                for (int q = 0; q < s_strata; q++) {
-                    Point light_sample = light->getLightSample(p, q, s_strata);
-
-                    Ray light_ray(light_sample,
-                                  intersection.sub(light_sample).norm());
-
-                    float t_max = light_ray.getOffsetFromOrigin(intersection);
-
-                    if (!isIntercepted(surfacesTree, surfaces, light_ray,
-                                       t_max, mode)) {
-                        RGB c = surface->phongShading2(light, light_ray,
-                                                       view_ray,intersection,
-                                                       mode);
-                        float avg_factor = 1.0f / (s_strata * s_strata);
-                        shade.addRGB(c.scaleRGB(avg_factor));
-                    }
-                }
-            }
-        }
+        /* Get diffuse shading from all Point & Square Lights */
+        shade.add(diffuseFromPointLights(plights, surfaces, surfacesTree,
+                                         surface, view_ray, intersection,
+                                         mode));
+        shade.add(diffuseFromSquareLights(slights, surfaces, surfacesTree,
+                                          surface, view_ray, intersection,
+                                          mode, s_strata));
 
         /*
-         * If the light source is an ambient light then simply add it to the
-         * shading.
+         * Ambient Light Shading
          * Note: Only add ambient light if computing shading for view ray
          * and not reflected/refracted rays.
          */
-        if (origin_surface_idx == -1) {
-            shade.addRGB(surface->getDiffuseComponent()
-                                 .scaleRGB(ambient.color));
-        }
+        if (origin_surface_idx == -1)
+            shade.add(surface->getDiffuseComponent().scaleRGB(ambient.color));
 
         /*
          * If the surface is reflective and is front-faced with respect to
@@ -290,7 +316,7 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
                                                     closest_surface_idx, mode,
                                                     s_strata);
 
-            shade.addRGB(
+            shade.add(
                     reflection.scaleRGB(surface->getReflectiveComponent()));
         }
     }
@@ -351,9 +377,7 @@ void Camera::render(Array2D <Rgba> &pixels, const vector<Surface *> &surfaces,
         for (int j = 0; j < this->pw; j++) {
 
             Rgba &px = pixels[i][j];
-            px.r = 0;
-            px.g = 0;
-            px.b = 0;
+            px.r = px.g = px.b = 0;
             px.a = 1;
 
             for (int p = 0; p < p_strata; p++) {
