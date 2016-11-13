@@ -24,6 +24,8 @@ void read_wavefront_file(const char *,
 void parseSceneFile(char *filename,
                     vector<Surface *> &surfaces,
                     vector<Material *> &materials,
-                    vector<Light *> &lights,
+                    vector<PointLight *> &plights,
+                    vector<SquareLight *> &slights,
+                    AmbientLight &ambient,
                     Camera *cam);
 

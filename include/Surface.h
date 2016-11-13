@@ -40,7 +40,7 @@ public:
 
     RGB getSpecularComponent() const;
 
-    RGB phongShading(const Light *light,
+    RGB phongShading(const PointLight *light,
                      const Ray &light_ray,
                      const Ray &view_ray,
                      const Point &intersection,

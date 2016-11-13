@@ -28,20 +28,13 @@ void writeRgba(const char fileName[], const Rgba *pixels,
 void cleanMemory(Camera *cam,
                  vector<Surface *> &surfaces,
                  vector<Material *> &materials,
-                 vector<Light *> &lights) {
+                 vector<PointLight *> &plights,
+                 vector<SquareLight *> &slights) {
     delete cam;
-
-    for (Surface *surface : surfaces) {
-        delete surface;
-    }
-
-    for (Material *material : materials) {
-        delete material;
-    }
-
-    for (Light *light : lights) {
-        delete light;
-    }
+    for (auto *surface : surfaces) delete surface;
+    for (auto *material : materials) delete material;
+    for (auto *light : plights) delete light;
+    for (auto *light : slights) delete light;
 }
 
 int main(int argc, char **argv) {
@@ -56,26 +49,40 @@ int main(int argc, char **argv) {
     vector<Surface *> surfaces;
     vector<Material *> materials;
     vector<Light *> lights;
+    vector<PointLight *> plights;
+    vector<SquareLight *> slights;
+    AmbientLight ambient;
 
-    parseSceneFile(argv[1], surfaces, materials, lights, cam);
+
+    parseSceneFile(argv[1], surfaces, materials, plights, slights,
+                   ambient, cam);
+
     cout << "Surfaces: " << surfaces.size() << endl;
     cout << "Materials: " << materials.size() - 1 << endl;
-    cout << "Lights: " << lights.size() << endl << endl;
+    cout << "Lights: " << slights.size() + plights.size() + 1 << endl << endl;
 
     Array2D <Rgba> pixels;
 
     int primary_samples = atoi(argv[3]);
+    int shadow_samples = 1;
 
     if (primary_samples < 1 || primary_samples > 10) {
-        cerr << "error: too less/many number of samples" << endl;
+        cerr << "error: too less/many number of primary samples" << endl;
         return -1;
     }
 
-    cam->render(pixels, surfaces, materials, lights, -1, primary_samples);
+    if (shadow_samples < 1 || shadow_samples > 10) {
+        cerr << "error: too less/many number of shadow samples" << endl;
+        return -1;
+    }
+
+    // TODO: add mode info -- for now defaulting to mode = -1
+    cam->render(pixels, surfaces, materials, plights, slights, ambient, -1,
+                primary_samples, shadow_samples);
 
     writeRgba(argv[2], &pixels[0][0], cam->pw, cam->ph);
 
-    cleanMemory(cam, surfaces, materials, lights);
+    cleanMemory(cam, surfaces, materials, plights, slights);
     return 0;
 }
 

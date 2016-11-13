@@ -20,7 +20,7 @@
  * @returns - an RGB object representing the shade on the surface determined
             using phong's shading model.
  */
-RGB Surface::phongShading(const Light *light,
+RGB Surface::phongShading(const PointLight *light,
                           const Ray &light_ray,
                           const Ray &view_ray,
                           const Point &intersection,

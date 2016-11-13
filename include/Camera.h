@@ -35,7 +35,9 @@ private:
 
     RGB getShadeAlongRay(const Ray &view_ray,
                          const vector<Surface *> &surfaces,
-                         const vector<Light *> &lights,
+                         const vector<PointLight *> &plights,
+                         const vector<SquareLight *> &slights,
+                         const AmbientLight &ambient,
                          const BVHTree &surfacesTree,
                          int refl_limit,
                          int origin_surface_idx,
@@ -64,8 +66,10 @@ public:
     void render(Array2D <Rgba> &pixels,
                 const vector<Surface *> &surfaces,
                 const vector<Material *> &materials,
-                const vector<Light *> &lights,
-                int mode, int p_strata) const;
+                const vector<PointLight *> &plights,
+                const vector<SquareLight *> &slights,
+                const AmbientLight &ambient,
+                int mode, int p_strata, int s_strata) const;
 };
 
 

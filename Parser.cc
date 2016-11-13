@@ -162,7 +162,9 @@ void read_wavefront_file(
 void parseSceneFile(char *filename,
                     vector<Surface *> &surfaces,
                     vector<Material *> &materials,
-                    vector<Light *> &lights,
+                    vector<PointLight *> &plights,
+                    vector<SquareLight *> &slights,
+                    AmbientLight &ambient,
                     Camera *cam) {
     int Cams = 0;
 
@@ -274,14 +276,34 @@ void parseSceneFile(char *filename,
 
                         PointLight *light = new PointLight(x, y, z,
                                                            r, g, b, 1.0);
-                        lights.push_back(light);
-
+                        plights.push_back(light);
                         break;
                     }
-/*
-                    case 'd':   // directional light
+                    case 's': {  // directional light
+                        float x, y, z, nx, ny, nz, ux, uy, uz, len, r, g, b;
+
+                        x = getTokenAsFloat(line, 2);
+                        y = getTokenAsFloat(line, 3);
+                        z = getTokenAsFloat(line, 4);
+                        nx = getTokenAsFloat(line, 5);
+                        ny = getTokenAsFloat(line, 6);
+                        nz = getTokenAsFloat(line, 7);
+                        ux = getTokenAsFloat(line, 8);
+                        uy = getTokenAsFloat(line, 9);
+                        uz = getTokenAsFloat(line, 10);
+                        len = getTokenAsFloat(line, 11);
+                        r = getTokenAsFloat(line, 12);
+                        g = getTokenAsFloat(line, 13);
+                        b = getTokenAsFloat(line, 14);
+
+                        SquareLight *light = new SquareLight(x, y, z,
+                                                             nx, ny, nz,
+                                                             ux, uy, uz,
+                                                             len, r, g, b);
+
+                        slights.push_back(light);
                         break;
-*/
+                    }
                     case 'a': {  // ambient light
                         float r, g, b;
 
@@ -289,9 +311,7 @@ void parseSceneFile(char *filename,
                         g = getTokenAsFloat(line, 2);
                         b = getTokenAsFloat(line, 2);
 
-                        AmbientLight *light = new AmbientLight(r, g, b);
-                        lights.push_back(light);
-
+                        ambient = AmbientLight(r, g, b);
                         break;
                     }
                 }

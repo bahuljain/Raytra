@@ -176,7 +176,9 @@ bool Camera::isIntercepted(const BVHTree &surfacesTree,
  */
 RGB Camera::getShadeAlongRay(const Ray &view_ray,
                              const vector<Surface *> &surfaces,
-                             const vector<Light *> &lights,
+                             const vector<PointLight *> &plights,
+                             const vector<SquareLight *> &slights,
+                             const AmbientLight &ambient,
                              const BVHTree &surfacesTree,
                              int refl_limit,
                              int origin_surface_idx,
@@ -201,19 +203,7 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
         Point intersection = view_ray.getPointOnIt(t);
         Surface *surface = surfaces[closest_surface_idx];
 
-        for (Light *light : lights) {
-            /*
-             * If the light source is an ambient light then simply add it to the
-             * shading.
-             * Note: Only add ambient light if computing shading for view ray
-             * and not reflected/refracted rays.
-             */
-            if (light->getType() == 'a' && origin_surface_idx == -1) {
-                shade.addRGB(surface->getDiffuseComponent()
-                                     .scaleRGB(light->color));
-                continue;
-            }
-
+        for (PointLight *light : plights) {
             /*
              * A light ray going from the light source to the point of
              * intersection on the surface.
@@ -235,6 +225,17 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
             if (!isIntercepted(surfacesTree, surfaces, light_ray, t_max, mode))
                 shade.addRGB(surface->phongShading(light, light_ray, view_ray,
                                                    intersection, mode));
+        }
+
+        /*
+         * If the light source is an ambient light then simply add it to the
+         * shading.
+         * Note: Only add ambient light if computing shading for view ray
+         * and not reflected/refracted rays.
+         */
+        if (origin_surface_idx == -1) {
+            shade.addRGB(surface->getDiffuseComponent()
+                                 .scaleRGB(ambient.color));
         }
 
         /*
@@ -261,7 +262,8 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
              * surface.
              */
             RGB reflection = this->getShadeAlongRay(reflected_ray, surfaces,
-                                                    lights, surfacesTree,
+                                                    plights, slights, ambient,
+                                                    surfacesTree,
                                                     refl_limit - 1,
                                                     closest_surface_idx, mode);
 
@@ -288,11 +290,12 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
  *          that pixel. Use the various light sources and materials to obtain
  *          the shading for each pixel.
  */
-void Camera::render(Array2D <Rgba> &pixels,
-                    const vector<Surface *> &surfaces,
+void Camera::render(Array2D <Rgba> &pixels, const vector<Surface *> &surfaces,
                     const vector<Material *> &materials,
-                    const vector<Light *> &lights,
-                    int mode, int p_strata) const {
+                    const vector<PointLight *> &plights,
+                    const vector<SquareLight *> &slights,
+                    const AmbientLight &ambient,
+                    int mode, int p_strata, int s_strata) const {
 
     float w = this->right - this->left;
     float h = this->top - this->bottom;
@@ -334,13 +337,14 @@ void Camera::render(Array2D <Rgba> &pixels,
                 for (int q = 0; q < p_strata; q++) {
                     Point px_sample;
 
-                    px_sample = this->getPixelSample(j, i, w, h, p, q, p_strata);
+                    px_sample = this->getPixelSample(j, i, w, h, p, q,
+                                                     p_strata);
 
                     // TODO: should this ray originate from px_sample or eye?
                     Ray view_ray(this->eye, px_sample.sub(this->eye).norm());
 
-                    RGB shade = getShadeAlongRay(view_ray, surfaces, lights,
-                                                 surfaceTree,
+                    RGB shade = getShadeAlongRay(view_ray, surfaces, plights,
+                                                 slights, ambient, surfaceTree,
                                                  MAX_RECURSIVE_LIMIT, -1,
                                                  mode);
 
