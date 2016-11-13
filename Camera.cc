@@ -73,9 +73,9 @@ void Camera::setValues(float x, float y, float z,
  * @param height    - the height of the image plane
  * @returns         - the pixel center co-ordinates for the given pixel
  */
-Point Camera::getPixelCenter(int i, int j, float width, float height,
+Point Camera::getPixelSample(int i, int j, float width, float height,
                              int p, int q, int strata) const {
-    Point center;
+    Point sample;
 
     float x_d = (p + ((float) rand() / RAND_MAX)) / strata;
     float y_d = (q + ((float) rand() / RAND_MAX)) / strata;
@@ -83,14 +83,14 @@ Point Camera::getPixelCenter(int i, int j, float width, float height,
     float x = left + width * (i + x_d) / pw;
     float y = bottom + height * (j + y_d) / ph;
 
-    center = eye
+    sample = eye
             .moveAlong(u.times(x))
             .moveAlong(v.times(y))
             .moveAlong(w.times(-d));
 
-//    center.printPoint();
+//    sample.printPoint();
 
-    return center;
+    return sample;
 }
 
 /**
@@ -332,12 +332,12 @@ void Camera::render(Array2D <Rgba> &pixels,
 
             for (int p = 0; p < p_strata; p++) {
                 for (int q = 0; q < p_strata; q++) {
-                    Point px_center;
+                    Point px_sample;
 
-                    px_center = this->getPixelCenter(j, i, w, h, p, q, p_strata);
+                    px_sample = this->getPixelSample(j, i, w, h, p, q, p_strata);
 
-                    // TODO: should this ray originate from px_center or eye?
-                    Ray view_ray(this->eye, px_center.sub(this->eye).norm());
+                    // TODO: should this ray originate from px_sample or eye?
+                    Ray view_ray(this->eye, px_sample.sub(this->eye).norm());
 
                     RGB shade = getShadeAlongRay(view_ray, surfaces, lights,
                                                  surfaceTree,

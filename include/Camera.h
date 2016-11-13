@@ -21,7 +21,7 @@ static const int MAX_RECURSIVE_LIMIT = 20;
 class Camera {
 private:
     Point
-    getPixelCenter(int i, int j,
+    getPixelSample(int i, int j,
                    float width, float height,
                    int p, int q, int strata) const;
 
