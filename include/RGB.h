@@ -31,6 +31,14 @@ public:
     inline RGB scaleRGB(const RGB shade) const {
         return RGB(r * shade.r, g * shade.g, b * shade.b);
     };
+
+    inline RGB scaleRGB(float c) const {
+        return RGB(r * c, g * c, b * c);
+    };
+
+    inline void printRGB() const {
+        std::cout << "r: " << r << ", g: " << g << ", b: " << b << std::endl;
+    };
 };
 
 

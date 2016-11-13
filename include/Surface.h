@@ -45,6 +45,12 @@ public:
                      const Ray &view_ray,
                      const Point &intersection,
                      int mode) const;
+
+    RGB phongShading2(const SquareLight *light,
+                     const Ray &light_ray,
+                     const Ray &view_ray,
+                     const Point &intersection,
+                     int mode) const;
 };
 
 

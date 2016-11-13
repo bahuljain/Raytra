@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
     Array2D <Rgba> pixels;
 
     int primary_samples = atoi(argv[3]);
-    int shadow_samples = 1;
+    int shadow_samples = 4;
 
     if (primary_samples < 1 || primary_samples > 10) {
         cerr << "error: too less/many number of primary samples" << endl;

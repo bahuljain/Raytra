@@ -182,7 +182,7 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
                              const BVHTree &surfacesTree,
                              int refl_limit,
                              int origin_surface_idx,
-                             int mode) const {
+                             int mode, int s_strata) const {
     RGB shade(0, 0, 0);
 
     /*
@@ -227,6 +227,28 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
                                                    intersection, mode));
         }
 
+        for (SquareLight *light :slights) {
+            for (int p = 0; p < s_strata; p++) {
+                for (int q = 0; q < s_strata; q++) {
+                    Point light_sample = light->getLightSample(p, q, s_strata);
+
+                    Ray light_ray(light_sample,
+                                  intersection.sub(light_sample).norm());
+
+                    float t_max = light_ray.getOffsetFromOrigin(intersection);
+
+                    if (!isIntercepted(surfacesTree, surfaces, light_ray,
+                                       t_max, mode)) {
+                        RGB c = surface->phongShading2(light, light_ray,
+                                                       view_ray,intersection,
+                                                       mode);
+                        float avg_factor = 1.0f / (s_strata * s_strata);
+                        shade.addRGB(c.scaleRGB(avg_factor));
+                    }
+                }
+            }
+        }
+
         /*
          * If the light source is an ambient light then simply add it to the
          * shading.
@@ -265,7 +287,8 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
                                                     plights, slights, ambient,
                                                     surfacesTree,
                                                     refl_limit - 1,
-                                                    closest_surface_idx, mode);
+                                                    closest_surface_idx, mode,
+                                                    s_strata);
 
             shade.addRGB(
                     reflection.scaleRGB(surface->getReflectiveComponent()));
@@ -346,7 +369,7 @@ void Camera::render(Array2D <Rgba> &pixels, const vector<Surface *> &surfaces,
                     RGB shade = getShadeAlongRay(view_ray, surfaces, plights,
                                                  slights, ambient, surfaceTree,
                                                  MAX_RECURSIVE_LIMIT, -1,
-                                                 mode);
+                                                 mode, s_strata);
 
                     px.r += shade.r;
                     px.g += shade.g;

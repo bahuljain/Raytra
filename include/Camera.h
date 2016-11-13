@@ -41,7 +41,7 @@ private:
                          const BVHTree &surfacesTree,
                          int refl_limit,
                          int origin_surface_idx,
-                         int mode) const;
+                         int mode, int s_strata) const;
 
 public:
     Point eye;
