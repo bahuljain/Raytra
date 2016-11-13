@@ -74,8 +74,18 @@ int main(int argc, char **argv) {
         return -1;
     }
 
+    int mode = -1;
+
+    if (argc == 6) {
+        mode = atoi(argv[5]);
+        if (mode != 0 && mode != 1) {
+            cerr << "error: incorrect mode of operation" << endl;
+            return -1;
+        }
+    }
+
     // TODO: add mode info -- for now defaulting to mode = -1
-    cam->render(pixels, surfaces, materials, plights, slights, ambient, -1,
+    cam->render(pixels, surfaces, materials, plights, slights, ambient, mode,
                 primary_samples, shadow_samples);
 
     writeRgba(argv[2], &pixels[0][0], cam->pw, cam->ph);

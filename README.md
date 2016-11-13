@@ -15,7 +15,7 @@ make
 ### Run
 
 ```
-./prog_out <scene_file_name> <output_image_name.exr> <primary_ray_samples> <shadow_ray_samples>
+./prog_out <scene_file_name> <output_image_name.exr> <primary_ray_samples> <shadow_ray_samples> [mode]
 ```
 
 #### Run Modes
