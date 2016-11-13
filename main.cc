@@ -39,9 +39,9 @@ void cleanMemory(Camera *cam,
 
 int main(int argc, char **argv) {
 
-    if (argc < 4) {
+    if (argc < 5) {
         cerr << "usage: raytra scenefilename outputfilename.exr "
-                "<primary_samples>" << endl;
+                "<primary_samples> <shadow_samples>" << endl;
         return -1;
     }
 
@@ -64,14 +64,14 @@ int main(int argc, char **argv) {
     Array2D <Rgba> pixels;
 
     int primary_samples = atoi(argv[3]);
-    int shadow_samples = 4;
+    int shadow_samples = atoi(argv[4]);
 
-    if (primary_samples < 1 || primary_samples > 10) {
+    if (primary_samples < 1 || primary_samples > 100) {
         cerr << "error: too less/many number of primary samples" << endl;
         return -1;
     }
 
-    if (shadow_samples < 1 || shadow_samples > 10) {
+    if (shadow_samples < 1 || shadow_samples > 100) {
         cerr << "error: too less/many number of shadow samples" << endl;
         return -1;
     }
