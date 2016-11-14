@@ -347,6 +347,7 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
  * @brief   Renders the image using the ray tracing algorithm.
  *
  * @param pixels    - a two dimensional array of pixels representing the image.
+ * @param surfaces  - a vector of all the surfaces in the scene.
  * @param materials - a vector of all the materials used.
  * @param plights   - a vector of all the point lights in the scene.
  * @param slights   - a vector of all the square lights in the scene.
@@ -375,7 +376,6 @@ void Camera::render(Array2D <Rgba> &pixels, const vector<Surface *> &surfaces,
 
     pixels.resizeErase(this->ph, this->pw);
 
-
     BVHTree surfaceTree(&surfaces);
 
     if (mode == 0) {
@@ -400,8 +400,7 @@ void Camera::render(Array2D <Rgba> &pixels, const vector<Surface *> &surfaces,
         for (int j = 0; j < this->pw; j++) {
 
             Rgba &px = pixels[i][j];
-            px.r = px.g = px.b = 0;
-            px.a = 1;
+            RGB shade(0, 0, 0);
 
             for (int p = 0; p < p_strata; p++) {
                 for (int q = 0; q < p_strata; q++) {
@@ -413,22 +412,20 @@ void Camera::render(Array2D <Rgba> &pixels, const vector<Surface *> &surfaces,
                     // TODO: should this ray originate from px_sample or eye?
                     Ray view_ray(this->eye, px_sample.sub(this->eye).norm());
 
-                    RGB shade = getShadeAlongRay(view_ray, plights, slights,
-                                                 ambient, surfaceTree,
-                                                 RECURSIVE_LIMIT, -1,
-                                                 mode, s_strata);
-
-                    px.r += shade.r;
-                    px.g += shade.g;
-                    px.b += shade.b;
+                    shade.add(getShadeAlongRay(view_ray, plights, slights,
+                                               ambient, surfaceTree,
+                                               RECURSIVE_LIMIT, -1, mode,
+                                               s_strata));
                 }
             }
 
-            int total_samples = p_strata * p_strata;
+            float avg_factor = 1.0f / (p_strata * p_strata);
+            shade = shade.times(avg_factor);
 
-            px.r /= total_samples;
-            px.g /= total_samples;
-            px.b /= total_samples;
+            px.r = shade.r;
+            px.g = shade.g;
+            px.b = shade.b;
+            px.a = 1;
 
             progress.log((i + 1) * (j + 1), total_pixels);
         }
