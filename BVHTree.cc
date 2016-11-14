@@ -32,7 +32,7 @@ int BVHTree::makeBVHTree() {
      * A list of BoundingBox objects each corresponding to a surface.
      */
     for (unsigned int i = 0; i < surfaces->size(); i++) {
-        BoundingBox *bbox = surfaces->at(i)->bbox;
+        BoundingBox *bbox = getSurfaceAt(i)->bbox;
 
         bbox->setBoundedSurface(i);
         bboxes.push_back(bbox);
@@ -168,7 +168,7 @@ bool BVHTree::_isIntercepted(const BVHNode *node,
         if (mode == 1 && t_bbox < fabsf(t_max - 0.01f))
             return true;
 
-        float t = surfaces->at(surface_idx)->getIntersection(ray);
+        float t = getSurfaceAt(surface_idx)->getIntersection(ray);
 
         return (t >= 0 && t < fabsf(t_max - 0.01f));
     }
@@ -241,7 +241,7 @@ BVHTree::_getClosestSurface(const BVHNode *node, const Ray &ray, int mode,
         if (mode == 1 && t_bbox >= 0.01 && t_bbox < t_max)
             return make_tuple(surface_idx, t_bbox);
 
-        float t = surfaces->at(surface_idx)->getIntersection(ray);
+        float t = getSurfaceAt(surface_idx)->getIntersection(ray);
 
         return (t >= 0.01 && t < t_max)
                ? make_tuple(surface_idx, t) : closest;
@@ -292,3 +292,12 @@ int BVHTree::_getMaxHeight(BVHNode *node) const {
 bool BVHTree::isEmpty() const {
     return (this->root == nullptr);
 }
+
+int BVHTree::getTotalSurfaces() const {
+    return (int) this->surfaces->size();
+}
+
+Surface *BVHTree::getSurfaceAt(int index) const {
+    return this->surfaces->at((unsigned long) index);
+}
+

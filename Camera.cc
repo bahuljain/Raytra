@@ -97,7 +97,6 @@ Point Camera::getPixelSample(int i, int j, float width, float height,
  * @brief   Finds the closest surface to the camera along a given ray.
  *
  * @param surfacesTree   -
- * @param surfaces       - a vector of all the surfaces in the scene.
  * @param ray            - a ray originating from the camera and passing
  *                         through the pixel center of the image.
  * @param origin_surface - the surface from which the ray has originated and
@@ -109,7 +108,6 @@ Point Camera::getPixelSample(int i, int j, float width, float height,
  *                   point on the view ray.
  */
 tuple<int, float> Camera::getClosestSurface(const BVHTree &surfacesTree,
-                                            const vector<Surface *> &surfaces,
                                             const Ray &ray, int mode) const {
     if (mode != 0)
         return surfacesTree.getClosestSurface(ray, mode);
@@ -145,13 +143,12 @@ tuple<int, float> Camera::getClosestSurface(const BVHTree &surfacesTree,
  *                 destination.
  */
 bool Camera::isIntercepted(const BVHTree &surfacesTree,
-                           const vector<Surface *> &surfaces,
                            const Ray &ray, float t_max, int mode) const {
     if (mode != 0)
         return surfacesTree.isIntercepted(ray, t_max, mode);
 
-    for (unsigned int i = 0; i < surfaces.size(); i++) {
-        float t = surfaces[i]->getIntersection(ray);
+    for (int i = 0; i < surfacesTree.getTotalSurfaces(); i++) {
+        float t = surfacesTree.getSurfaceAt(i)->getIntersection(ray);
 
         if (t >= 0 && t < fabsf(t_max - 0.01f)) return true;
     }
@@ -166,7 +163,6 @@ bool Camera::isIntercepted(const BVHTree &surfacesTree,
  *
  * */
 RGB Camera::diffuseFromPointLights(const vector<PointLight *> &plights,
-                                   const vector<Surface *> &surfaces,
                                    const BVHTree &surfacesTree,
                                    const Surface *surface,
                                    const Ray &view_ray,
@@ -192,7 +188,7 @@ RGB Camera::diffuseFromPointLights(const vector<PointLight *> &plights,
          * to the intersection point then compute the diffuse and specular
          * shading on the surface.
          */
-        if (!isIntercepted(surfacesTree, surfaces, light_ray, t_max, mode))
+        if (!isIntercepted(surfacesTree, light_ray, t_max, mode))
             shade.add(
                     surface->phongShading(light->color, light_ray, view_ray,
                                           intersection, mode));
@@ -218,7 +214,6 @@ RGB Camera::diffuseFromPointLights(const vector<PointLight *> &plights,
  * collected, added together and normalized.
  */
 RGB Camera::diffuseFromSquareLights(const vector<SquareLight *> &slights,
-                                    const vector<Surface *> &surfaces,
                                     const BVHTree &surfacesTree,
                                     const Surface *surface,
                                     const Ray &view_ray,
@@ -236,7 +231,7 @@ RGB Camera::diffuseFromSquareLights(const vector<SquareLight *> &slights,
 
                 float t_max = light_ray.getOffsetFromOrigin(intersection);
 
-                if (!isIntercepted(surfacesTree, surfaces, light_ray,
+                if (!isIntercepted(surfacesTree, light_ray,
                                    t_max, mode)) {
 
                     /*
@@ -265,7 +260,6 @@ RGB Camera::diffuseFromSquareLights(const vector<SquareLight *> &slights,
  * @brief   Computes the shading along the given view ray
  *
  * @param view_ray    - the ray along which shading needs to be computed.
- * @param surfaces    - a list of all the surfaces in the scene.
  * @param lights      - a list of all the light sources in the scene.
  * @param refl_limit  - the number of reflections allowed before the light
  *                      fades away.
@@ -276,7 +270,6 @@ RGB Camera::diffuseFromSquareLights(const vector<SquareLight *> &slights,
  *                      the given view ray
  */
 RGB Camera::getShadeAlongRay(const Ray &view_ray,
-                             const vector<Surface *> &surfaces,
                              const vector<PointLight *> &plights,
                              const vector<SquareLight *> &slights,
                              const AmbientLight &ambient,
@@ -291,21 +284,20 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
 
     /* Get closest surface along the ray */
     tuple<int, float> closest_surface;
-    closest_surface = getClosestSurface(surfacesTree, surfaces, view_ray, mode);
+    closest_surface = getClosestSurface(surfacesTree, view_ray, mode);
 
     int closest_surface_idx = get<0>(closest_surface);
     float t = get<1>(closest_surface);
 
     if (closest_surface_idx != -1) {
         Point intersection = view_ray.getPointOnIt(t);
-        Surface *surface = surfaces[closest_surface_idx];
+        Surface *surface = surfacesTree.getSurfaceAt(closest_surface_idx);
 
         /* Get diffuse shading from all Point & Square Lights */
-        shade.add(diffuseFromPointLights(plights, surfaces, surfacesTree,
-                                         surface, view_ray, intersection,
-                                         mode));
-        shade.add(diffuseFromSquareLights(slights, surfaces, surfacesTree,
-                                          surface, view_ray, intersection,
+        shade.add(diffuseFromPointLights(plights, surfacesTree, surface,
+                                         view_ray, intersection, mode));
+        shade.add(diffuseFromSquareLights(slights, surfacesTree, surface,
+                                          view_ray, intersection,
                                           mode, s_strata));
 
         /*
@@ -337,15 +329,14 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
             Ray reflected_ray(intersection, reflected_vector);
 
             /* The shade obtained from the reflected ray */
-            RGB reflection = this->getShadeAlongRay(reflected_ray, surfaces,
-                                                    plights, slights, ambient,
+            RGB reflection = this->getShadeAlongRay(reflected_ray, plights,
+                                                    slights, ambient,
                                                     surfacesTree,
                                                     refl_limit - 1,
                                                     closest_surface_idx, mode,
                                                     s_strata);
 
-            shade.add(
-                    reflection.scaleRGB(surface->getReflectiveComponent()));
+            shade.add(reflection.scaleRGB(surface->getReflectiveComponent()));
         }
     }
     return shade;
@@ -356,7 +347,6 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
  * @brief   Renders the image using the ray tracing algorithm.
  *
  * @param pixels    - a two dimensional array of pixels representing the image.
- * @param surfaces  - a vector of all the surfaces in the scene.
  * @param materials - a vector of all the materials used.
  * @param plights   - a vector of all the point lights in the scene.
  * @param slights   - a vector of all the square lights in the scene.
@@ -423,8 +413,8 @@ void Camera::render(Array2D <Rgba> &pixels, const vector<Surface *> &surfaces,
                     // TODO: should this ray originate from px_sample or eye?
                     Ray view_ray(this->eye, px_sample.sub(this->eye).norm());
 
-                    RGB shade = getShadeAlongRay(view_ray, surfaces, plights,
-                                                 slights, ambient, surfaceTree,
+                    RGB shade = getShadeAlongRay(view_ray, plights, slights,
+                                                 ambient, surfaceTree,
                                                  RECURSIVE_LIMIT, -1,
                                                  mode, s_strata);
 

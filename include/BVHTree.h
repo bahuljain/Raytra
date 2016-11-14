@@ -35,6 +35,10 @@ public:
 
     ~BVHTree();
 
+    int getTotalSurfaces() const;
+
+    Surface *getSurfaceAt(int index) const;
+
     int makeBVHTree();
 
     bool isIntercepted(const Ray &ray, float t_max, int mode) const;

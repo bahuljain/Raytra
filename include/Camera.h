@@ -20,21 +20,17 @@ static const int RECURSIVE_LIMIT = 20;
 
 class Camera {
 private:
-    Point
-    getPixelSample(int i, int j,
-                   float width, float height,
-                   int p, int q, int strata) const;
+    Point getPixelSample(int i, int j,
+                         float width, float height,
+                         int p, int q, int strata) const;
 
     tuple<int, float> getClosestSurface(const BVHTree &surfacesTree,
-                                        const vector<Surface *> &surfaces,
                                         const Ray &ray, int mode) const;
 
     bool isIntercepted(const BVHTree &surfacesTree,
-                       const vector<Surface *> &surfaces,
                        const Ray &ray, float t_max, int mode) const;
 
     RGB diffuseFromPointLights(const vector<PointLight *> &plights,
-                               const vector<Surface *> &surfaces,
                                const BVHTree &surfacesTree,
                                const Surface *surface,
                                const Ray &view_ray,
@@ -42,7 +38,6 @@ private:
                                int mode) const;
 
     RGB diffuseFromSquareLights(const vector<SquareLight *> &slights,
-                                const vector<Surface *> &surfaces,
                                 const BVHTree &surfacesTree,
                                 const Surface *surface,
                                 const Ray &view_ray,
@@ -50,7 +45,6 @@ private:
                                 int mode, int s_strata) const;
 
     RGB getShadeAlongRay(const Ray &view_ray,
-                         const vector<Surface *> &surfaces,
                          const vector<PointLight *> &plights,
                          const vector<SquareLight *> &slights,
                          const AmbientLight &ambient,
