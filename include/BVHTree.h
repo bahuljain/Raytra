@@ -7,8 +7,28 @@
 
 
 #include <functional>
-#include "BVHNode.h"
 #include "Surface.h"
+#include "BoundingBox.h"
+
+class BVHNode {
+public:
+    BoundingBox *thisBound;
+
+    BVHNode *left;
+    BVHNode *right;
+
+    BVHNode() {
+        this->thisBound = nullptr;
+        this->left = nullptr;
+        this->right = nullptr;
+    };
+
+    ~BVHNode() {
+        delete this->thisBound;
+        delete this->left;
+        delete this->right;
+    };
+};
 
 class BVHTree {
 private:
