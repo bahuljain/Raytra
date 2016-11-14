@@ -3,7 +3,6 @@
  * @author  Bahul Jain
  * @date    10/3/16
  * @brief   Holds all constructors and members of the Camera class.
- *
  */
 
 #include <tuple>
@@ -118,8 +117,8 @@ tuple<int, float> Camera::getClosestSurface(const BVHTree &surfacesTree,
     float min_t = numeric_limits<float>::infinity();
     int min_i = -1;
 
-    for (unsigned int i = 0; i < surfaces.size(); i++) {
-        float t = surfaces[i]->getIntersection(ray);
+    for (int i = 0; i < surfacesTree.getTotalSurfaces(); i++) {
+        float t = surfacesTree.getSurfaceAt(i)->getIntersection(ray);
 
         if (t >= 0.01 && t < min_t) {
             min_t = t;
@@ -159,6 +158,13 @@ bool Camera::isIntercepted(const BVHTree &surfacesTree,
     return false;
 }
 
+/**
+ * @name diffuseFromPointLights
+ * @brief obtains the shade on the surface from all the point lights in the
+ * scene.
+ *
+ *
+ * */
 RGB Camera::diffuseFromPointLights(const vector<PointLight *> &plights,
                                    const vector<Surface *> &surfaces,
                                    const BVHTree &surfacesTree,
@@ -194,6 +200,23 @@ RGB Camera::diffuseFromPointLights(const vector<PointLight *> &plights,
     return shade;
 }
 
+/**
+ * @name diffuseFromSquareLight
+ * @brief obtains the diffuse shading contributed by all the square lights in
+ * the scene.
+ *
+ * @param slights  - a list of all the sqaure lights in the scene
+ * @param s_strata - the number of samples that need to be collected from the
+ *                   area light are determined by this value.
+ *
+ * @see diffuseFromPointLights
+ * @details For the most part the process of shading is exactly the same as
+ * that for point lights. But here since its an area light, we need to collect
+ * multiple samples from different sections of the area light. For each sample
+ * the shade obtained will be attenuated by the angle the light ray makes
+ * with the normal direction of the square light. Lastly each sample is
+ * collected, added together and normalized.
+ */
 RGB Camera::diffuseFromSquareLights(const vector<SquareLight *> &slights,
                                     const vector<Surface *> &surfaces,
                                     const BVHTree &surfacesTree,
@@ -205,6 +228,7 @@ RGB Camera::diffuseFromSquareLights(const vector<SquareLight *> &slights,
     for (SquareLight *light :slights) {
         for (int p = 0; p < s_strata; p++) {
             for (int q = 0; q < s_strata; q++) {
+                /* Obtaining a random sample point on the area light */
                 Point light_sample = light->getLightSample(p, q, s_strata);
 
                 Ray light_ray(light_sample,
@@ -214,15 +238,21 @@ RGB Camera::diffuseFromSquareLights(const vector<SquareLight *> &slights,
 
                 if (!isIntercepted(surfacesTree, surfaces, light_ray,
                                    t_max, mode)) {
+
+                    /*
+                     * Attenuating the shade of the light according to the
+                     * angle made by the light ray and normal of the light
+                     */
                     float cos = fmaxf(0, light_ray.direction.dot(light->w));
-                    RGB light_color = light->color.scaleRGB(cos);
+                    RGB light_color = light->color.times(cos);
 
                     RGB c = surface->phongShading(light_color, light_ray,
                                                   view_ray, intersection,
                                                   mode);
 
+                    /* Normalizing the shade obtained and accumulating it. */
                     float avg_factor = 1.0f / (s_strata * s_strata);
-                    shade.add(c.scaleRGB(avg_factor));
+                    shade.add(c.times(avg_factor));
                 }
             }
         }
@@ -306,9 +336,7 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
 
             Ray reflected_ray(intersection, reflected_vector);
 
-            /* The shade obtained from the ray that reflected off the
-             * surface.
-             */
+            /* The shade obtained from the reflected ray */
             RGB reflection = this->getShadeAlongRay(reflected_ray, surfaces,
                                                     plights, slights, ambient,
                                                     surfacesTree,
@@ -330,7 +358,12 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
  * @param pixels    - a two dimensional array of pixels representing the image.
  * @param surfaces  - a vector of all the surfaces in the scene.
  * @param materials - a vector of all the materials used.
- * @param lights    - a vector of all the lights in the scene.
+ * @param plights   - a vector of all the point lights in the scene.
+ * @param slights   - a vector of all the square lights in the scene.
+ * @param ambient   - an ambient light added to the scene.
+ * @param mode      - @see README.md - Run Modes
+ * @param p_strata  - number of primary ray samples
+ * @param s_strata  - number of area light (shadow ray) samples
  *
  * @details For every pixel in the image, construct a ray that originates
  *          from the camera eye and passes via the pixel center. Now trace
@@ -392,7 +425,7 @@ void Camera::render(Array2D <Rgba> &pixels, const vector<Surface *> &surfaces,
 
                     RGB shade = getShadeAlongRay(view_ray, surfaces, plights,
                                                  slights, ambient, surfaceTree,
-                                                 MAX_RECURSIVE_LIMIT, -1,
+                                                 RECURSIVE_LIMIT, -1,
                                                  mode, s_strata);
 
                     px.r += shade.r;

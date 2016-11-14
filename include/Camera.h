@@ -16,7 +16,7 @@
 using namespace std;
 using namespace Imf;
 
-static const int MAX_RECURSIVE_LIMIT = 20;
+static const int RECURSIVE_LIMIT = 20;
 
 class Camera {
 private:
