@@ -24,21 +24,21 @@ private:
                          float width, float height,
                          int p, int q, int strata) const;
 
-    tuple<int, float> getClosestSurface(const BVHTree &surfacesTree,
+    tuple<int, float> getClosestSurface(const BVHTree &surfaces,
                                         const Ray &ray, int mode) const;
 
-    bool isIntercepted(const BVHTree &surfacesTree,
+    bool isIntercepted(const BVHTree &surfaces,
                        const Ray &ray, float t_max, int mode) const;
 
     RGB diffuseFromPointLights(const vector<PointLight *> &plights,
-                               const BVHTree &surfacesTree,
+                               const BVHTree &surfaces,
                                const Surface *surface,
                                const Ray &view_ray,
                                const Point &intersection,
                                int mode) const;
 
     RGB diffuseFromSquareLights(const vector<SquareLight *> &slights,
-                                const BVHTree &surfacesTree,
+                                const BVHTree &surfaces,
                                 const Surface *surface,
                                 const Ray &view_ray,
                                 const Point &intersection,
@@ -48,7 +48,7 @@ private:
                          const vector<PointLight *> &plights,
                          const vector<SquareLight *> &slights,
                          const AmbientLight &ambient,
-                         const BVHTree &surfacesTree,
+                         const BVHTree &surfaces,
                          int refl_limit,
                          int origin_surface_idx,
                          int mode, int s_strata) const;

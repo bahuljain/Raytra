@@ -35,9 +35,9 @@ public:
 
     ~BVHTree();
 
-    int getTotalSurfaces() const;
+    int size() const;
 
-    Surface *getSurfaceAt(int index) const;
+    Surface *at(int index) const;
 
     int makeBVHTree();
 
