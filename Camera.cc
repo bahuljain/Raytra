@@ -63,14 +63,18 @@ void Camera::setValues(float x, float y, float z,
 }
 
 /**
- * @name    getPixelCenter
- * @brief   Finds the co-ordinates of center of the given pixel.
+ * @name    getPixelSample
+ * @brief   Finds the co-ordinates of a sample point on the given pixel.
  *
  * @param i         - the row index of the pixel
  * @param j         - the column index of the pixel
  * @param width     - the width of the image plane
  * @param height    - the height of the image plane
- * @returns         - the pixel center co-ordinates for the given pixel
+ * @param p         - the column index of the block on a pixel
+ * @param q         - the row index of the block on a pixel
+ * @param strata    - the number of blocks along the row and column the pixel
+ *                    needs to be split into.
+ * @returns         - the sample point co-ordinates for the given pixel
  */
 Point Camera::getPixelSample(int i, int j, float width, float height,
                              int p, int q, int strata) const {
@@ -96,7 +100,7 @@ Point Camera::getPixelSample(int i, int j, float width, float height,
  * @name    getClosestSurface
  * @brief   Finds the closest surface to the camera along a given ray.
  *
- * @param surfaces   -
+ * @param surfaces       - collection of all the surfaces in the scene.
  * @param ray            - a ray originating from the camera and passing
  *                         through the pixel center of the image.
  * @param origin_surface - the surface from which the ray has originated and
@@ -131,7 +135,7 @@ tuple<int, float> Camera::getClosestSurface(const BVHTree &surfaces,
  * @brief   Determines if a surface intercepts the ray before it reaches it
  *          final destination.
  *
- * @param surfaces -
+ * @param surfaces - collection of all the surfaces in the scene.
  * @param ray   - the ray which needs to be checked if it is intercepted
  *                by the surface.
  * @param t_max - the destination of the ray; the ray should be intercepted
@@ -273,7 +277,7 @@ RGB Camera::diffuseFromSquareLights(const vector<SquareLight *> &slights,
  * @name    getShadeAlongRay
  * @brief   Computes the shading along the given view ray
  *
- * @param plights | @param slights | @param ambient - all the light sources
+ * @param plights | @param slights | @param ambient - all the light sources.
  * @param view_ray    - the ray along which shading needs to be computed.
  * @param surfaces    - contains all surfaces in two forms: BVHTree & array.
  * @param refl_limit  - the number of reflections allowed before the light
@@ -371,8 +375,8 @@ RGB Camera::getShadeAlongRay(const Ray &view_ray,
  * @param p_strata  - number of primary ray samples
  * @param s_strata  - number of area light (shadow ray) samples
  *
- * @details For every pixel in the image, construct a ray that originates
- *          from the camera eye and passes via the pixel center. Now trace
+ * @details For every pixel in the image, construct rays that originates
+ *          from the camera eye and passes via points on the pixel. Now trace
  *          the ray in the scene to find intersection with objects. The
  *          closest object encountered along the ray will get rendered at
  *          that pixel. Use the various light sources and materials to obtain
