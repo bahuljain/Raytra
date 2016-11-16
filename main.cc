@@ -84,6 +84,8 @@ int main(int argc, char **argv) {
         }
     }
 
+    srand(1);
+
     // TODO: add mode info -- for now defaulting to mode = -1
     cam->render(pixels, surfaces, materials, plights, slights, ambient, mode,
                 primary_samples, shadow_samples);

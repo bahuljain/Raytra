@@ -52,9 +52,19 @@ public:
         return Vector(i + vec.i, j + vec.j, k + vec.k);
     };
 
+    inline void plusEq(const Vector &vec) {
+        i += vec.i;
+        j += vec.j;
+        k += vec.k;
+    };
+
     inline Vector operator-() const {
         return Vector(-i, -j, -k);
     };
+
+    inline bool equals(const Vector vec) const {
+        return i == vec.i && j == vec.j && k == vec.k;
+    }
 
     inline void printVector() const {
         std::cout << i << "i + " << j << "j + " << k << "k" << std::endl;

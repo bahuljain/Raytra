@@ -347,32 +347,59 @@ void parseSceneFile(char *filename,
 
             case 'w': { // read .obj file
                 string filename;
-                vector<int> triangles;
-                vector<float> vertices;
+                vector<Triangle *> triangles;
+                vector<int> tris;
+                vector<float> verts;
 
                 filename = line.substr(2);
+                read_wavefront_file(filename.c_str(), tris, verts);
 
-                read_wavefront_file(filename.c_str(), triangles, vertices);
+                Vector vertex_normals[verts.size() / 3];
+                for (unsigned int i = 0; i < verts.size() / 3; i++)
+                    vertex_normals[i] = Vector();
 
-                for (unsigned int i = 0; i < triangles.size() / 3; i++) {
+                for (unsigned int i = 0; i < tris.size() / 3; i++) {
                     Triangle *triangle;
+                    int v1, v2, v3;
                     float x1, y1, z1, x2, y2, z2, x3, y3, z3;
 
-                    x1 = vertices[3 * triangles[3 * i]];
-                    y1 = vertices[3 * triangles[3 * i] + 1];
-                    z1 = vertices[3 * triangles[3 * i] + 2];
+                    v1 = tris[3 * i];
+                    v2 = tris[3 * i + 1];
+                    v3 = tris[3 * i + 2];
 
-                    x2 = vertices[3 * triangles[3 * i + 1]];
-                    y2 = vertices[3 * triangles[3 * i + 1] + 1];
-                    z2 = vertices[3 * triangles[3 * i + 1] + 2];
+                    x1 = verts[3 * v1];
+                    y1 = verts[3 * v1 + 1];
+                    z1 = verts[3 * v1 + 2];
 
-                    x3 = vertices[3 * triangles[3 * i + 2]];
-                    y3 = vertices[3 * triangles[3 * i + 2] + 1];
-                    z3 = vertices[3 * triangles[3 * i + 2] + 2];
+                    x2 = verts[3 * v2];
+                    y2 = verts[3 * v2 + 1];
+                    z2 = verts[3 * v2 + 2];
+
+                    x3 = verts[3 * v3];
+                    y3 = verts[3 * v3 + 1];
+                    z3 = verts[3 * v3 + 2];
 
                     triangle = new Triangle(x1, y1, z1, x2, y2, z2, x3, y3, z3);
                     triangle->setMaterial(lastMaterial);
-                    surfaces.push_back(triangle);
+
+                    vertex_normals[v1].plusEq(triangle->normal);
+                    vertex_normals[v2].plusEq(triangle->normal);
+                    vertex_normals[v3].plusEq(triangle->normal);
+                    triangles.push_back(triangle);
+                }
+
+                for (unsigned int i = 0; i < verts.size() / 3; i++) {
+                    if (!vertex_normals[i].equals(Vector(0, 0, 0)))
+                        vertex_normals[i] = vertex_normals[i].norm();
+                }
+
+                for (unsigned int i = 0; i < tris.size() / 3; i++) {
+                    triangles[i]->isInMesh = true;
+                    triangles[i]->n1 = vertex_normals[tris[3 * i]];
+                    triangles[i]->n2 = vertex_normals[tris[3 * i + 1]];
+                    triangles[i]->n3 = vertex_normals[tris[3 * i + 2]];
+
+                    surfaces.push_back(triangles[i]);
                 }
 
                 break;

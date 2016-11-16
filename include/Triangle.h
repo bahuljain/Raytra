@@ -9,12 +9,14 @@
 #include "Surface.h"
 
 class Triangle : public Surface {
-private:
-    Vector normal;
 public:
-    Point a;
-    Point b;
-    Point c;
+    bool isInMesh;
+    Point p1;
+    Point p2;
+    Point p3;
+    Vector normal;
+    Vector n1, n2, n3;
+    float _a, _b, _c, _d, _e, _f;
 
     Triangle(float, float, float, float, float, float, float, float, float);
 
