@@ -100,6 +100,10 @@ Vector Triangle::getSurfaceNormal(const Point &p) const {
     blkc = b * l - k * c;
 
     M = a * eihf + b * gfdi + c * dheg;
+
+    if (M == 0)
+        return normal;
+
     alpha = (j * eihf + k * gfdi + l * dheg) / M;
     beta = (i * akjb + h * jcal + g * blkc) / M;
     gamma = (-f * akjb - e * jcal - d * blkc) / M;
