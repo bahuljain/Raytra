@@ -165,12 +165,12 @@ bool BVHTree::_isIntercepted(const BVHNode *node,
     if (node->left == nullptr && node->right == nullptr) {
         int surface_idx = node->thisBound->getBoundedSurface();
 
-        if (mode == 1 && t_bbox < fabsf(t_max - 0.01f))
+        if (mode == 1 && t_bbox < t_max - 0.05f)
             return true;
 
         float t = this->at(surface_idx)->getIntersection(ray);
 
-        return (t >= 0 && t < fabsf(t_max - 0.01f));
+        return (t >= 0 && t < t_max - 0.05f);
     }
 
     /*
@@ -238,12 +238,12 @@ BVHTree::_getClosestSurface(const BVHNode *node, const Ray &ray, int mode,
     if (node->left == nullptr && node->right == nullptr) {
         int surface_idx = node->thisBound->getBoundedSurface();
 
-        if (mode == 1 && t_bbox >= 0.01 && t_bbox < t_max)
+        if (mode == 1 && t_bbox >= 0.05 && t_bbox < t_max)
             return make_tuple(surface_idx, t_bbox);
 
         float t = this->at(surface_idx)->getIntersection(ray);
 
-        return (t >= 0.01 && t < t_max)
+        return (t >= 0.05 && t < t_max)
                ? make_tuple(surface_idx, t) : closest;
     }
 
